@@ -1,76 +1,188 @@
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color: #1f2937; }
-
-.main { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
-
-/* Topbar */
-.topbar {
-  display: flex; gap: 16px; align-items: center; justify-content: space-between;
-  padding: 12px 16px; border-bottom: 1px solid #e5e7eb; background: #f9fafb;
+/* ================== Reset / Global ================== */
+* {
+  box-sizing: border-box;
 }
-.navegacion a { margin: 0 8px; text-decoration: none; color: #111827; }
-.usuario .separar { margin: 0 8px; color: #9ca3af; }
 
-/* Hero */
-.hero { margin-left: 250px; display: grid; gap: 24px; grid-template-columns: 1.2fr 1fr; padding: 24px 16px; border-bottom: 1px solid #e5e7eb; }
-.hero-media img { margin-left:100px;max-width: 100%; height: auto; display: block; }
-.btn { display: inline-block; margin-top: 10px; padding: 10px 14px; border: 1px solid #111827; border-radius: 8px; text-decoration: none; color: #111827; }
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: #1f2937;
+}
 
-/* Secciones */
-.filtros, .productos, .mision { padding: 24px 0; }
-.filtros label { margin-right: 8px; }
-.status { margin-top: 8px; color: #374151; }
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
 
-/* Grid de productos */
+/* ================== Topbar ================== */
+.topbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.navegacion a {
+  margin: 0 8px;
+  text-decoration: none;
+  color: #111827;
+}
+
+.usuario .separar {
+  margin: 0 8px;
+  color: #9ca3af;
+}
+
+/* ================== Hero ================== */
+.hero {
+  margin-left: 250px;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1.2fr 1fr;
+  padding: 24px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.hero-media img {
+  margin-left: 100px;
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 14px;
+  border: 1px solid #111827;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #111827;
+}
+
+/* ================== Secciones ================== */
+.filtros,
+.productos,
+.mision {
+  padding: 24px 0;
+}
+
+.filtros label {
+  margin-right: 8px;
+}
+
+.status {
+  margin-top: 8px;
+  color: #374151;
+}
+
+/* ================== Grid de productos ================== */
 .buscador {
-  display: grid; gap: 16px;
+  display: grid;
+  gap: 16px;
   grid-template-columns: repeat(4, 1fr);
 }
-@media (max-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 700px)  { .grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 430px)  { .grid { grid-template-columns: 1fr; } }
+
+@media (max-width: 1000px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 430px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 .item {
-  border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
 }
-.item img { width: 100%; height: auto; border-radius: 8px; }
-.item h3 { margin: 8px 0; font-size: 1rem; }
-.precio { font-weight: 700; }
 
-/* Misión */
+.item img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.item h3 {
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+.precio {
+  font-weight: 700;
+}
+
+/* ================== Misión ================== */
 .mision {
-    text-align: center;
-    padding: 24px 0;
+  text-align: center;
+  padding: 24px 0;
 }
 
 .mision img {
-    display: block;
-    margin: 0 auto 16px;
-    max-width: 200px;
+  display: block;
+  margin: 0 auto 16px;
+  max-width: 200px;
 }
 
+/* ================== Footer ================== */
+.footer {
+  margin-top: 24px;
+  padding: 16px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
 
+.footer nav a {
+  margin: 0 8px;
+  color: #111827;
+  text-decoration: none;
+}
 
-/* Footer */
-.footer { margin-top: 24px; padding: 16px; border-top: 1px solid #e5e7eb; background: #f9fafb; }
-.footer nav a { margin: 0 8px; color: #111827; text-decoration: none; }
-.newsletter { margin-top: 8px; display: flex; gap: 8px; }
-.newsletter input { padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; }
-.newsletter button { padding: 10px 12px; border: 1px solid #111827; border-radius: 8px; background: #111827; color: #fff; }
+.newsletter {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
 
+.newsletter input {
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
 
+.newsletter button {
+  padding: 10px 12px;
+  border: 1px solid #111827;
+  border-radius: 8px;
+  background: #111827;
+  color: #fff;
+}
 
-
-
-/* ===== Modal ===== */
-
-/* El backdrop (fondo oscuro) de <dialog> */
+/* ================== Modal ================== */
+/* Fondo oscuro del modal */
 #modal::backdrop {
   background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(2px); /* opcional: difumina fondo */
+  backdrop-filter: blur(2px);
 }
 
-/* Contenedor del modal */
+/* Contenedor */
 #modal {
   border: none;
   border-radius: 12px;
@@ -83,7 +195,7 @@ html, body { margin: 0; padding: 0; font-family: system-ui, -apple-system, Segoe
   animation: fadeIn 0.3s ease;
 }
 
-/* Encabezado del modal */
+/* Encabezado */
 #modal h2 {
   margin-top: 0;
   margin-bottom: 16px;
@@ -92,7 +204,7 @@ html, body { margin: 0; padding: 0; font-family: system-ui, -apple-system, Segoe
   text-align: center;
 }
 
-/* Campos del formulario */
+/* Campos */
 #modal form div {
   margin-bottom: 16px;
 }
@@ -137,20 +249,59 @@ html, body { margin: 0; padding: 0; font-family: system-ui, -apple-system, Segoe
   background: #e5e7eb;
   color: #111827;
   margin-top: 10px;
-  width: 18%;
+  width: 10%;
+  font-size: 0.8rem; /* más pequeño */
+  padding: 4px 6px;
 }
 
 /* Animación */
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
+/* ================== Tabs ================== */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 16px;
+}
 
+.tab {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+  cursor: pointer;
+}
 
-.tabs { display:flex; gap:8px; margin:12px 0 16px; }
-.tab { padding:8px 12px; border-radius:8px; border:1px solid #d1d5db; background:#f3f4f6; cursor:pointer; }
-.tab[aria-selected="true"] { background:#111827; color:#fff; border-color:#111827; }
+.tab[aria-selected="true"] {
+  background: #111827;
+  color: #fff;
+  border-color: #111827;
+}
 
-.btn-primaria { background:#111827; color:#fff; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; }
-.btn-secundaria { background:#e5e7eb; color:#111827; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; }
+/* ================== Botones globales ================== */
+.btn-primaria {
+  background: #111827;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-secundaria {
+  background: #e5e7eb;
+  color: #111827;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
