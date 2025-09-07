@@ -1,307 +1,184 @@
-/* ================== Reset / Global ================== */
-* {
-  box-sizing: border-box;
+* { 
+  box-sizing: border-box; 
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color: #1f2937;
+html, body { 
+  margin: 0; 
+  padding: 0; 
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; 
+  color: #5D4037; /* Texto principal */
+  background-color: #FFF5E1; /* Fondo principal */
 }
 
-.main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 16px;
+.main { 
+  max-width: 1100px; 
+  margin: 0 auto; 
+  padding: 0 16px; 
 }
 
-/* ================== Topbar ================== */
+/* Topbar */
 .topbar {
-  display: flex;
-  gap: 16px;
-  align-items: center;
+  display: flex; 
+  gap: 16px; 
+  align-items: center; 
   justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  padding: 12px 16px; 
+  border-bottom: 1px solid #e5e7eb; 
+  background: #FFC0CB; /* Rosa suave */
+}
+.navegacion a { 
+  margin: 0 8px; 
+  text-decoration: none; 
+  color: #8B4513; /* Chocolate */
+  font-weight: 600;
+}
+.usuario .separar { 
+  margin: 0 8px; 
+  color: #B0BEC5; /* Texto secundario */
 }
 
-.navegacion a {
-  margin: 0 8px;
-  text-decoration: none;
-  color: #111827;
+/* Hero */
+.hero { 
+  margin-left: 250px; 
+  display: grid; 
+  gap: 24px; 
+  grid-template-columns: 1.2fr 1fr; 
+  padding: 24px 16px; 
+  border-bottom: 1px solid #e5e7eb; 
+}
+.hero-media img { 
+  margin-left:100px;
+  max-width: 100%; 
+  height: auto; 
+  display: block; 
+}
+.btn { 
+  display: inline-block; 
+  margin-top: 10px; 
+  padding: 10px 14px; 
+  border: 1px solid #8B4513; 
+  border-radius: 8px; 
+  text-decoration: none; 
+  color: #FFF; 
+  background: #8B4513; /* Chocolate */
+}
+.btn:hover {
+  background: #FFC0CB; /* Rosa suave */
+  color: #5D4037;
 }
 
-.usuario .separar {
-  margin: 0 8px;
-  color: #9ca3af;
+/* Secciones */
+.filtros, .productos, .mision { 
+  padding: 24px 0; 
+}
+.filtros label { 
+  margin-right: 8px; 
+}
+.status { 
+  margin-top: 8px; 
+  color: #5D4037; 
 }
 
-/* ================== Hero ================== */
-.hero {
-  margin-left: 250px;
-  display: grid;
-  gap: 24px;
-  grid-template-columns: 1.2fr 1fr;
-  padding: 24px 16px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.hero-media img {
-  margin-left: 100px;
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-.btn {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 10px 14px;
-  border: 1px solid #111827;
-  border-radius: 8px;
-  text-decoration: none;
-  color: #111827;
-}
-
-/* ================== Secciones ================== */
-.filtros,
-.productos,
-.mision {
-  padding: 24px 0;
-}
-
-.filtros label {
-  margin-right: 8px;
-}
-
-.status {
-  margin-top: 8px;
-  color: #374151;
-}
-
-/* ================== Grid de productos ================== */
+/* Grid de productos */
 .buscador {
-  display: grid;
+  display: grid; 
   gap: 16px;
   grid-template-columns: repeat(4, 1fr);
 }
-
-@media (max-width: 1000px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+@media (max-width: 1000px) { 
+  .grid { grid-template-columns: repeat(3, 1fr); } 
+}
+@media (max-width: 700px)  { 
+  .grid { grid-template-columns: repeat(2, 1fr); } 
+}
+@media (max-width: 430px)  { 
+  .grid { grid-template-columns: 1fr; } 
 }
 
-@media (max-width: 700px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 430px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* Tarjetas de productos */
 .item {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 12px;
-  background: #fff;
+  border: 1px solid #e5e7eb; 
+  border-radius: 12px; 
+  padding: 12px; 
+  background: #FFC0CB; /* Rosa Suave */
+  transition: all 0.3s ease;
+}
+.item img { 
+  width: 100%; 
+  height: auto; 
+  border-radius: 8px; 
+}
+.item h3 { 
+  margin: 8px 0; 
+  font-size: 1rem; 
+  color: #8B4513; /* Chocolate */
+}
+.item p { 
+  color: #5D4037; /* Texto principal */
+}
+.precio { 
+  font-weight: 700; 
+  color: #5D4037; 
 }
 
-.item img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
+/* Hover en productos */
+.item:hover {
+  background: #8B4513; /* Chocolate */
+  color: #fff; /* Texto blanco */
+}
+.item:hover h3,
+.item:hover p,
+.item:hover .precio {
+  color: #fff; 
 }
 
-.item h3 {
-  margin: 8px 0;
-  font-size: 1rem;
-}
-
-.precio {
-  font-weight: 700;
-}
-
-/* ================== Misión ================== */
+/* Misión */
 .mision {
   text-align: center;
   padding: 24px 0;
 }
-
 .mision img {
   display: block;
   margin: 0 auto 16px;
   max-width: 200px;
 }
 
-/* ================== Footer ================== */
-.footer {
-  margin-top: 24px;
-  padding: 16px;
-  border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
+/* Footer */
+.footer { 
+  margin-top: 24px; 
+  padding: 16px; 
+  border-top: 1px solid #e5e7eb; 
+  background: #FFC0CB; /* Rosa suave */
+}
+.footer nav a { 
+  margin: 0 8px; 
+  color: #8B4513; /* Chocolate */
+  text-decoration: none; 
+}
+.newsletter { 
+  margin-top: 8px; 
+  display: flex; 
+  gap: 8px; 
+}
+.newsletter input { 
+  padding: 10px; 
+  border: 1px solid #d1d5db; 
+  border-radius: 8px; 
+}
+.newsletter button { 
+  padding: 10px 12px; 
+  border: 1px solid #8B4513; 
+  border-radius: 8px; 
+  background: #8B4513; 
+  color: #fff; 
+}
+.newsletter button:hover {
+  background: #FFC0CB; 
+  color: #5D4037;
 }
 
-.footer nav a {
-  margin: 0 8px;
-  color: #111827;
-  text-decoration: none;
-}
-
-.newsletter {
-  margin-top: 8px;
-  display: flex;
-  gap: 8px;
-}
-
-.newsletter input {
-  padding: 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-}
-
-.newsletter button {
-  padding: 10px 12px;
-  border: 1px solid #111827;
-  border-radius: 8px;
-  background: #111827;
-  color: #fff;
-}
-
-/* ================== Modal ================== */
-/* Fondo oscuro del modal */
-#modal::backdrop {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(2px);
-}
-
-/* Contenedor */
-#modal {
-  border: none;
-  border-radius: 12px;
-  padding: 24px;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-  background: #fff;
-  font-family: system-ui, sans-serif;
-  animation: fadeIn 0.3s ease;
-}
-
-/* Encabezado */
-#modal h2 {
-  margin-top: 0;
-  margin-bottom: 16px;
-  font-size: 1.4rem;
-  color: #111827;
-  text-align: center;
-}
-
-/* Campos */
-#modal form div {
-  margin-bottom: 16px;
-}
-
-#modal label {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 0.9rem;
-  color: #374151;
-}
-
-#modal input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-#modal input:focus {
-  outline: 2px solid #3b82f6;
-  border-color: #3b82f6;
-}
-
-/* Botones */
-#modal button {
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-#modal button[type="submit"],
-#modal button:not(#cerrar) {
-  max-width: 50%;
-  background: #111827;
-  color: #fff;
-}
-
-#modal #cerrar {
-  background: #e5e7eb;
-  color: #111827;
-  margin-top: 10px;
-  width: 10%;
-  font-size: 0.8rem; /* más pequeño */
-  padding: 4px 6px;
-}
-
-/* Animación */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* ================== Tabs ================== */
-.tabs {
-  display: flex;
-  gap: 8px;
-  margin: 12px 0 16px;
-}
-
-.tab {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  background: #f3f4f6;
-  cursor: pointer;
-}
-
-.tab[aria-selected="true"] {
-  background: #111827;
-  color: #fff;
-  border-color: #111827;
-}
-
-/* ================== Botones globales ================== */
-.btn-primaria {
-  background: #111827;
-  color: #fff;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.btn-secundaria {
-  background: #e5e7eb;
-  color: #111827;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 8px;
+#inicio_sesion,
+#registrarse,
+.usuario span {
   cursor: pointer;
 }
