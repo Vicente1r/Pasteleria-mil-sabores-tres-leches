@@ -2,26 +2,59 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Conviction</title>
+    <title>Mil Sabores</title>
 </head>
 <body>
-    <h1>Bon Menu</h1>
-    <p>
-        <a href="#">Save</a> 
-        <a href="#">Package</a> 
-        <a href="#">Message</a> 
-        <a href="#">Reset</a> 
-        <a href="#">Confuse</a>
-    </p>
-    <p><strong>Get (0)</strong></p>
-    
-    <p>nombre empresa</p>
-    
-    <h2><strong>FORMULARIO DE CONVICTION</strong></h2>
-    
-    <p>[Firmado]</p>
-    
-    <p>[Descripción]</p>
+
+    <!-- el encabezado -->
+    <header>
+        <table width="100%">
+            <tr>
+                <td><strong>■ Pastelería Mil Sabores</strong></td>
+                <td align="center">
+                    <a href="../index.html">Home</a> |
+                    <a href="#">Productos</a> |
+                    <a href="#">Nosotros</a> |
+                    <a href="#">Blog</a> |
+                    <a href="#">Contacto</a>
+                </td>
+                <td align="right">🛒 Cart (0)</td>
+            </tr>
+        </table>
+    </header>
+
+    <hr>
+
+    <!-- Logo de la pinche pagina -->
+    <div align="center">
+        <img src="https://via.placeholder.com/150x100" alt="Logo Empresa"><br><br>
+        <h2>nombre empresa</h2>
+    </div>
+
+    <!-- el Formulario +rpara el cliente -->
+    <div align="center">
+        <table border="1" width="60%" cellspacing="0" cellpadding="10">
+            <tr>
+                <th colspan="2">FORMULARIO DE CONTACTOS</th>
+            </tr>
+            <tr>
+                <td colspan="2" align="left">
+                    <form action="#" method="post">
+                        <label for="nombre">Nombre Completo</label><br>
+                        <input type="text" id="nombre" name="nombre" size="50"><br><br>
+
+                        <label for="correo">Correo</label><br>
+                        <input type="email" id="correo" name="correo" size="50"><br><br>
+
+                        <label for="contenido">Contenido</label><br>
+                        <textarea id="contenido" name="contenido" rows="5" cols="50"></textarea><br><br>
+
+                        <input type="submit" value="ENVIAR MENSAJE">
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+
 </body>
 </html>
