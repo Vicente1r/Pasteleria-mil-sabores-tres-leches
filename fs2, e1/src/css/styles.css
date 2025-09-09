@@ -8,7 +8,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color: #1f2937;
+  color: #5D4037; /* Texto principal */
+  background: #FFF5E1; /* Fondo crema pastel */
 }
 
 .main {
@@ -20,37 +21,48 @@ body {
 /* ================== Topbar ================== */
 .topbar {
   display: flex;
-  gap: 16px;
+  gap: 5px;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 2px 16px;
   border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  background: #FFF5E1;
 }
+.logo {
+  display: flex;
+  align-items: flex-start; 
+}
+
+.logo img {
+  height: 70px; 
+  width: auto;
+}
+
 
 .navegacion a {
   margin: 0 8px;
   text-decoration: none;
-  color: #111827;
+  color: #5D4037;
 }
 
 .usuario .separar {
   margin: 0 8px;
-  color: #9ca3af;
+  color: #B0BEC5;
 }
 
 /* ================== Hero ================== */
 .hero {
-  margin-left: 250px;
+  margin-left: 400px;
   display: grid;
   gap: 24px;
   grid-template-columns: 1.2fr 1fr;
   padding: 24px 16px;
   border-bottom: 1px solid #e5e7eb;
+  background: #FFF5E1;
 }
 
 .hero-media img {
-  margin-left: 100px;
+  margin-left: 250px;
   max-width: 100%;
   height: auto;
   display: block;
@@ -60,10 +72,16 @@ body {
   display: inline-block;
   margin-top: 10px;
   padding: 10px 14px;
-  border: 1px solid #111827;
+  border: 1px solid #8B4513; /* Chocolate */
   border-radius: 8px;
   text-decoration: none;
-  color: #111827;
+  color: #fff;
+  background: #8B4513; /* Botón chocolate */
+}
+
+.btn:hover {
+  background: #FFC0CB; /* Rosa suave en hover */
+  color: #5D4037;
 }
 
 /* ================== Secciones ================== */
@@ -71,15 +89,17 @@ body {
 .productos,
 .mision {
   padding: 24px 0;
+  background: #FFF5E1;
 }
 
 .filtros label {
   margin-right: 8px;
+  color: #B0BEC5;
 }
 
 .status {
   margin-top: 8px;
-  color: #374151;
+  color: #B0BEC5;
 }
 
 /* ================== Grid de productos ================== */
@@ -123,16 +143,20 @@ body {
 .item h3 {
   margin: 8px 0;
   font-size: 1rem;
+  color: #5D4037;
 }
 
 .precio {
   font-weight: 700;
+  color: #5D4037;
 }
 
 /* ================== Misión ================== */
 .mision {
   text-align: center;
   padding: 24px 0;
+  color: #5D4037;
+  background: #FFF5E1;
 }
 
 .mision img {
@@ -146,12 +170,12 @@ body {
   margin-top: 24px;
   padding: 16px;
   border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
+  background: #FFF5E1;
 }
 
 .footer nav a {
   margin: 0 8px;
-  color: #111827;
+  color: #5D4037;
   text-decoration: none;
 }
 
@@ -165,24 +189,30 @@ body {
   padding: 10px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
+  color: #5D4037;
+  background: #fff;
 }
 
 .newsletter button {
   padding: 10px 12px;
-  border: 1px solid #111827;
+  border: 1px solid #8B4513;
   border-radius: 8px;
-  background: #111827;
+  background: #FFC0CB; /* Botón rosa suave */
+  color: #5D4037;
+  font-weight: 600;
+}
+
+.newsletter button:hover {
+  background: #8B4513;
   color: #fff;
 }
 
 /* ================== Modal ================== */
-/* Fondo oscuro del modal */
 #modal::backdrop {
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(2px);
 }
 
-/* Contenedor */
 #modal {
   border: none;
   border-radius: 12px;
@@ -193,27 +223,22 @@ body {
   background: #fff;
   font-family: system-ui, sans-serif;
   animation: fadeIn 0.3s ease;
+  color: #5D4037;
 }
 
-/* Encabezado */
 #modal h2 {
   margin-top: 0;
   margin-bottom: 16px;
   font-size: 1.4rem;
-  color: #111827;
+  color: #5D4037;
   text-align: center;
-}
-
-/* Campos */
-#modal form div {
-  margin-bottom: 16px;
 }
 
 #modal label {
   display: block;
   margin-bottom: 6px;
   font-size: 0.9rem;
-  color: #374151;
+  color: #131414;
 }
 
 #modal input {
@@ -222,14 +247,10 @@ body {
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 1rem;
+  color: #5D4037;
+  background: #FFF5E1;
 }
 
-#modal input:focus {
-  outline: 2px solid #3b82f6;
-  border-color: #3b82f6;
-}
-
-/* Botones */
 #modal button {
   padding: 10px 14px;
   border-radius: 8px;
@@ -241,29 +262,17 @@ body {
 #modal button[type="submit"],
 #modal button:not(#cerrar) {
   max-width: 50%;
-  background: #111827;
+  background: #8B4513; /* Chocolate */
   color: #fff;
 }
 
 #modal #cerrar {
-  background: #e5e7eb;
-  color: #111827;
+  background: #FFC0CB; /* Rosa suave */
+  color: #5D4037;
   margin-top: 10px;
   width: 10%;
-  font-size: 0.8rem; /* más pequeño */
+  font-size: 0.8rem;
   padding: 4px 6px;
-}
-
-/* Animación */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 /* ================== Tabs ================== */
@@ -277,19 +286,20 @@ body {
   padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
-  background: #f3f4f6;
+  background: #FFC0CB; /* Rosa suave */
   cursor: pointer;
+  color: #5D4037;
 }
 
 .tab[aria-selected="true"] {
-  background: #111827;
+  background: #8B4513; /* Chocolate */
   color: #fff;
-  border-color: #111827;
+  border-color: #8B4513;
 }
 
 /* ================== Botones globales ================== */
 .btn-primaria {
-  background: #111827;
+  background: #8B4513; /* Chocolate */
   color: #fff;
   border: none;
   padding: 10px 14px;
@@ -297,11 +307,18 @@ body {
   cursor: pointer;
 }
 
-.btn-secundaria {
-  background: #e5e7eb;
-  color: #111827;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
+.btn-primaria:hover {
+  background: #FFC0CB;
+}
+
+.usuario a {
+  cursor: pointer;        
+  text-decoration: none;  
+  color: #5D4037;         
+  font-weight: 500;
+}
+
+.usuario a:hover {
+  color: #8B4513;         
+  text-decoration: underline; 
 }
