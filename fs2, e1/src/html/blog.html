@@ -4,49 +4,213 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Site Name</title>
-  <link rel="stylesheet" href="styles.css">
+  <!-- Bootstrap 4 CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    .header-custom {
+      background-color: #e9ecef;
+      border: 1px solid #dee2e6;
+      padding: 10px 0;
+    }
+    
+    .logo h1 {
+      font-size: 1.2rem;
+      margin: 0;
+      color: #000;
+    }
+    
+    .nav-custom a {
+      color: #007bff;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    
+    .nav-custom a:hover {
+      text-decoration: underline;
+    }
+    
+    .cart-custom {
+      color: #000;
+      text-decoration: none;
+    }
+    
+    .cart-custom:hover {
+      text-decoration: none;
+      color: #000;
+    }
+    
+    .main-content {
+      padding: 40px 0;
+      background-color: #f8f9fa;
+    }
+    
+    .noticias-title {
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.5rem;
+      margin-bottom: 30px;
+      color: #000;
+    }
+    
+    .caso-card {
+      background-color: #e9ecef;
+      border: 1px solid #dee2e6;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+    
+    .caso-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #000;
+    }
+    
+    .caso-text {
+      font-size: 0.9rem;
+      color: #666;
+      line-height: 1.4;
+      margin-bottom: 15px;
+    }
+    
+    .btn-custom {
+      background-color: #fff;
+      border: 1px solid #000;
+      color: #000;
+      padding: 5px 15px;
+      font-size: 0.8rem;
+      border-radius: 3px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-custom:hover {
+      background-color: #f8f9fa;
+      color: #000;
+      text-decoration: none;
+    }
+    
+    .image-placeholder {
+      background-color: #fff;
+      border: 2px solid #000;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .image-placeholder img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    /* Líneas cruzadas para placeholder cuando no hay imagen */
+    .image-placeholder:empty::before,
+    .image-placeholder:empty::after {
+      content: '';
+      position: absolute;
+      background-color: #ccc;
+      z-index: 1;
+    }
+    
+    .image-placeholder:empty::before {
+      width: 100%;
+      height: 2px;
+      transform: rotate(45deg);
+    }
+    
+    .image-placeholder:empty::after {
+      width: 100%;
+      height: 2px;
+      transform: rotate(-45deg);
+    }
+  </style>
 </head>
 <body>
   <!-- Header -->
-  <header>
+  <header class="header-custom">
     <div class="container">
-      <div class="logo">
-        <h1>Pastelería Mil Sabores</h1>
-      </div>
-      <nav>
-        <ul>
-          <li><a href="../index.html">Home</a></li>
-          <li><a href="#">Productos</a></li>
-          <li><a href="#">Nosotros</a></li>
-          <li><a href="#">Blogs</a></li>
-          <li><a href="#">Contacto</a></li>
-        </ul>
-      </nav>
-      <div class="cart">
-        <a href="#">Cart (0)</a>
+      <div class="row align-items-center">
+        <div class="col-md-3">
+          <div class="logo">
+            <h1>■ Site Name</h1>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <nav class="nav-custom text-center">
+            <a href="../index.html">Home</a> |
+            <a href="#">Productos</a> |
+            <a href="#">Nosotros</a> |
+            <a href="#">Blogs</a> |
+            <a href="#">Contacto</a>
+          </nav>
+        </div>
+        <div class="col-md-3 text-right">
+          <div class="cart">
+            <a href="#" class="cart-custom">
+              <i class="fas fa-shopping-cart"></i> Cart (0)
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </header>
 
   <!-- Main Section -->
-  <main>
-    <section class="noticias">
-      <h2>NOTICIAS IMPORTANTES</h2>
-      <div class="caso">
-        <h3>El auge de la pastelería en Chile impulsa talento, formación y nuevas experiencias gastronómicas</h3>
-        <p>La pastelería en Chile vive un crecimiento notable, con más espacios colaborativos, talleres y técnicas innovadoras. La experiencia</p>
-        <p>“Manos en la Masa” de Master Martini reunió a comunicadores para aprender panadería artesanal, reflejando la apuesta por el talento<p>
-        <p>local y la formación continua.</p>
-        <a href="#" class="btn">VER CASO</a>
+  <main class="main-content">
+    <div class="container">
+      <h2 class="noticias-title">NOTICIAS IMPORTANTES</h2>
+      
+      <!-- Caso 1 -->
+      <div class="row">
+        <div class="col-md-6">
+          <div class="caso-card">
+            <h3 class="caso-title">El auge de la pastelería en Chile impulsa talento, formación y nuevas experiencias gastronómicas</h3>
+            <p class="caso-text">
+              La pastelería en Chile vive un crecimiento notable, con más espacios colaborativos, talleres y técnicas innovadoras. La experiencia
+              “Manos en la Masa” de Master Martini reunió a comunicadores para aprender panadería artesanal, reflejando la apuesta por el talento
+              local y la formación continua.
+            </p>
+            <a href="#" class="btn-custom">VER CASO</a>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="image-placeholder">
+            <img src = "../assets/masamano.jpg">
+          </div>
+        </div>
       </div>
-      <div class="caso">
-        <h3>Especial Marzo 2025: Innovación y adaptabilidad: Las nuevas tendencias que marcan la repostería y pastelería en Chile</h3>
-        <p>La industria de la repostería y pastelería en Chile ha evolucionado a un ritmo acelerado, adaptándose a las demandas de un consumidor</p>
-        <p>cada vez más exigente y consciente. Ingredientes innovadores, técnicas modernas y un enfoque en la accesibilidad han marcado el desarrollo</p>
-        <p>de este sector en los últimos años.</p>
-        <a href="#" class="btn">VER CASO</a>
+      
+      <!-- Caso 2 -->
+      <div class="row">
+        <div class="col-md-6">
+          <div class="caso-card">
+            <h3 class="caso-title">Especial Marzo 2025: Innovación y adaptabilidad: Las nuevas tendencias que marcan la repostería y pastelería en Chile</h3>
+            <p class="caso-text">
+              La industria de la repostería y pastelería en Chile ha evolucionado a un ritmo acelerado, adaptándose a las demandas de un consumidor
+        cada vez más exigente y consciente. Ingredientes innovadores, técnicas modernas y un enfoque en la accesibilidad han marcado el desarrollo
+        de este sector en los últimos años.
+            </p>
+            <a href="#" class="btn-custom">VER CASO</a>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="image-placeholder">
+            <img src = "../assets/pastelerianoticia.jpg">
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
   </main>
+
+  <!-- Bootstrap 4 JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
