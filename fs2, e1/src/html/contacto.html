@@ -2,59 +2,86 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mil Sabores</title>
+    <!-- Bootstrap 4 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
 
     <!-- el encabezado -->
-    <header>
-        <table width="100%">
-            <tr>
-                <td><strong>■ Pastelería Mil Sabores</strong></td>
-                <td align="center">
-                    <a href="../index.html">Home</a> |
-                    <a href="#">Productos</a> |
-                    <a href="#">Nosotros</a> |
-                    <a href="#">Blog</a> |
-                    <a href="#">Contacto</a>
-                </td>
-                <td align="right">🛒 Cart (0)</td>
-            </tr>
-        </table>
+    <header class="bg-light border p-2">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <h5 class="mb-0"><strong>■ Pastelería Mil Sabores</strong></h5>
+                </div>
+                <div class="col-md-6 text-center">
+                    <nav>
+                        <a href="../index.html" class="text-primary">Home</a> |
+                        <a href="#" class="text-primary">Productos</a> |
+                        <a href="#" class="text-primary">Nosotros</a> |
+                        <a href="#" class="text-primary">Blog</a> |
+                        <a href="#" class="text-primary">Contacto</a>
+                    </nav>
+                </div>
+                <div class="col-md-3 text-right">
+                    <a href="#" class="text-dark text-decoration-none">
+                        <i class="fas fa-shopping-cart"></i> Cart (0)
+                    </a>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <hr>
-
     <!-- Logo de la pinche pagina -->
-    <div align="center">
-        <img src="https://via.placeholder.com/150x100" alt="Logo Empresa"><br><br>
-        <h2>nombre empresa</h2>
-    </div>
+    <main class="bg-light py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <div class="d-inline-block border border-dark bg-white p-3 mb-3" style="width: 150px; height: 150px;">
+                    <img src="../assets/Logo.png" alt="Logo Empresa" class="img-fluid">
+                </div>
+                <h4>nombre empresa</h4>
+            </div>
 
-    <!-- el Formulario +rpara el cliente -->
-    <div align="center">
-        <table border="1" width="60%" cellspacing="0" cellpadding="10">
-            <tr>
-                <th colspan="2">FORMULARIO DE CONTACTOS</th>
-            </tr>
-            <tr>
-                <td colspan="2" align="left">
-                    <form action="#" method="post">
-                        <label for="nombre">Nombre Completo</label><br>
-                        <input type="text" id="nombre" name="nombre" size="50"><br><br>
+            <!-- el Formulario para el cliente -->
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="bg-secondary border p-4">
+                        <div class="bg-light text-center font-weight-bold p-2 mb-3">
+                            FORMULARIO DE CONTACTOS
+                        </div>
+                        <form action="#" method="post">
+                            <div class="form-group">
+                                <label for="nombre" class="small">Nombre Completo</label>
+                                <input type="text" class="form-control border-dark" id="nombre" name="nombre">
+                            </div>
 
-                        <label for="correo">Correo</label><br>
-                        <input type="email" id="correo" name="correo" size="50"><br><br>
+                            <div class="form-group">
+                                <label for="correo" class="small">Correo</label>
+                                <input type="email" class="form-control border-dark" id="correo" name="correo">
+                            </div>
 
-                        <label for="contenido">Contenido</label><br>
-                        <textarea id="contenido" name="contenido" rows="5" cols="50"></textarea><br><br>
+                            <div class="form-group">
+                                <label for="contenido" class="small">Contenido</label>
+                                <textarea class="form-control border-dark" id="contenido" name="contenido" rows="5"></textarea>
+                            </div>
 
-                        <input type="submit" value="ENVIAR MENSAJE">
-                    </form>
-                </td>
-            </tr>
-        </table>
-    </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-light border-dark px-4 small">
+                                    ENVIAR MENSAJE
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
+    <!-- Bootstrap 4 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
