@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/styles.css" />
   <script src="js/filtro.js" defer></script>
   <script src="js/inicio_sesion.js" defer></script>
+  <script src="js/validaciones.js" defer></script>
 </head>
 <body>
   <!--======================= HEADER =======================-->
@@ -53,14 +54,26 @@
 
           <!--Panel: Login-->
           <div id="panel-login" role="tabpanel" aria-labelledby="tab-login">
-            <form id="form-login" method="dialog">
+            <form id="form-login" method="post">
               <div>
-                <label for="email_login">Correo</label>
-                <input type="email" id="email_login" required placeholder="Ingresa tu correo" />
+                <label>RUN (sin puntos ni guión): </label><br>
+                <input type="text" id="run" minlength="7" maxlength="9" required><br><br>
               </div>
               <div>
-                <label for="password_login">Contraseña</label>
-                <input type="password" id="password_login" required placeholder="Ingresa tu contraseña" />
+                <label for="nonmbre">Nombre: </label><br>
+                <input type="text" id="nonmbre" name="nombre" maxlength="100" required> <br><br>
+              </div>
+              <div>
+                <label for="correo">Correo: </label><br>
+                <input type="email" id="correo" name="correo" maxlength="100" required><br><br>
+              </div>
+              <div>
+                <label for="clave">Clave: </label><br>
+                <input type="password" id="clave" name="clave" minlength="4" maxlength="10" required><br><br>
+              </div>
+              <div>
+                <label for="nombre">Fecha: </label><br>
+                <input type="date" required><br><br>
               </div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
                 <button id="btn-login" class="btn-primaria">Iniciar sesión</button>
@@ -71,7 +84,8 @@
 
           <!-- Panel: Registro -->
           <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden>
-            <form id="form-register" method="dialog">
+            <form id="form-register" method="post">
+
               <div class="form-group">
                 <label for="nombre">NOMBRE COMPLETO</label>
                 <input type="text" id="nombre" name="nombre" required />
@@ -79,7 +93,7 @@
 
               <div class="form-group">
                 <label for="correo">CORREO</label>
-                <input type="email" id="correo" name="correo" required />
+                <input type="email" id="correo_reg" name="correo" required />
               </div>
 
               <div class="form-group">
