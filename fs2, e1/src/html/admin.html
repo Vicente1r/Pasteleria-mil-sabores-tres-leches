@@ -66,9 +66,9 @@
       </div>
     </div>
 
-    <!-- Lo principal -->
+    <!--Lo principal-->
     <div class="main-content">
-      <!-- dea -->
+      <!--dea-->
       <div class="header">
         <h1 id="page-title">¡HOLA Administrador!</h1>
         <div class="header-actions">
@@ -76,15 +76,14 @@
         </div>
       </div>
 
-      <!-- el panel -->
+      <!--el panel-->
       <div class="content-view" id="dashboard-view">
         <div class="welcome-message">
           <p>Bienvenido al panel de administración</p>
         </div>
       </div>
 
-      <!-- vista de las ordenes -->
-       <!-- nada de funcionalidad, solo que se vea-->
+
       <div class="content-view hidden" id="orders-view">
         <div class="view-header">
           <h2>Usuarios</h2>
@@ -155,7 +154,6 @@
         </div>
       </div>
 
-      <!-- el formulario para nuevo usuario dea -->
       <div class="content-view hidden" id="new-user-view">
         <div class="form-container">
           <h2>NUEVO USUARIO</h2>
@@ -229,32 +227,31 @@
   </div>
 
   <script>
-    // Navigation functionality
+
     document.addEventListener('DOMContentLoaded', function() {
       const navItems = document.querySelectorAll('.nav-item[data-view]');
       const contentViews = document.querySelectorAll('.content-view');
       const pageTitle = document.getElementById('page-title');
       const newUserBtn = document.getElementById('new-user-btn');
 
-      // Navigation click handlers
+
       navItems.forEach(item => {
         item.addEventListener('click', function() {
           const viewName = this.getAttribute('data-view');
           
-          // Remove active class from all nav items
+
           navItems.forEach(nav => nav.classList.remove('active'));
           this.classList.add('active');
           
-          // Hide all content views
+
           contentViews.forEach(view => view.classList.add('hidden'));
           
-          // Show selected view
+
           const targetView = document.getElementById(viewName + '-view');
           if (targetView) {
             targetView.classList.remove('hidden');
           }
-          
-          // Update page title
+
           switch(viewName) {
             case 'dashboard':
               pageTitle.textContent = '¡HOLA Administrador!';
@@ -269,7 +266,6 @@
         });
       });
 
-      // New user button handler
       if (newUserBtn) {
         newUserBtn.addEventListener('click', function() {
           contentViews.forEach(view => view.classList.add('hidden'));

@@ -1,4 +1,3 @@
-// ===== Galería =====
 const mainImg = document.getElementById('img-principal');
 document.querySelectorAll('.thumbs button').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -9,7 +8,7 @@ document.querySelectorAll('.thumbs button').forEach(btn => {
   });
 });
 
-// ===== Carrito (demo) =====
+
 document.getElementById('agregar-carrito')?.addEventListener('click', () => {
   const qty = Number(document.getElementById('cantidad').value || 1);
   alert(`Añadido al carrito: ${qty} × Torta Cuadrada de Chocolate`);

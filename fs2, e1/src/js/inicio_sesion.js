@@ -1,8 +1,8 @@
-  // Registro submit: guardar usuario en localStorage
+
   const formRegister = document.getElementById("form-register");
   if (formRegister) {
     formRegister.addEventListener("submit", function(e) {
-      // Obtener nombre y correo del registro
+
       const nombre = document.getElementById("nombre")?.value || "";
       const correo = document.getElementById("correo_reg")?.value || "";
       if (nombre && correo) {
@@ -10,7 +10,7 @@
         try {
           usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
         } catch {}
-        // Si ya existe, actualiza el nombre
+
         const idx = usuarios.findIndex(u => u.correo === correo);
         if (idx >= 0) usuarios[idx].nombre = nombre;
         else usuarios.push({ correo, nombre });
@@ -31,16 +31,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const panelRegister = document.getElementById("panel-register");
   const notificacion = document.getElementById("notificacion-bienvenida");
 
-  // abrir modal
+
   abrir?.addEventListener("click", () => {
     if (typeof modal.showModal === "function") modal.showModal();
     else modal.setAttribute("open", "");
   });
 
-  // cerrar modal
+
   cerrar?.addEventListener("click", () => modal.close?.());
 
-  // tabs
+
   function activarLogin() {
     tabLogin.setAttribute("aria-selected", "true");
     tabRegister.setAttribute("aria-selected", "false");
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
   tabRegister?.addEventListener("click", activarRegistro);
 
 
-  // Mostrar notificación de bienvenida
+
   function mostrarBienvenida(nombre) {
     if (!notificacion) return;
     if (nombre && nombre.trim()) {
@@ -72,14 +72,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3500);
   }
 
-  // Login submit
+
   const formLogin = document.getElementById("form-login");
   if (formLogin) {
     formLogin.addEventListener("submit", function(e) {
       e.preventDefault();
-      // Obtener correo ingresado
+
       const correo = document.getElementById("login-correo")?.value || "";
-      // Buscar nombre en registros (localStorage simulado)
+
       let nombre = "";
       try {
         const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
@@ -91,10 +91,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Por defecto: login
+
   activarLogin();
 
-  // Click en "Registrarse" del header
+
   const linkRegistrarse = document.getElementById("registrarse");
   linkRegistrarse?.addEventListener("click", function(e) {
     e.preventDefault();
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     tabRegister?.focus();
   });
 
-  // Click en "Iniciar sesión" del header
+
   const linkIniciarSesion = document.getElementById("inicio_sesion");
   linkIniciarSesion?.addEventListener("click", function(e) {
     e.preventDefault();
