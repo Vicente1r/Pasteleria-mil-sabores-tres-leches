@@ -1,64 +1,41 @@
-// --- Abrir / cerrar modal ---
-const btnAbrirLogin = document.getElementById('inicio_sesion');
-const btnAbrirReg   = document.getElementById('registrarse');
-const modal         = document.getElementById('modal');
-const btnCerrar     = document.getElementById('cerrar');
+"use strict";
 
-btnAbrirLogin?.addEventListener('click', () => { modal.showModal(); mostrarLogin(); });
-btnAbrirReg?.addEventListener('click',   () => { modal.showModal(); mostrarRegistro(); });
-btnCerrar?.addEventListener('click',     () => modal.close());
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("modal");
+  const abrir = document.getElementById("inicio_sesion");
+  const cerrar = document.getElementById("cerrar");
 
-// --- Tabs ---
-const tabLogin   = document.getElementById('tab-login');
-const tabReg     = document.getElementById('tab-register');
-const panelLogin = document.getElementById('panel-login');
-const panelReg   = document.getElementById('panel-register');
+  const tabLogin = document.getElementById("tab-login");
+  const tabRegister = document.getElementById("tab-register");
+  const panelLogin = document.getElementById("panel-login");
+  const panelRegister = document.getElementById("panel-register");
 
-function mostrarLogin() {
-  tabLogin.setAttribute('aria-selected', 'true');
-  tabReg.setAttribute('aria-selected', 'false');
-  panelLogin.hidden = false;
-  panelReg.hidden = true;
-  document.getElementById('email_login')?.focus();
-}
+  // abrir modal
+  abrir?.addEventListener("click", () => {
+    if (typeof modal.showModal === "function") modal.showModal();
+    else modal.setAttribute("open", "");
+  });
 
-function mostrarRegistro() {
-  tabLogin.setAttribute('aria-selected', 'false');
-  tabReg.setAttribute('aria-selected', 'true');
-  panelLogin.hidden = true;
-  panelReg.hidden = false;
-  document.getElementById('nombre')?.focus();
-}
+  // cerrar modal
+  cerrar?.addEventListener("click", () => modal.close?.());
 
-tabLogin?.addEventListener('click', mostrarLogin);
-tabReg?.addEventListener('click',   mostrarRegistro);
+  // tabs
+  function activarLogin() {
+    tabLogin.setAttribute("aria-selected", "true");
+    tabRegister.setAttribute("aria-selected", "false");
+    panelLogin.hidden = false;
+    panelRegister.hidden = true;
+  }
+  function activarRegistro() {
+    tabLogin.setAttribute("aria-selected", "false");
+    tabRegister.setAttribute("aria-selected", "true");
+    panelLogin.hidden = true;
+    panelRegister.hidden = false;
+  }
 
-// Enlaces dentro de los paneles
-document.getElementById('btn-ir-registro')?.addEventListener('click', mostrarRegistro);
-document.getElementById('btn-ir-login')?.addEventListener('click',    mostrarLogin);
+  tabLogin?.addEventListener("click", activarLogin);
+  tabRegister?.addEventListener("click", activarRegistro);
 
-// --- Evitar envíos reales (no hay BD) ---
-document.getElementById('btn-login')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  // Aquí podrías validar campos si quieres
-  modal.close();
+  // Por defecto: login
+  activarLogin();
 });
-
-document.getElementById('btn-register')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  // Ej: validar correo=correo2 y pass=pass2
-  const c1 = document.getElementById('correo')?.value.trim();
-  const c2 = document.getElementById('correo2')?.value.trim();
-  const p1 = document.getElementById('password')?.value;
-  const p2 = document.getElementById('password2')?.value;
-
-  if (c1 && c2 && c1 !== c2) { alert('Los correos no coinciden'); return; }
-  if (p1 && p2 && p1 !== p2) { alert('Las contraseñas no coinciden'); return; }
-
-  // Simular 'ok'
-  alert('Registro enviado (demo).');
-  modal.close();
-});
-
-// Estado inicial cuando se carga la página
-mostrarLogin();

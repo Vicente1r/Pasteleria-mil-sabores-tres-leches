@@ -54,29 +54,29 @@
 
           <!--Panel: Login-->
           <div id="panel-login" role="tabpanel" aria-labelledby="tab-login">
-            <form id="form-login" method="post">
+            <form id="form-login" method="post" autocomplete="on">
               <div>
-                <label>RUN (sin puntos ni guión): </label><br>
-                <input type="text" id="run" minlength="7" maxlength="9" required><br><br>
+                <label for="login-run">RUN (sin puntos ni guión): </label><br>
+                <input type="text" id="login-run" minlength="7" maxlength="9" required><br><br>
               </div>
               <div>
-                <label for="nonmbre">Nombre: </label><br>
-                <input type="text" id="nonmbre" name="nombre" maxlength="100" required> <br><br>
+                <label for="login-nombre">Nombre: </label><br>
+                <input type="text" id="login-nombre" name="nombre" maxlength="100" required> <br><br>
               </div>
               <div>
-                <label for="correo">Correo: </label><br>
-                <input type="email" id="correo" name="correo" maxlength="100" required><br><br>
+                <label for="login-correo">Correo: </label><br>
+                <input type="email" id="login-correo" name="correo" maxlength="100" required><br><br>
               </div>
               <div>
-                <label for="clave">Clave: </label><br>
-                <input type="password" id="clave" name="clave" minlength="4" maxlength="10" required><br><br>
+                <label for="login-clave">Clave: </label><br>
+                <input type="password" id="login-clave" name="clave" minlength="4" maxlength="10" required><br><br>
               </div>
               <div>
-                <label for="nombre">Fecha: </label><br>
+                <label for="login-fecha">Fecha: </label><br>
                 <input type="date" required><br><br>
               </div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-                <button id="btn-login" class="btn-primaria">Iniciar sesión</button>
+                <button id="btn-login" class="btn-primaria" type="submit">Iniciar sesión</button>
                 <button type="button" id="btn-ir-registro" class="btn-secundaria">¿No tienes cuenta? Registrarse</button>
               </div>
             </form>
@@ -87,32 +87,32 @@
             <form id="form-register" method="post">
 
               <div class="form-group">
-                <label for="nombre">NOMBRE COMPLETO</label>
+                <label for="reg-nombre">NOMBRE COMPLETO</label>
                 <input type="text" id="nombre" name="nombre" required />
               </div>
 
               <div class="form-group">
-                <label for="correo">CORREO</label>
+                <label for="reg-correo">CORREO</label>
                 <input type="email" id="correo_reg" name="correo" required />
               </div>
 
               <div class="form-group">
-                <label for="correo2">CONFIRMAR CORREO</label>
+                <label for="reg-correo2">CONFIRMAR CORREO</label>
                 <input type="email" id="correo2" name="correo2" required />
               </div>
 
               <div class="form-group">
-                <label for="password">CONTRASEÑA</label>
+                <label for="reg-password">CONTRASEÑA</label>
                 <input type="password" id="password" name="password" required />
               </div>
 
               <div class="form-group">
-                <label for="password2">CONFIRMAR CONTRASEÑA</label>
+                <label for="reg-password2">CONFIRMAR CONTRASEÑA</label>
                 <input type="password" id="password2" name="password2" required />
               </div>
 
               <div class="form-group">
-                <label for="telefono">TELÉFONO (opcional)</label>
+                <label for="reg-telefono">TELÉFONO (opcional)</label>
                 <input type="tel" id="telefono" name="telefono" />
               </div>
 
@@ -176,7 +176,7 @@
               </div>
 
               <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-                <button id="btn-register" class="btn-primaria">Registrar</button>
+                <button id="btn-register" class="btn-primaria" type="submit">Registrar</button>
                 <button type="button" id="btn-ir-login" class="btn-secundaria">¿Ya tienes cuenta? Iniciar sesión</button>
               </div>
             </form>

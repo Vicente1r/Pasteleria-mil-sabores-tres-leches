@@ -10,11 +10,6 @@ function aplicarFiltro() {
   });
 }
 
-select.addEventListener('change', aplicarFiltro);
-limpiarBtn.addEventListener('click', () => {
-    select.value = 'all';
-    aplicarFiltro();
-    select.focus();
-});
+
 
 aplicarFiltro();
