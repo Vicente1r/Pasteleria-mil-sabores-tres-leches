@@ -1,92 +1,323 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Administrativo</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Administración</title>
+  <link rel="stylesheet" href="../css/style_admin_new.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="company-logo">
-                <div class="logo-container">
-                    <div class="logo-icon"></div>
-                    <span class="company-name">Company</span>
-                </div>
-            </div>
-            
-            <nav class="nav-menu">
-                <a href="#" class="nav-item active">
-                    <div class="nav-icon dashboard-icon"></div>
-                    Dashboard
-                </a>
-                <a href="#" class="nav-item">
-                    <div class="nav-icon orders-icon"></div>
-                    Orders
-                </a>
-                <a href="#" class="nav-item">
-                    <div class="nav-icon inventory-icon"></div>
-                    Inventory
-                </a>
-                <a href="#" class="nav-item">
-                    <div class="nav-icon reports-icon"></div>
-                    Reports
-                </a>
-                <a href="#" class="nav-item">
-                    <div class="nav-icon employees-icon"></div>
-                    Employees
-                </a>
-                <a href="#" class="nav-item">
-                    <div class="nav-icon customers-icon"></div>
-                    Customers
-                </a>
-            </nav>
-            
-            <div class="sidebar-footer">
-                <a href="#" class="nav-item">
-                    <div class="nav-icon settings-icon"></div>
-                    Settings
-                </a>
-                <a href="#" class="nav-item">
-                    <div class="nav-icon profile-icon"></div>
-                    Profile
-                </a>
-                <a href="#" class="nav-item">
-                    <div class="nav-icon search-icon"></div>
-                    Search
-                </a>
-                <a href="#" class="nav-item">
-                    <div class="nav-icon help-icon"></div>
-                    Help
-                </a>
-                
-                <div class="user-profile">
-                    <div class="user-avatar">P</div>
-                    <div class="user-info">
-                        <div class="user-name">Profile</div>
-                    </div>
-                </div>
-            </div>
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">⚙</div>
+        <span>Panel Pastelería Mil Sabores</span>
+      </div>
+      
+      <nav class="nav-menu">
+        <div class="nav-item active" data-view="dashboard">
+          <i class="icon">📊</i>
+          <span>Panel</span>
+        </div>
+        <div class="nav-item" data-view="orders">
+          <i class="icon">📋</i>
+          <span>Ordenes</span>
+        </div>
+        <div class="nav-item">
+          <i class="icon">📦</i>
+          <span>Inventario</span>
+        </div>
+        <div class="nav-item">
+          <i class="icon">📈</i>
+          <span>Reportes</span>
+        </div>
+        <div class="nav-item" data-view="employees">
+          <i class="icon">👥</i>
+          <span>Empleados</span>
+        </div>
+        <div class="nav-item">
+          <i class="icon">👤</i>
+          <span>Clientes</span>
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="nav-item">
+          <i class="icon">⚙</i>
+          <span>Configuracion</span>
+        </div>
+        <div class="nav-item">
+          <i class="icon">👤</i>
+          <span>Perfil</span>
+        </div>
+        <div class="nav-item">
+          <i class="icon">🔍</i>
+          <span>Busqueda</span>
+        </div>
+        <div class="nav-item">
+          <i class="icon">❓</i>
+          <span>Ayuda</span>
+        </div>
+        <div class="nav-item profile">
+          <i class="icon">👤</i>
+          <span>Mi Perfil</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <h1 id="page-title">¡HOLA Administrador!</h1>
+        <div class="header-actions">
+          <button class="notification-btn">🔔</button>
+        </div>
+      </div>
+
+      <!-- Dashboard View -->
+      <div class="content-view" id="dashboard-view">
+        <div class="welcome-message">
+          <p>Bienvenido al panel de administración</p>
+        </div>
+      </div>
+
+      <!-- Orders View -->
+      <div class="content-view hidden" id="orders-view">
+        <div class="view-header">
+          <h2>Usuarios</h2>
+          <button class="btn-primary" id="new-user-btn">NUEVO USUARIO</button>
         </div>
         
-        <!-- Main Content -->
-        <div class="main-content">
-            <header class="top-header">
-                <h1 class="welcome-text">¡HOLA Administrador!</h1>
-                <div class="header-actions">
-                    <div class="notification-bell">
-                        <div class="bell-icon"></div>
-                        <div class="notification-badge">3</div>
-                    </div>
-                </div>
-            </header>
-            
-            <main class="content-area">
-                <!-- Aquí va el contenido principal del dashboard -->
-            </main>
+        <div class="filter-section">
+          <select class="filter-dropdown">
+            <option>All Sales Orders ▼</option>
+          </select>
         </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Orden #</th>
+                <th>Cliente</th>
+                <th>Estado</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2024-06-01</td>
+                <td>SO101</td>
+                <td>Acme Corporation</td>
+                <td><span class="status shipped">Entregado</span></td>
+                <td>$2500.00</td>
+              </tr>
+              <tr>
+                <td>2024-06-01</td>
+                <td>SO102</td>
+                <td>Bravo Solutions</td>
+                <td><span class="status pending">Pendiente</span></td>
+                <td>$1500.00</td>
+              </tr>
+              <tr>
+                <td>2024-06-02</td>
+                <td>SO103</td>
+                <td>Charlie's Workshop</td>
+                <td><span class="status cancelled">Cancelado</span></td>
+                <td>$500.00</td>
+              </tr>
+              <tr>
+                <td>2024-06-03</td>
+                <td>SO104</td>
+                <td>Delta Retail</td>
+                <td><span class="status processing">Procesando</span></td>
+                <td>$750.00</td>
+              </tr>
+              <tr>
+                <td>2024-06-04</td>
+                <td>SO105</td>
+                <td>Echo Enterprises</td>
+                <td><span class="status shipped">Entregado</span></td>
+                <td>$3200.00</td>
+              </tr>
+              <tr>
+                <td>2024-06-05</td>
+                <td>SO106</td>
+                <td>Foxtrot Media</td>
+                <td><span class="status pending">Pendiente</span></td>
+                <td>$1150.00</td>
+              </tr>
+              <tr>
+                <td>2024-06-06</td>
+                <td>SO107</td>
+                <td>Golf Goods Inc.</td>
+                <td><span class="status shipped">Entregado</span></td>
+                <td>$2300.00</td>
+              </tr>
+              <tr>
+                <td>2024-06-07</td>
+                <td>SO108</td>
+                <td>Hotel Harmony</td>
+                <td><span class="status processing">Procesando</span></td>
+                <td>$800.00</td>
+              </tr>
+              <tr>
+                <td>2024-06-08</td>
+                <td>SO109</td>
+                <td>India IT Solutions</td>
+                <td><span class="status cancelled">Cancelado</span></td>
+                <td>$600.00</td>
+              </tr>
+              <tr>
+                <td>2024-06-09</td>
+                <td>SO110</td>
+                <td>Juliet Services</td>
+                <td><span class="status shipped">Entregado</span></td>
+                <td>$1850.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <button class="page-btn">‹‹</button>
+          <button class="page-btn">‹</button>
+          <button class="page-btn">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn active">3</button>
+          <button class="page-btn">4</button>
+          <button class="page-btn">5</button>
+          <button class="page-btn">›</button>
+          <button class="page-btn">››</button>
+        </div>
+      </div>
+
+      <!-- New User Form View -->
+      <div class="content-view hidden" id="new-user-view">
+        <div class="form-container">
+          <h2>NUEVO USUARIO</h2>
+          
+          <form class="user-form">
+            <div class="form-section">
+              <div class="section-header">Registro de usuario</div>
+              
+              <div class="form-group">
+                <label>NOMBRE COMPLETO</label>
+                <input type="text" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label>NOMBRE</label>
+                <input type="text" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label>CORREO</label>
+                <input type="email" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label>CONTRASEÑA</label>
+                <input type="password" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label>CONFIRMAR CONTRASEÑA</label>
+                <input type="password" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label>TELÉFONO (opcional)</label>
+                <input type="tel" class="form-input">
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group half">
+                  <label>Especialidad el empleo</label>
+                  <select class="form-select">
+                    <option>Seleccionar...</option>
+                    <option>Panadero</option>
+                    <option>Repostero</option>
+                    <option>Decorador</option>
+                    <option>Pastelero</option>
+                  </select>
+                </div>
+                
+                <div class="form-group half">
+                  <label>Experiencia en categoria</label>
+                  <select class="form-select">
+                    <option>Seleccionar...</option>
+                    <option>Principiante</option>
+                    <option>Intermedio</option>
+                    <option>Avanzado</option>
+                    <option>Experto</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn-register">REGISTRAR</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <script>
+    // Navigation functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const navItems = document.querySelectorAll('.nav-item[data-view]');
+      const contentViews = document.querySelectorAll('.content-view');
+      const pageTitle = document.getElementById('page-title');
+      const newUserBtn = document.getElementById('new-user-btn');
+
+      // Navigation click handlers
+      navItems.forEach(item => {
+        item.addEventListener('click', function() {
+          const viewName = this.getAttribute('data-view');
+          
+          // Remove active class from all nav items
+          navItems.forEach(nav => nav.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Hide all content views
+          contentViews.forEach(view => view.classList.add('hidden'));
+          
+          // Show selected view
+          const targetView = document.getElementById(viewName + '-view');
+          if (targetView) {
+            targetView.classList.remove('hidden');
+          }
+          
+          // Update page title
+          switch(viewName) {
+            case 'dashboard':
+              pageTitle.textContent = '¡HOLA Administrador!';
+              break;
+            case 'orders':
+              pageTitle.textContent = 'Usuarios';
+              break;
+            case 'employees':
+              pageTitle.textContent = 'Empleados';
+              break;
+          }
+        });
+      });
+
+      // New user button handler
+      if (newUserBtn) {
+        newUserBtn.addEventListener('click', function() {
+          contentViews.forEach(view => view.classList.add('hidden'));
+          document.getElementById('new-user-view').classList.remove('hidden');
+          pageTitle.textContent = 'NUEVO USUARIO';
+        });
+      }
+    });
+  </script>
 </body>
 </html>
