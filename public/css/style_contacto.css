@@ -1,0 +1,56 @@
+/* Estilos personalizados para la página de contacto de Pastelería Mil Sabores */
+
+/* Barra de navegación rosa pastel */
+.navbar-custom {
+    background-color: #f3d3fa !important; /* Rosa pastel */
+}
+
+/* Logo en la barra de navegación */
+.nav-logo {
+    max-height: 40px;
+}
+
+/* Enlaces de color gris */
+.nav-link-custom {
+    color: #555555 !important; /* Gris */
+}
+
+.nav-link-custom:hover {
+    color: #606060 !important; /* Gris oscuro al pasar el ratón */
+    text-decoration: none;
+}
+
+/* Carrito de compras en gris */
+.cart-custom {
+    color: #808080 !important; /* Gris para el carrito */
+}
+
+.cart-custom:hover {
+    color: #606060 !important; /* Gris oscuro al pasar el ratón */
+    text-decoration: none;
+}
+
+/* Contenedor del logo principal */
+.logo-container {
+    width: 150px; 
+    height: 150px;
+}
+
+/* Estilos adicionales para mejorar la apariencia */
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+.bg-light {
+    background-color: #f8f9fa!important;
+}
+
+.btn-light {
+    background-color: #f8f9fa;
+    border-color: #343a40;
+}
+
+.btn-light:hover {
+    background-color: #e2e6ea;
+    border-color: #343a40;
+}

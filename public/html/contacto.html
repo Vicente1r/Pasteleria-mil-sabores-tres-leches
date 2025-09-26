@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mil Sabores</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/style_contacto.css">
+</head>
+<body>
+
+
+    <header class="navbar-custom border p-2">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-3 d-flex align-items-center">
+
+                    <img src="../assets/Logo.png" alt="Logo Pastelería Mil Sabores" class="img-fluid mr-2 nav-logo">
+                    <h5 class="mb-0"><strong>Pastelería Mil Sabores</strong></h5>
+                </div>
+                <div class="col-md-6 text-center">
+                    <nav>
+                        <a href="../index.html" class="nav-link-custom text-decoration-none">Home</a> |
+                        <a href="../index.html" class="nav-link-custom text-decoration-none">Productos</a> |
+                        <a href="#" class="nav-link-custom text-decoration-none">Nosotros</a> |
+                        <a href="blog.html" class="nav-link-custom text-decoration-none">Blog</a> |
+                        <a href="contacto.html" class="nav-link-custom text-decoration-none">Contacto</a>
+                    </nav>
+                </div>
+                <div class="col-md-3 text-right">
+                    <a href="#" class="cart-custom text-decoration-none">
+                        <i class="fas fa-shopping-cart"></i> Cart (0)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="bg-light py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <div class="d-inline-block border border-dark bg-white p-3 mb-3 logo-container">
+                    <img src="../assets/Logo.png" alt="Logo Empresa" class="img-fluid">
+                </div>
+                <h4>nombre empresa</h4>
+            </div>
+
+
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="bg-secondary border p-4">
+                        <div class="bg-light text-center font-weight-bold p-2 mb-3">
+                            FORMULARIO DE CONTACTOS
+                        </div>
+                        <form action="#" method="post">
+                            <div class="form-group">
+                                <label for="nombre" class="small">Nombre Completo</label>
+                                <input type="text" class="form-control border-dark" id="nombre" name="nombre">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="correo" class="small">Correo</label>
+                                <input type="email" class="form-control border-dark" id="correo" name="correo">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="contenido" class="small">Contenido</label>
+                                <textarea class="form-control border-dark" id="contenido" name="contenido" rows="5"></textarea>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-light border-dark px-4 small">
+                                    ENVIAR MENSAJE
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap 4 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
