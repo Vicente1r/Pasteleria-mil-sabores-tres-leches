@@ -92,10 +92,9 @@ document.addEventListener("DOMContentLoaded", () => {
     
         //Tiempo de reacción al redirigir
         //setTimeout(() => {
-        //    window.location.href = destino;
+          //  window.location.href = destino;
         //}, 1000);
         
     
     });
 });
-

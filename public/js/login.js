@@ -9,9 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Inicializar Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
-        authDomain: "Pasteleriamilsaborestresleches.firebaseapp.com",
-        projectId: "Pasteleriamilsaborestresleches",
-        storageBucket: "Pasteleriamilsaborestresleches.appspot.com",
+        authDomain: "tiendanombretienda.firebaseapp.com",
+        projectId: "tiendanombretienda",
+        storageBucket: "tiendanombretienda.appspot.com",
         messagingSenderId: "408928911689",
         appId: "1:408928911689:web:d8b313c7e15fc528661a98",
         measurementId: "G-Y1DW47VEWZ"
