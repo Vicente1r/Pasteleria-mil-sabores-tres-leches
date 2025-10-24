@@ -13,3 +13,4 @@ document.getElementById('agregar-carrito')?.addEventListener('click', () => {
   const qty = Number(document.getElementById('cantidad').value || 1);
   alert(`Añadido al carrito: ${qty} × Torta Cuadrada de Chocolate`);
 });
+

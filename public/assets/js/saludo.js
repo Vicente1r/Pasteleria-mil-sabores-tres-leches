@@ -12,3 +12,4 @@ document.addEventListener("DOMContentLoaded", () => {
     const usuario = JSON.parse(usuarioStr);
     bienvenido.innerText = `Bienvenido ${usuario.nombre}!`;
 });
+
