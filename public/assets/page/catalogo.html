@@ -3,65 +3,274 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo - Mi Tienda</title>
-  <link rel="stylesheet" href="../css/catalogo.css">
+  <title>Catálogo - Mil Sabores</title>
+  <link rel="stylesheet" href="../css/styles.css">
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
   <!-- HEADER -->
-  <header class="header">
-    <!-- Línea Superior -->
-    <div class="header-top">
-      <div class="search-container">
-        <input type="text" id="buscador" placeholder="Buscar productos..." class="search-input">
-        <button id="btnBuscar" class="btn-buscar">Buscar</button>
+  <header class="topbar" style="align-items:stretch;">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="logo">
+        <img src="../Logo.png" alt="Mil Sabores" style="height:60px;">
       </div>
-      <div class="auth-buttons">
-        <button class="btn-login">Iniciar Sesión</button>
-        <button class="btn-signup">Crear Cuenta</button>
-      </div>
+      <div><strong>Tienda online - Mil Sabores</strong></div>
     </div>
 
-    <!-- Línea Inferior - Nav -->
-    <nav class="nav-main">
-      <div class="nav-center">
-        <a href="/" class="nav-link">Home</a> <!--Cambiar a "/" para React Router-->
-        <div class="dropdown">
-          <a href="#" class="nav-link"></a>
-          <div class="dropdown-content" id="dropdownCategorias"></div>
-        </div>
-        <a href="#" class="nav-link">Ofertas</a>
-        <a href="#" class="nav-link">Nosotros</a>
-        <a href="#" class="nav-link">Blog</a>
-        <a href="#" class="nav-link">Contacto</a>
-      </div>
-      
-      <div class="nav-right">
-        <button class="btn-carrito" onclick="window.location.href='carrito.html'"> <!--Cambiar a "carrito" para React Router-->
-          <span class="carrito-icon">🛒</span>
-          Total: $<span class="carrito-total">0</span>
-        </button>
-      </div>
+    <nav class="navegacion" aria-label="Navegación principal" style="margin-left:auto;">
+      <a href="../../index.html">Home</a>
+      <a href="catalogo.html">Productos</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="#contacto">Contacto</a>
+      <a href="login.html">Iniciar sesión</a>
+      <span class="separar">|</span>
+      <a href="carrito.html" id="cart-link">Carrito (0)</a>
     </nav>
   </header>
 
-  <!-- MAIN CONTENT -->
   <main class="main">
-    <!-- CARDS DE CATEGORÍAS -->
-    <section class="categorias-section">
-      <h2 class="section-title">Categorías</h2>
-       <button id="btnVerTodos" class="btn-ver-todos">Todos los productos</button>
-      <div id="cardsCategorias" class="categorias-grid"></div>
+    <section class="filtros" aria-labelledby="categorias">
+      <h2 id="categorias">Categorías</h2>
+      <label for="filtro">Filtrar por categoría: </label>
+      <select id="filtro" name="filtro">
+        <option value="all">Todas</option>
+        <option value="tortas_cuadradas">Tortas Cuadradas</option>
+        <option value="tortas_circulares">Tortas Circulares</option>
+        <option value="postres_individuales">Postres Individuales</option>
+        <option value="productos_sin_azucar">Productos sin azúcar</option>
+        <option value="pasteleria_tradicional">Pastelería Tradicional</option>
+        <option value="productos_sin_gluten">Productos sin gluten</option>
+        <option value="vegano">Vegano</option>
+        <option value="especiales">Especiales</option>
+      </select>
+      <div id="mensaje" aria-live="polite" class="status"></div>
     </section>
 
-    <!-- PRODUCTOS -->
-    <section class="productos-section">
-      <h2 id="tituloProductos" class="section-title">Todos los Productos</h2>
-      <div id="productosGrid" class="productos-grid"></div>
+    <section class="productos" aria-labelledby="titulo-productos">
+      <h2 id="titulo-productos">Todos los Productos</h2>
+
+      <div id="productosGrid" class="buscador">
+        <!-- Torta cuadrada chocolate -->
+        <article class="item" data-category="tortas_cuadradas" data-id="torta_cuadrada_chocolate">
+          <a href="productos/torta_cuadrada_chocolate.html">
+            <img src="../torta_cuadrada_chocolate.png" alt="Torta Cuadrada de Chocolate">
+          </a>
+          <div class="item-content">
+            <h3>Torta Cuadrada de Chocolate</h3>
+            <p>Capas de ganache y avellanas. Personalizable.</p>
+            <p class="precio">$45.000 CLP</p>
+            <button class="btn-comprar" data-id="torta_cuadrada_chocolate">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Torta cuadrada frutas -->
+        <article class="item" data-category="tortas_cuadradas" data-id="torta_cuadrada_frutas">
+          <a href="productos/torta_cuadrada_frutas.html">
+            <img src="../torta_cuadrada_frutas2.png" alt="Torta Cuadrada de Frutas">
+          </a>
+          <div class="item-content">
+            <h3>Torta Cuadrada de Frutas</h3>
+            <p>Frutas frescas y crema chantilly.</p>
+            <p class="precio">$50.000 CLP</p>
+            <button class="btn-comprar" data-id="torta_cuadrada_frutas">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Torta circular vainilla -->
+        <article class="item" data-category="tortas_circulares" data-id="torta_circular_vainilla">
+          <a href="productos/torta_circular_vainilla.html">
+            <img src="../torta_circular_vainilla.png" alt="Torta Circular de Vainilla">
+          </a>
+          <div class="item-content">
+            <h3>Torta Circular de Vainilla</h3>
+            <p>Bizcocho clásico con crema pastelera.</p>
+            <p class="precio">$40.000 CLP</p>
+            <button class="btn-comprar" data-id="torta_circular_vainilla">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Torta circular manjar -->
+        <article class="item" data-category="tortas_circulares" data-id="torta_circular_manjar">
+          <a href="productos/torta_circular_manjar.html">
+            <img src="../torta_circular_manjar.png" alt="Torta Circular de Manjar">
+          </a>
+          <div class="item-content">
+            <h3>Torta Circular de Manjar</h3>
+            <p>Manjar tradicional con nueces.</p>
+            <p class="precio">$42.000 CLP</p>
+            <button class="btn-comprar" data-id="torta_circular_manjar">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Cheesecake sin azúcar -->
+        <article class="item" data-category="productos_sin_azucar" data-id="torta_sin_azucar_cheesecake">
+          <a href="productos/torta_sin_azucar_cheesecake.html">
+            <img src="../sin_azucar_cheesecake3.png" alt="Cheesecake sin azúcar">
+          </a>
+          <div class="item-content">
+            <h3>Cheesecake sin azúcar</h3>
+            <p>Opción reducida en azúcar, textura cremosa.</p>
+            <p class="precio">Consultar</p>
+            <button class="btn-comprar" data-id="torta_sin_azucar_cheesecake">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Torta sin azúcar naranja -->
+        <article class="item" data-category="productos_sin_azucar" data-id="torta_sin_azucar_naranja">
+          <a href="productos/torta_sin_azucar_naranja.html">
+            <img src="../sin_azucar_torta_naranja2.png" alt="Torta sin azúcar Naranja">
+          </a>
+          <div class="item-content">
+            <h3>Torta sin azúcar - Naranja</h3>
+            <p>Sabor cítrico y suave, apta para dietas.</p>
+            <p class="precio">Consultar</p>
+            <button class="btn-comprar" data-id="torta_sin_azucar_naranja">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Torta vegana -->
+        <article class="item" data-category="vegano" data-id="torta_vegana">
+          <a href="productos/torta_vegana.html">
+            <img src="../vegana_torta_chocolate.png" alt="Torta Vegana">
+          </a>
+          <div class="item-content">
+            <h3>Torta Vegana</h3>
+            <p>Ingredientes 100% vegetales.</p>
+            <p class="precio">Consultar</p>
+            <button class="btn-comprar" data-id="torta_vegana">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Galleta vegana -->
+        <article class="item" data-category="vegano" data-id="galleta_vegana">
+          <a href="productos/galleta_vegana.html">
+            <img src="../gallet3.jpg" alt="Galleta Vegana">
+          </a>
+          <div class="item-content">
+            <h3>Galleta Vegana</h3>
+            <p>Snack crujiente sin ingredientes de origen animal.</p>
+            <p class="precio">$1.500 CLP</p>
+            <button class="btn-comprar" data-id="galleta_vegana">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Brownie sin gluten -->
+        <article class="item" data-category="productos_sin_gluten" data-id="sin_gluten_brownie">
+          <a href="productos/sin_gluten_brownie.html">
+            <img src="../sin_gluten_brownie.png" alt="Brownie sin gluten">
+          </a>
+          <div class="item-content">
+            <h3>Brownie sin gluten</h3>
+            <p>Textura húmeda y sabor intenso.</p>
+            <p class="precio">$2.800 CLP</p>
+            <button class="btn-comprar" data-id="sin_gluten_brownie">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Pan sin gluten -->
+        <article class="item" data-category="productos_sin_gluten" data-id="pan_sin_gluten">
+          <a href="productos/pan_sin_gluten.html">
+            <img src="../pan3.jpg" alt="Pan sin gluten">
+          </a>
+          <div class="item-content">
+            <h3>Pan sin gluten</h3>
+            <p>Alternativa diaria sin gluten.</p>
+            <p class="precio">Consultar</p>
+            <button class="btn-comprar" data-id="pan_sin_gluten">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Postre individual mousse -->
+        <article class="item" data-category="postres_individuales" data-id="postre_individual_mousse">
+          <a href="productos/postre_individual_mousse.html">
+            <img src="../individual_mousse_chocolate2.png" alt="Postre Individual Mousse">
+          </a>
+          <div class="item-content">
+            <h3>Postre Individual - Mousse</h3>
+            <p>Ligero y cremoso, porción individual.</p>
+            <p class="precio">$3.200 CLP</p>
+            <button class="btn-comprar" data-id="postre_individual_mousse">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Postre individual tiramisú -->
+        <article class="item" data-category="postres_individuales" data-id="postre_individual_tiramisu">
+          <a href="productos/postre_individual_tiramisu.html">
+            <img src="../individual_tiramisu_clasico.png" alt="Postre Individual Tiramisú">
+          </a>
+          <div class="item-content">
+            <h3>Postre Individual - Tiramisú</h3>
+            <p>Clásico italiano en porción individual.</p>
+            <p class="precio">$3.500 CLP</p>
+            <button class="btn-comprar" data-id="postre_individual_tiramisu">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Torta especial boda -->
+        <article class="item" data-category="especiales" data-id="especial_boda">
+          <a href="productos/especial_boda.html">
+            <img src="../especial_torta_boda.png" alt="Torta Especial Boda">
+          </a>
+          <div class="item-content">
+            <h3>Especial - Boda</h3>
+            <p>Tortas personalizadas para bodas.</p>
+            <p class="precio">Cotizar</p>
+            <button class="btn-comprar" data-id="especial_boda">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Torta especial cumpleaños -->
+        <article class="item" data-category="especiales" data-id="especial_cumpleanos">
+          <a href="productos/especial_cumpleanos.html">
+            <img src="../especial_torta_cumpleanos.png" alt="Torta Especial Cumpleaños">
+          </a>
+          <div class="item-content">
+            <h3>Especial - Cumpleaños</h3>
+            <p>Diseños a medida para celebraciones.</p>
+            <p class="precio">Cotizar</p>
+            <button class="btn-comprar" data-id="especial_cumpleanos">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Tradicional - empanada -->
+        <article class="item" data-category="pasteleria_tradicional" data-id="tradicional_empanada">
+          <a href="productos/tradicional_empanada.html">
+            <img src="../empanada3.jpg" alt="Empanada Tradicional">
+          </a>
+          <div class="item-content">
+            <h3>Empanada Tradicional</h3>
+            <p>Receta clásica de la casa.</p>
+            <p class="precio">$1.200 CLP</p>
+            <button class="btn-comprar" data-id="tradicional_empanada">Agregar al Carrito</button>
+          </div>
+        </article>
+
+        <!-- Tradicional - tarta -->
+        <article class="item" data-category="pasteleria_tradicional" data-id="tradicional_tarta">
+          <a href="productos/tradicional_tarta.html">
+            <img src="../tarta2.jpg" alt="Tarta Tradicional">
+          </a>
+          <div class="item-content">
+            <h3>Tarta Tradicional</h3>
+            <p>Sabores clásicos de repostería.</p>
+            <p class="precio">Consultar</p>
+            <button class="btn-comprar" data-id="tradicional_tarta">Agregar al Carrito</button>
+          </div>
+        </article>
+      </div>
     </section>
   </main>
 
+  <footer class="footer" id="contacto">
+    <nav aria-label="Redes">
+      <a href="#">X</a> ·
+      <a href="#" id="blog">Instagram</a> ·
+      <a href="#">WhatsApp</a>
+    </nav>
+  </footer>
+
   <script src="../js/catalogo.js"></script>
+  <script src="../js/carrito.js"></script>
 </body>
 </html>
