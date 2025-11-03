@@ -1,5 +1,172 @@
 <h1 id="bienvenido"></h1>
     <script src="../js/saludo.js"></script>
 
-<a href="catalogo.html">Catalogo</a>
 
+<a href="../../index.html">Inicio</a>
+<a href="catalogo.html">Catalogo</a>
+<a href="carrito.html">Carrito</a>
+
+
+
+<style>
+    .dashboard {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 12px;
+        font-family: Arial, sans-serif;
+        padding: 12px;
+    }
+    .dash-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    /* ensure existing #bienvenido appears on the left of the header */
+    .dash-header .left { display:flex; align-items:center; gap:12px; }
+    #bienvenido { margin: 0; font-size: 1.25rem; font-weight:700; }
+    .dash-header .right a {
+        margin-left: 10px;
+        text-decoration: none;
+        color: #0078d4;
+        font-weight: 600;
+    }
+
+    .dash-main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        align-items: start;
+    }
+
+    .card {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 12px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .left-col .card + .card { margin-top: 12px; }
+
+    h3 { margin: 0 0 8px 0; font-size: 1rem; }
+
+    ul { margin: 0; padding-left: 18px; }
+    li { margin-bottom: 6px; }
+
+    /* responsive */
+    @media (max-width: 700px) {
+        .dash-main { grid-template-columns: 1fr; }
+        .dash-header { flex-direction: column; align-items: stretch; gap:8px; }
+        .dash-header .right { display:flex; justify-content:flex-end; }
+    }
+</style>
+
+<div class="dashboard">
+    <div class="dash-header">
+        <div class="left">
+            <!-- #bienvenido is already present earlier in the document and will appear here -->
+        </div>
+        <div class="right">
+            <a href="inicio.html">Inicio</a>
+            <a href="blog.html">Blog</a>
+            <a href="index.html" id="logout">Cerrar sesión</a>
+        </div>
+    </div>
+
+    <main class="dash-main">
+        <div class="left-col">
+            <div class="card" id="datosUsuario">
+                <h3>Datos del usuario</h3>
+                <p><strong>Nombre:</strong> <span id="nombreUsuario">—</span></p>
+                <p><strong>Email:</strong> <span id="emailUsuario">—</span></p>
+                <p><strong>Teléfono:</strong> <span id="telefonoUsuario">—</span></p>
+            </div>
+
+            <div class="card" id="historialComprasCard">
+                <h3>Historial de compras</h3>
+                <ul id="historialCompras">
+                    <li>No hay compras registradas.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="right-col">
+            <div class="card" id="historialContactosCard">
+                <h3>Historial de contacto</h3>
+                <ul id="historialContactos">
+                    <li>No hay contactos registrados.</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Leer datos desde localStorage (ajusta las claves según tu implementación)
+    const nombre = localStorage.getItem('nombre') || localStorage.getItem('username') || 'Cliente';
+    const email = localStorage.getItem('email') || '—';
+    const telefono = localStorage.getItem('telefono') || '—';
+
+    // Poblar bienvenido (si no lo hace saludo.js)
+    const bien = document.getElementById('bienvenido');
+    if (bien) bien.textContent = `Bienvenido, ${nombre}`;
+
+    // Poblar datos
+    const elNombre = document.getElementById('nombreUsuario');
+    const elEmail = document.getElementById('emailUsuario');
+    const elTelefono = document.getElementById('telefonoUsuario');
+    if (elNombre) elNombre.textContent = nombre;
+    if (elEmail) elEmail.textContent = email;
+    if (elTelefono) elTelefono.textContent = telefono;
+
+    // Historial de compras: se espera un JSON en localStorage bajo 'compras' (array)
+    const comprasRaw = localStorage.getItem('compras');
+    const comprasList = document.getElementById('historialCompras');
+    if (comprasRaw && comprasList) {
+        try {
+            const compras = JSON.parse(comprasRaw);
+            if (Array.isArray(compras) && compras.length) {
+                comprasList.innerHTML = '';
+                compras.forEach(c => {
+                    const li = document.createElement('li');
+                    li.textContent = `${c.fecha || ''} ${c.item ? '- ' + c.item : ''} ${c.total ? '(' + c.total + ')' : ''}`;
+                    comprasList.appendChild(li);
+                });
+            }
+        } catch (e) { /* ignore parse errors */ }
+    }
+
+    // Historial de contactos: se espera un JSON en localStorage bajo 'contactos'
+    const contactosRaw = localStorage.getItem('contactos');
+    const contactosList = document.getElementById('historialContactos');
+    if (contactosRaw && contactosList) {
+        try {
+            const contactos = JSON.parse(contactosRaw);
+            if (Array.isArray(contactos) && contactos.length) {
+                contactosList.innerHTML = '';
+                contactos.forEach(c => {
+                    const li = document.createElement('li');
+                    li.textContent = `${c.fecha || ''} ${c.mensaje ? '- ' + c.mensaje : ''}`;
+                    contactosList.appendChild(li);
+                });
+            }
+        } catch (e) { /* ignore parse errors */ }
+    }
+
+    // Cerrar sesión: limpia datos y redirige
+    const logout = document.getElementById('logout');
+    if (logout) {
+        logout.addEventListener('click', function(e) {
+            // evitar seguir href antes de limpiar
+            e.preventDefault();
+            // borrar sólo las claves de sesión (ajusta según tu app)
+            localStorage.removeItem('nombre');
+            localStorage.removeItem('email');
+            localStorage.removeItem('telefono');
+            localStorage.removeItem('compras');
+            localStorage.removeItem('contactos');
+            // redirigir a la página principal (index.html)
+            window.location.href = this.getAttribute('href') || 'index.html';
+        });
+    }
+</script>
