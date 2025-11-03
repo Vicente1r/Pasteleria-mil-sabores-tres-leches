@@ -1,453 +1,249 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Perfil Cliente</title>
-    <link rel="stylesheet" href="/assets/css/perfilcliente.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Usuario</title>
+  <link rel="stylesheet" href="../css/perfilcliente.css">
 </head>
-
-<<<<<<< Updated upstream
-
-<a href="../../index.html">Inicio</a>
-<a href="catalogo.html">Catalogo</a>
-<a href="carrito.html">Carrito</a>
-
-
-
-<style>
-    .dashboard {
-        display: grid;
-        grid-template-rows: auto 1fr;
-        gap: 12px;
-        font-family: Arial, sans-serif;
-        padding: 12px;
-    }
-    .dash-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    /* ensure existing #bienvenido appears on the left of the header */
-    .dash-header .left { display:flex; align-items:center; gap:12px; }
-    #bienvenido { margin: 0; font-size: 1.25rem; font-weight:700; }
-    .dash-header .right a {
-        margin-left: 10px;
-        text-decoration: none;
-        color: #0078d4;
-        font-weight: 600;
-    }
-
-    .dash-main {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        align-items: start;
-    }
-
-    .card {
-        background: #fff;
-        border: 1px solid #e0e0e0;
-        border-radius: 6px;
-        padding: 12px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-    }
-
-    .left-col .card + .card { margin-top: 12px; }
-
-    h3 { margin: 0 0 8px 0; font-size: 1rem; }
-
-    ul { margin: 0; padding-left: 18px; }
-    li { margin-bottom: 6px; }
-
-    /* responsive */
-    @media (max-width: 700px) {
-        .dash-main { grid-template-columns: 1fr; }
-        .dash-header { flex-direction: column; align-items: stretch; gap:8px; }
-        .dash-header .right { display:flex; justify-content:flex-end; }
-    }
-</style>
-
-<div class="dashboard">
-    <div class="dash-header">
-        <div class="left">
-            <!-- #bienvenido is already present earlier in the document and will appear here -->
+<body>
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">⚙</div>
+        <span>Bienvenido *Usuario</span>
+      </div>
+      
+      <nav class="nav-menu">
+        <div class="nav-item active" data-view="dashboard">
+          <i class="icon"></i>
+          <span>Historial de compra</span>
         </div>
-        <div class="right">
-            <a href="inicio.html">Inicio</a>
-            <a href="blog.html">Blog</a>
-            <a href="index.html" id="logout">Cerrar sesión</a>
+        <div class="nav-item" data-view="orders">
+          <i class="icon"></i>
+          <span>Historial de contactos</span>
         </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="nav-item profile" id="profile-btn">
+          <i class="icon"></i>
+          <span>Mi Perfil</span>
+        </div>
+      </div>
     </div>
 
-    <main class="dash-main">
-        <div class="left-col">
-            <div class="card" id="datosUsuario">
-                <h3>Datos del usuario</h3>
-                <p><strong>Nombre:</strong> <span id="nombreUsuario">—</span></p>
-                <p><strong>Email:</strong> <span id="emailUsuario">—</span></p>
-                <p><strong>Teléfono:</strong> <span id="telefonoUsuario">—</span></p>
-            </div>
+    <!--Lo principal-->
+    <div class="main-content">
+      <!--dea-->
+      <div class="header">
+        <h1 id="page-title">¡HOLA --------!</h1>
+        <div class="header-actions">
+          <button class="notification-btn"></button>
+        </div>
+      </div>
 
-            <div class="card" id="historialComprasCard">
-                <h3>Historial de compras</h3>
-                <ul id="historialCompras">
-                    <li>No hay compras registradas.</li>
-                </ul>
-            </div>
+      <!--el panel-->
+      <div class="content-view" id="dashboard-view">
+        <div class="welcome-message">
+          <p>Bienvenido al panel de administración</p>
+        </div>
+      </div>
+
+      <div class="content-view hidden" id="orders-view">
+        <div class="view-header">
+          <h2>Usuarios</h2>
+          <button class="btn-primary" id="new-user-btn">NUEVO USUARIO</button>
+        </div>
+        
+        <div class="filter-section">
+          <select class="filter-dropdown">
+            <option>Todos los pedidos de venta ▼</option>
+          </select>
         </div>
 
-        <div class="right-col">
-            <div class="card" id="historialContactosCard">
-                <h3>Historial de contacto</h3>
-                <ul id="historialContactos">
-                    <li>No hay contactos registrados.</li>
-                </ul>
-            </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Orden #</th>
+                <th>Cliente</th>
+                <th>Estado</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2024-06-01</td>
+                <td>SO101</td>
+                <td>Arturo Vidal</td>
+                <td><span class="status shipped">Entregado</span></td>
+                <td>$60.000</td>
+              </tr>
+              <tr>
+                <td>2024-06-01</td>
+                <td>SO102</td>
+                <td>Claudio Bravo</td>
+                <td><span class="status pending">Pendiente</span></td>
+                <td>$5.000</td>
+              </tr>
+              <tr>
+                <td>2024-06-02</td>
+                <td>SO103</td>
+                <td>Mauricio Paredes</td>
+                <td><span class="status cancelled">Cancelado</span></td>
+                <td>$30.000</td>
+              </tr>
+              <tr>
+                <td>2024-06-03</td>
+                <td>SO104</td>
+                <td>Roman Rojas</td>
+                <td><span class="status processing">Procesando</span></td>
+                <td>$12.000</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-    </main>
-</div>
 
-<script>
-    // Leer datos desde localStorage (ajusta las claves según tu implementación)
-    const nombre = localStorage.getItem('nombre') || localStorage.getItem('username') || 'Cliente';
-    const email = localStorage.getItem('email') || '—';
-    const telefono = localStorage.getItem('telefono') || '—';
+        <div class="pagination">
+          <button class="page-btn">‹‹</button>
+          <button class="page-btn">‹</button>
+          <button class="page-btn">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn active">3</button>
+          <button class="page-btn">4</button>
+          <button class="page-btn">5</button>
+          <button class="page-btn">›</button>
+          <button class="page-btn">››</button>
+        </div>
+      </div>
 
-    // Poblar bienvenido (si no lo hace saludo.js)
-    const bien = document.getElementById('bienvenido');
-    if (bien) bien.textContent = `Bienvenido, ${nombre}`;
-
-    // Poblar datos
-    const elNombre = document.getElementById('nombreUsuario');
-    const elEmail = document.getElementById('emailUsuario');
-    const elTelefono = document.getElementById('telefonoUsuario');
-    if (elNombre) elNombre.textContent = nombre;
-    if (elEmail) elEmail.textContent = email;
-    if (elTelefono) elTelefono.textContent = telefono;
-
-    // Historial de compras: se espera un JSON en localStorage bajo 'compras' (array)
-    const comprasRaw = localStorage.getItem('compras');
-    const comprasList = document.getElementById('historialCompras');
-    if (comprasRaw && comprasList) {
-        try {
-            const compras = JSON.parse(comprasRaw);
-            if (Array.isArray(compras) && compras.length) {
-                comprasList.innerHTML = '';
-                compras.forEach(c => {
-                    const li = document.createElement('li');
-                    li.textContent = `${c.fecha || ''} ${c.item ? '- ' + c.item : ''} ${c.total ? '(' + c.total + ')' : ''}`;
-                    comprasList.appendChild(li);
-                });
-            }
-        } catch (e) { /* ignore parse errors */ }
-    }
-
-    // Historial de contactos: se espera un JSON en localStorage bajo 'contactos'
-    const contactosRaw = localStorage.getItem('contactos');
-    const contactosList = document.getElementById('historialContactos');
-    if (contactosRaw && contactosList) {
-        try {
-            const contactos = JSON.parse(contactosRaw);
-            if (Array.isArray(contactos) && contactos.length) {
-                contactosList.innerHTML = '';
-                contactos.forEach(c => {
-                    const li = document.createElement('li');
-                    li.textContent = `${c.fecha || ''} ${c.mensaje ? '- ' + c.mensaje : ''}`;
-                    contactosList.appendChild(li);
-                });
-            }
-        } catch (e) { /* ignore parse errors */ }
-    }
-
-    // Cerrar sesión: limpia datos y redirige
-    const logout = document.getElementById('logout');
-    if (logout) {
-        logout.addEventListener('click', function(e) {
-            // evitar seguir href antes de limpiar
-            e.preventDefault();
-            // borrar sólo las claves de sesión (ajusta según tu app)
-            localStorage.removeItem('nombre');
-            localStorage.removeItem('email');
-            localStorage.removeItem('telefono');
-            localStorage.removeItem('compras');
-            localStorage.removeItem('contactos');
-            // redirigir a la página principal (index.html)
-            window.location.href = this.getAttribute('href') || 'index.html';
-        });
-    }
-</script>
-=======
-<body>
-    <!-- Layout sin CSS usando una tabla para ubicar elementos -->
-    <table width="100%" cellpadding="10" cellspacing="0" border="0">
-        <!-- fila superior: izquierda = bienvenida, derecha = cerrar sesión -->
-        <tr>
-            <td valign="top">
-                <h2>Bienvenido, <span id="username">Usuario</span></h2>
-            </td>
-            <td valign="top" align="right">
-                <button id="logout">Cerrar sesión</button>
-            </td>
-        </tr>
-        <tr>
-            <td valign="top" width="25%">
-            <aside class="dashboard-sidebar" style="background:#fafafa;border:1px solid #eee;border-radius:6px;padding:12px;">
-                <div class="avatar-wrap" style="text-align:center;padding:6px 0;">
-                <img id="avatar" src="/assets/img/default-avatar.png" alt="Avatar" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid #ddd;">
+      <div class="content-view hidden" id="profile-view">
+        <div class="form-container">
+          <h2>MI PERFIL</h2>
+          
+          <form class="user-form">
+            <div class="form-section">
+              <div class="section-header">Información personal</div>
+              
+              <div class="form-row">
+                <div class="form-group half">
+                  <label>NOMBRE</label>
+                  <input type="text" class="form-input" value="Juan" required>
                 </div>
-
-                <div class="profile-info" style="padding:8px 6px;">
-                <div id="profileName" style="text-align:center;margin-bottom:6px;font-weight:600;">Usuario</div>
-                <p style="text-align:center;margin:0 0 8px;color:#666;font-size:0.95rem;">Rol: <strong>Cliente</strong></p>
-
-                <div class="profile-actions" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;">
-                    <button id="editProfile" type="button">Editar perfil</button>
-                    <button id="btnOrders" type="button">Ver pedidos</button>
-                    <button id="btnContacts" type="button">Contactos</button>
+                
+                <div class="form-group half">
+                  <label>APELLIDO</label>
+                  <input type="text" class="form-input" value="Pérez" required>
                 </div>
-
-                <div class="profile-summary" style="border-top:1px solid #eee;padding-top:10px;margin-top:6px;">
-                    <dl style="margin:0;font-size:0.95rem;">
-                    <dt style="color:#666;font-size:0.85rem;margin-bottom:4px;">Compras registradas</dt>
-                    <dd id="summaryPurchases" style="margin:0 0 8px;color:#000;">—</dd>
-
-                    <dt style="color:#666;font-size:0.85rem;margin-bottom:4px;">Último contacto</dt>
-                    <dd id="summaryLastContact" style="margin:0;color:#000;">—</dd>
-
-                    <dt style="color:#666;font-size:0.85rem;margin-top:8px;margin-bottom:4px;">Total gastado</dt>
-                    <dd id="summaryTotal" style="margin:0;color:#000;">—</dd>
-                    </dl>
-                </div>
-                </div>
-            </aside>
-            </td>
-
-            <td valign="top" width="75%">
-            <nav class="dashboard-nav" style="padding:8px 12px;">
-                <ul style="list-style:none;padding:0;margin:0;display:flex;gap:12px;align-items:center;">
-                <li><a href="#userData">Perfil</a></li>
-                <li><a href="#purchases">Pedidos</a></li>
-                <li><a href="#contacts">Contactos</a></li>
-                <li style="margin-left:auto;color:#888;font-size:0.9rem;">Dashboard</li>
-                </ul>
-            </nav>
-
-            <div class="dashboard-cards" style="display:flex;gap:12px;padding:12px;">
-                <div class="card" style="flex:1;background:#fff;border:1px solid #eee;padding:12px;border-radius:6px;text-align:center;">
-                <div style="font-size:1.4rem;font-weight:700;" id="cardOrders">—</div>
-                <div style="color:#666;font-size:0.85rem;">Pedidos</div>
-                </div>
-                <div class="card" style="flex:1;background:#fff;border:1px solid #eee;padding:12px;border-radius:6px;text-align:center;">
-                <div style="font-size:1.4rem;font-weight:700;" id="cardContacts">—</div>
-                <div style="color:#666;font-size:0.85rem;">Contactos</div>
-                </div>
-                <div class="card" style="flex:1;background:#fff;border:1px solid #eee;padding:12px;border-radius:6px;text-align:center;">
-                <div style="font-size:1.4rem;font-weight:700;" id="cardSpent">—</div>
-                <div style="color:#666;font-size:0.85rem;">Total gastado</div>
-                </div>
+              </div>
+              
+              <div class="form-group">
+                <label>NOMBRE DE USUARIO</label>
+                <input type="text" class="form-input" value="juanperez" required>
+              </div>
+              
+              <div class="form-group">
+                <label>CORREO ELECTRÓNICO</label>
+                <input type="email" class="form-input" value="juan.perez@ejemplo.com" required>
+              </div>
+              
+              <div class="form-group">
+                <label>TELÉFONO</label>
+                <input type="tel" class="form-input" value="+56 9 1234 5678">
+              </div>
+              
+              <div class="section-header">Cambiar contraseña</div>
+              
+              <div class="form-group">
+                <label>CONTRASEÑA ACTUAL</label>
+                <input type="password" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label>NUEVA CONTRASEÑA</label>
+                <input type="password" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label>CONFIRMAR NUEVA CONTRASEÑA</label>
+                <input type="password" class="form-input">
+              </div>
             </div>
-            </td>
-        </tr>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn-register">GUARDAR CAMBIOS</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <script>
-            // Sincroniza nombre y métricas del sidebar con los elementos/resúmenes que rellenan otros scripts.
-            function updateDashboardFromDOM() {
-            const mainName = document.getElementById('username');
-            if (mainName) {
-                const p = document.getElementById('profileName');
-                if (p) p.textContent = mainName.textContent || 'Usuario';
-            }
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const navItems = document.querySelectorAll('.nav-item[data-view]');
+      const contentViews = document.querySelectorAll('.content-view');
+      const pageTitle = document.getElementById('page-title');
+      const newUserBtn = document.getElementById('new-user-btn');
+      const profileBtn = document.getElementById('profile-btn');
 
-            const sp = document.getElementById('summaryPurchases');
-            const sl = document.getElementById('summaryLastContact');
-            const st = document.getElementById('summaryTotal');
-
-            const cOrders = document.getElementById('cardOrders');
-            const cContacts = document.getElementById('cardContacts');
-            const cSpent = document.getElementById('cardSpent');
-
-            if (sp && cOrders) cOrders.textContent = sp.textContent || '0';
-            if (sl && cContacts) {
-                // intenta extraer cantidad de la cadena "N pedido(s)" o deja la cadena tal cual
-                const m = (sp && sp.textContent.match(/\d+/)) ? sp.textContent.match(/\d+/)[0] : null;
-                cContacts.textContent = (m ? m : (sl.textContent === 'Sin contactos' ? '0' : sl.textContent));
-            }
-            if (st && cSpent) cSpent.textContent = st.textContent || '—';
-            }
-
-            // Espera breve para que el resto de scripts (fillMiniSummary / fillProfile) hayan llenado datos.
-            setTimeout(updateDashboardFromDOM, 120);
-            window.addEventListener('focus', updateDashboardFromDOM);
-        </script>
-
-        <script>
-            // Navegación local simple entre secciones
-            document.getElementById('btnOrders').addEventListener('click', () => {
-                const el = document.getElementById('purchases');
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
-            document.getElementById('btnContacts').addEventListener('click', () => {
-                const el = document.getElementById('contacts');
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
-
-            // Botón "Editar perfil" abre el formulario de datos si existe (comportamiento mínimo)
-            document.getElementById('editProfile').addEventListener('click', () => {
-                const el = document.getElementById('userData');
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            });
-
-            // Rellenar los resúmenes con los datos del cliente cuando el resto del script
-            // (que crea getUser / fillProfile) haya corrido. Reintento simple.
-            function fillMiniSummary() {
-                try {
-                    const raw = localStorage.getItem('user');
-                    const user = raw ? JSON.parse(raw) : null;
-                    const purchases = (user && Array.isArray(user.purchases)) ? user.purchases : [];
-                    const contacts = (user && Array.isArray(user.contacts)) ? user.contacts : [];
-
-                    document.getElementById('summaryPurchases').textContent = purchases.length ? `${purchases.length} pedido(s)` : '0';
-                    document.getElementById('summaryLastContact').textContent = contacts.length ? contacts[contacts.length - 1].date + ' — ' + contacts[contacts.length - 1].asunto : 'Sin contactos';
-                } catch (e) {
-                    // silencioso
-                }
-            }
-
-            // Espera breve para permitir que el script principal cargue y/o que sampleUser se use
-            setTimeout(fillMiniSummary, 50);
-            // También rellena cuando la página gana foco (por si se actualiza localStorage desde otra pestaña)
-            window.addEventListener('focus', fillMiniSummary);
-        </script>
-        <!-- contenido principal: historial de compras y de contacto en la izquierda -->
-        <tr>
-            <td valign="top">
-                <section>
-                    <h3>Historial de compras</h3>
-                    <ul id="purchases">
-                        <!-- Se rellenará con JavaScript -->
-                    </ul>
-                </section>
-
-                <section>
-                    <h3>Historial de contacto rellenados</h3>
-                    <ul id="contacts">
-                        <!-- Se rellenará con JavaScript -->
-                    </ul>
-                </section>
-            </td>
-            <td valign="top">
-                <!-- columna derecha vacía por ahora -->
-            </td>
-        </tr>
-
-        <!-- fila inferior: en la izquierda datos del usuario -->
-        <tr>
-            <td valign="bottom">
-                <section>
-                    <h3>Datos del usuario</h3>
-                    <dl id="userData">
-                        <!-- Se rellenará con JavaScript -->
-                    </dl>
-                </section>
-            </td>
-            <td valign="bottom">
-                <!-- columna derecha vacía -->
-            </td>
-        </tr>
-    </table>
-
-    <script>
-        // Intenta obtener datos de localStorage (clave "user"). Si no hay, usa datos de ejemplo.
-        // Estructura esperada: { name, email, phone, purchases: [{id,date,total}], contacts: [{date, asunto, mensaje}] }
-        const sampleUser = {
-            name: "Nombre Ejemplo",
-            email: "cliente@ejemplo.com",
-            phone: "+34 600 000 000",
-            purchases: [
-                { id: "A001", date: "2025-01-15", total: "25.00€" },
-                { id: "A023", date: "2025-03-02", total: "40.50€" }
-            ],
-            contacts: [
-                { date: "2025-02-01", asunto: "Consulta sabores", mensaje: "¿Tienen opción sin gluten?" },
-                { date: "2025-04-10", asunto: "Reclamación", mensaje: "Problema con la entrega" }
-            ]
-        };
-
-        function getUser() {
-            try {
-                const raw = localStorage.getItem('user');
-                if (!raw) return sampleUser;
-                return JSON.parse(raw);
-            } catch (e) {
-                return sampleUser;
-            }
+      // Función para cambiar vistas
+      function showView(viewName, title) {
+        // Ocultar todas las vistas
+        contentViews.forEach(view => view.classList.add('hidden'));
+        
+        // Mostrar la vista seleccionada
+        const targetView = document.getElementById(viewName + '-view');
+        if (targetView) {
+          targetView.classList.remove('hidden');
         }
+        
+        // Actualizar título
+        pageTitle.textContent = title;
+      }
 
-        function fillProfile() {
-            const user = getUser();
-
-            // Nombre en la bienvenida
-            document.getElementById('username').textContent = user.name || 'Usuario';
-
-            // Historial de compras
-            const purchasesEl = document.getElementById('purchases');
-            purchasesEl.innerHTML = '';
-            if (user.purchases && user.purchases.length) {
-                user.purchases.forEach(p => {
-                    const li = document.createElement('li');
-                    li.textContent = `Pedido ${p.id} — ${p.date} — ${p.total}`;
-                    purchasesEl.appendChild(li);
-                });
-            } else {
-                purchasesEl.innerHTML = '<li>No hay compras registradas.</li>';
-            }
-
-            // Historial de contactos rellenados
-            const contactsEl = document.getElementById('contacts');
-            contactsEl.innerHTML = '';
-            if (user.contacts && user.contacts.length) {
-                user.contacts.forEach(c => {
-                    const li = document.createElement('li');
-                    li.textContent = `${c.date} — ${c.asunto}: ${c.mensaje}`;
-                    contactsEl.appendChild(li);
-                });
-            } else {
-                contactsEl.innerHTML = '<li>No hay contactos registrados.</li>';
-            }
-
-            // Datos del usuario
-            const userDataEl = document.getElementById('userData');
-            userDataEl.innerHTML = '';
-            const ddName = document.createElement('dd'); ddName.textContent = user.name || '-';
-            const dtName = document.createElement('dt'); dtName.textContent = 'Nombre:';
-            const dtEmail = document.createElement('dt'); dtEmail.textContent = 'Email:';
-            const ddEmail = document.createElement('dd'); ddEmail.textContent = user.email || '-';
-            const dtPhone = document.createElement('dt'); dtPhone.textContent = 'Teléfono:';
-            const ddPhone = document.createElement('dd'); ddPhone.textContent = user.phone || '-';
-
-            userDataEl.appendChild(dtName);
-            userDataEl.appendChild(ddName);
-            userDataEl.appendChild(dtEmail);
-            userDataEl.appendChild(ddEmail);
-            userDataEl.appendChild(dtPhone);
-            userDataEl.appendChild(ddPhone);
-        }
-
-        // Cerrar sesión: limpia localStorage y redirige (ajusta la ruta si hace falta)
-        document.getElementById('logout').addEventListener('click', function () {
-            localStorage.removeItem('user');
-            // Redirigir a página de inicio o login; si no existe, recargar
-            if (location.pathname.endsWith('perfilCliente.html')) {
-                location.href = 'index.html';
-            } else {
-                location.reload();
-            }
+      // Navegación del sidebar
+      navItems.forEach(item => {
+        item.addEventListener('click', function() {
+          const viewName = this.getAttribute('data-view');
+          
+          // Actualizar navegación activa
+          navItems.forEach(nav => nav.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Mostrar vista correspondiente
+          switch(viewName) {
+            case 'dashboard':
+              showView('dashboard', '¡HOLA --------!');
+              break;
+            case 'orders':
+              showView('orders', 'Usuarios');
+              break;
+          }
         });
+      });
 
-        // Ejecutar al cargar
-        fillProfile();
-    </script>
+      // Botón "Mi Perfil"
+      if (profileBtn) {
+        profileBtn.addEventListener('click', function() {
+          // Quitar activo de otros elementos de navegación
+          navItems.forEach(nav => nav.classList.remove('active'));
+          
+          // Mostrar vista de perfil
+          showView('profile', 'Mi Perfil');
+        });
+      }
+
+      // Botón "NUEVO USUARIO"
+      if (newUserBtn) {
+        newUserBtn.addEventListener('click', function() {
+          showView('profile', 'Mi Perfil');
+        });
+      }
+    });
+  </script>
 </body>
 </html>
->>>>>>> Stashed changes

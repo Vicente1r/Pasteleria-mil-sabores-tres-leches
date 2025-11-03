@@ -1,4 +1,4 @@
-// Configuración de Firebase
+// Configuración de Firebase (solo para el carrito, no para productos)
 const firebaseConfig = {
     apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
     authDomain: "tiendanombretienda.firebaseapp.com",
@@ -33,21 +33,63 @@ function inicializarCarrito() {
 }
 
 /**
- * Carga productos en oferta desde Firestore
+ * Carga productos en oferta - VERSIÓN MODIFICADA
+ * Ahora usa productos de pastelería estáticos en lugar de Firebase
  */
 async function cargarProductosOferta() {
     try {
-        const snapshot = await db.collection("producto").get();
-        productosOferta = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
+        // PRODUCTOS DE PASTELERÍA EN OFERTA (estáticos)
+        productosOferta = [
+            {
+                id: "torta_cuadrada_chocolate",
+                nombre: "Torta Cuadrada de Chocolate",
+                descripcion: "Capas de ganache y avellanas. Personalizable.",
+                precio: 38000, // Precio con oferta
+                precioAnterior: 45000, // Precio original
+                imagen: "../torta_cuadrada_chocolate.png",
+                categoria: "tortas_cuadradas",
+                stock: 10
+            },
+            {
+                id: "torta_circular_vainilla",
+                nombre: "Torta Circular de Vainilla", 
+                descripcion: "Bizcocho clásico con crema pastelera.",
+                precio: 32000, // Precio con oferta
+                precioAnterior: 40000, // Precio original
+                imagen: "../torta_circular_vainilla.png",
+                categoria: "tortas_circulares",
+                stock: 8
+            },
+            {
+                id: "postre_individual_mousse",
+                nombre: "Postre Individual - Mousse",
+                descripcion: "Ligero y cremoso, porción individual.",
+                precio: 2500, // Precio con oferta
+                precioAnterior: 3200, // Precio original
+                imagen: "../individual_mousse_chocolate2.png",
+                categoria: "postres_individuales",
+                stock: 15
+            },
+            {
+                id: "sin_gluten_brownie",
+                nombre: "Brownie sin gluten",
+                descripcion: "Textura húmeda y sabor intenso.",
+                precio: 2200, // Precio con oferta
+                precioAnterior: 2800, // Precio original
+                imagen: "../sin_gluten_brownie.png",
+                categoria: "productos_sin_gluten",
+                stock: 12
+            }
+        ];
         
-        // Filtrar productos con oferta (precio anterior)
-        const productosConOferta = productosOferta.filter(producto => producto.precioAnterior);
-        renderizarProductosOferta(productosConOferta);
+        renderizarProductosOferta(productosOferta);
     } catch (error) {
         console.error("Error cargando productos en oferta:", error);
+        // En caso de error, mostrar mensaje
+        const contenedor = document.getElementById('productosOferta');
+        if (contenedor) {
+            contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay productos en oferta en este momento.</p>';
+        }
     }
 }
 
@@ -69,16 +111,18 @@ function renderizarProductosOferta(productos) {
             <img src="${producto.imagen}" 
                  alt="${producto.nombre}" 
                  class="producto-imagen"
-                 onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'">
+                 onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Pastel+No+Disponible'">
             <div class="producto-info">
                 <h3 class="producto-nombre">${producto.nombre}</h3>
-                <div class="precios-oferta">
-                    <span class="precio-anterior">$${producto.precioAnterior?.toLocaleString('es-CL')}</span>
-                    <span class="precio-actual">$${producto.precio?.toLocaleString('es-CL')}</span>
+                <p style="color: #666; font-size: 0.9rem; margin-bottom: 10px;">${producto.descripcion}</p>
+                <div class="precios-oferta" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <span class="precio-anterior" style="text-decoration: line-through; color: #999; font-size: 0.9rem;">$${producto.precioAnterior?.toLocaleString('es-CL')}</span>
+                    <span class="precio-actual" style="color: #e36b86; font-weight: bold; font-size: 1.1rem;">$${producto.precio?.toLocaleString('es-CL')}</span>
                 </div>
-                <p class="stock-disponible">Stock: ${producto.stock || 10}</p>
-                <button class="btn-agregar-oferta" data-id="${producto.id}">
-                    Añadir al carrito
+                <p class="stock-disponible" style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">Stock: ${producto.stock || 10}</p>
+                <button class="btn-agregar-oferta" data-id="${producto.id}" 
+                        style="background: linear-gradient(90deg, #ff9fb3, #e36b86); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;">
+                    🛒 Añadir al carrito
                 </button>
             </div>
         </div>
@@ -130,7 +174,7 @@ function renderizarCarrito() {
                      alt="${producto.nombre}" 
                      class="imagen-tabla"
                      style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;"
-                     onerror="this.src='https://via.placeholder.com/100x100/cccccc/969696?text=Imagen'">
+                     onerror="this.src='https://via.placeholder.com/100x100/cccccc/969696?text=Pastel'">
             </td>
             <td>
                 <strong>${producto.nombre}</strong>
@@ -203,36 +247,18 @@ async function agregarProductoAlCarrito(productId) {
     renderizarCarrito();
     calcularTotal();
     
-    // Actualizar stock en Firebase
+    // Actualizar stock local (no en Firebase para productos estáticos)
     if (producto.stock !== undefined) {
-        await actualizarStockFirebase(productId, -1);
+        const productoOferta = productosOferta.find(p => p.id === productId);
+        if (productoOferta) {
+            productoOferta.stock = Math.max(0, productoOferta.stock - 1);
+        }
     }
     
     mostrarNotificacion(`"${producto.nombre}" agregado al carrito ✓`);
 }
 
-/**
- * Actualizar stock en Firebase
- */
-async function actualizarStockFirebase(productId, cambio) {
-    try {
-        const productoRef = db.collection("producto").doc(productId);
-        const productoDoc = await productoRef.get();
-        
-        if (productoDoc.exists) {
-            const stockActual = productoDoc.data().stock || 0;
-            const nuevoStock = Math.max(0, stockActual + cambio);
-            
-            await productoRef.update({
-                stock: nuevoStock
-            });
-            
-            console.log(`Stock actualizado en Firebase: ${nuevoStock}`);
-        }
-    } catch (error) {
-        console.error("Error actualizando stock en Firebase:", error);
-    }
-}
+// EL RESTO DEL CÓDIGO PERMANECE IGUAL (las funciones de aumentar/disminuir cantidad, eliminar, calcular total, etc.)
 
 /**
  * Aumenta la cantidad de un producto en el carrito
@@ -256,11 +282,6 @@ async function aumentarCantidad(index) {
     renderizarCarrito();
     calcularTotal();
     
-    // Actualizar stock en Firebase
-    if (producto.stock !== undefined) {
-        await actualizarStockFirebase(producto.id, -1);
-    }
-    
     mostrarNotificacion('Cantidad actualizada', 'success');
 }
 
@@ -280,11 +301,6 @@ async function disminuirCantidad(index) {
         guardarCarrito();
         renderizarCarrito();
         calcularTotal();
-        
-        // Restaurar stock en Firebase
-        if (producto.stock !== undefined) {
-            await actualizarStockFirebase(producto.id, 1);
-        }
         
         mostrarNotificacion('Cantidad actualizada', 'success');
     } else {
@@ -311,11 +327,6 @@ async function eliminarDelCarrito(index) {
         renderizarCarrito();
         calcularTotal();
         mostrarNotificacion(`"${producto.nombre}" eliminado del carrito`);
-
-        // Restaurar stock en Firebase
-        if (producto.stock !== undefined) {
-            await actualizarStockFirebase(producto.id, cantidadEliminada);
-        }
     }
 }
 
@@ -385,7 +396,7 @@ function limpiarCarrito() {
 }
 
 /**
- * Procesa la compra
+ * Procesa la compra y genera boleta
  */
 function irAlCheckout() {
     // Recargar carrito del localStorage
@@ -399,34 +410,204 @@ function irAlCheckout() {
     const total = carrito.reduce((sum, p) => sum + ((p.precio || 0) * (p.cantidad || 1)), 0);
     const totalProductos = carrito.reduce((sum, p) => sum + (p.cantidad || 1), 0);
     
-    // Crear mensaje para WhatsApp
-    let mensaje = `🛒 *NUEVO PEDIDO - Mil Sabores*\n\n`;
-    mensaje += `📦 Total de productos: ${totalProductos}\n\n`;
-    mensaje += `*DETALLE DEL PEDIDO:*\n`;
-    
-    carrito.forEach((p, i) => {
-        const subtotal = (p.precio || 0) * (p.cantidad || 1);
-        mensaje += `\n${i + 1}. *${p.nombre}*\n`;
-        mensaje += `   Cantidad: ${p.cantidad}\n`;
-        mensaje += `   Precio unitario: $${(p.precio || 0).toLocaleString('es-CL')}\n`;
-        mensaje += `   Subtotal: $${subtotal.toLocaleString('es-CL')}\n`;
-    });
-    
-    mensaje += `\n━━━━━━━━━━━━━━━━\n`;
-    mensaje += `💰 *TOTAL A PAGAR: $${total.toLocaleString('es-CL')} CLP*`;
-    
-    // Reemplaza con tu número de WhatsApp (formato: 56912345678 para Chile)
-    const numeroWhatsApp = '56912345678';
-    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
-    
-    if (confirm(`Se abrirá WhatsApp para confirmar tu pedido.\n\nTotal: $${total.toLocaleString('es-CL')} CLP\n\n¿Continuar?`)) {
-        window.open(url, '_blank');
+    // Mostrar confirmación antes de generar la boleta
+    if (confirm(`¿Confirmar compra?\n\nTotal: $${total.toLocaleString('es-CL')} CLP\nProductos: ${totalProductos}\n\nSe generará una boleta electrónica.`)) {
+        // Generar número de boleta único
+        const numeroBoleta = 'B' + Date.now().toString().slice(-8);
+        const fecha = new Date().toLocaleDateString('es-CL');
+        const hora = new Date().toLocaleTimeString('es-CL');
         
-        // Opcional: Vaciar carrito después de enviar
-        // carrito = [];
-        // guardarCarrito();
-        // renderizarCarrito();
-        // calcularTotal();
+        // Crear contenido de la boleta
+        const boletaHTML = `
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Boleta - Mil Sabores</title>
+                <style>
+                    body {
+                        font-family: 'Arial', sans-serif;
+                        margin: 0;
+                        padding: 20px;
+                        background: #f5f5f5;
+                    }
+                    .boleta-container {
+                        max-width: 600px;
+                        margin: 0 auto;
+                        background: white;
+                        padding: 30px;
+                        border-radius: 10px;
+                        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                    }
+                    .header {
+                        text-align: center;
+                        border-bottom: 2px solid #e36b86;
+                        padding-bottom: 20px;
+                        margin-bottom: 20px;
+                    }
+                    .logo {
+                        font-size: 24px;
+                        font-weight: bold;
+                        color: #e36b86;
+                        margin-bottom: 10px;
+                    }
+                    .info-boleta {
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 20px;
+                        font-size: 14px;
+                        color: #666;
+                    }
+                    .tabla-productos {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 20px;
+                    }
+                    .tabla-productos th {
+                        background: #f8f9fa;
+                        padding: 12px;
+                        text-align: left;
+                        border-bottom: 2px solid #dee2e6;
+                        font-weight: 600;
+                    }
+                    .tabla-productos td {
+                        padding: 12px;
+                        border-bottom: 1px solid #e9ecef;
+                    }
+                    .total-section {
+                        background: #f8f9fa;
+                        padding: 20px;
+                        border-radius: 8px;
+                        text-align: center;
+                        margin-top: 20px;
+                    }
+                    .total-grande {
+                        font-size: 24px;
+                        font-weight: bold;
+                        color: #28a745;
+                        margin: 10px 0;
+                    }
+                    .footer {
+                        text-align: center;
+                        margin-top: 30px;
+                        padding-top: 20px;
+                        border-top: 1px solid #dee2e6;
+                        color: #666;
+                        font-size: 12px;
+                    }
+                    .botones-boleta {
+                        display: flex;
+                        gap: 10px;
+                        justify-content: center;
+                        margin-top: 20px;
+                    }
+                    .btn-imprimir {
+                        background: #007bff;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    }
+                    .btn-volver {
+                        background: #6c757d;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        text-decoration: none;
+                    }
+                    @media print {
+                        body { background: white; }
+                        .boleta-container { box-shadow: none; }
+                        .botones-boleta { display: none; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="boleta-container">
+                    <div class="header">
+                        <div class="logo">🍰 Mil Sabores</div>
+                        <h1>BOLETA ELECTRÓNICA</h1>
+                        <p>Pastelería Artesanal</p>
+                    </div>
+                    
+                    <div class="info-boleta">
+                        <div>
+                            <strong>N° Boleta:</strong> ${numeroBoleta}<br>
+                            <strong>Fecha:</strong> ${fecha}<br>
+                            <strong>Hora:</strong> ${hora}
+                        </div>
+                        <div style="text-align: right;">
+                            <strong>Estado:</strong> <span style="color: #28a745;">PAGADO</span><br>
+                            <strong>Productos:</strong> ${totalProductos}
+                        </div>
+                    </div>
+                    
+                    <table class="tabla-productos">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cant.</th>
+                                <th>P. Unitario</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${carrito.map((p, i) => {
+                                const subtotal = (p.precio || 0) * (p.cantidad || 1);
+                                return `
+                                    <tr>
+                                        <td>${p.nombre}</td>
+                                        <td>${p.cantidad}</td>
+                                        <td>$${(p.precio || 0).toLocaleString('es-CL')}</td>
+                                        <td>$${subtotal.toLocaleString('es-CL')}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div class="total-section">
+                        <div style="font-size: 18px; font-weight: 600;">TOTAL A PAGAR</div>
+                        <div class="total-grande">$${total.toLocaleString('es-CL')} CLP</div>
+                        <div style="color: #666; font-size: 14px;">
+                            IVA INCLUIDO • Método de pago: Transferencia
+                        </div>
+                    </div>
+                    
+                    <div class="footer">
+                        <p><strong>¡Gracias por su compra!</strong></p>
+                        <p>Mil Sabores - Pastelería Artesanal<br>
+                        Contacto: +56 9 8812 7156 • milsabores@tienda.com</p>
+                        <p>Boleta electrónica generada automáticamente</p>
+                    </div>
+                    
+                    <div class="botones-boleta">
+                        <button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir Boleta</button>
+                        <a href="carrito.html" class="btn-volver">← Volver al Carrito</a>
+                    </div>
+                </div>
+            </body>
+            </html>
+        `;
+        
+        // Abrir la boleta en una nueva ventana
+        const ventanaBoleta = window.open('', '_blank', 'width=800,height=900,scrollbars=yes');
+        ventanaBoleta.document.write(boletaHTML);
+        ventanaBoleta.document.close();
+        
+        // Vaciar carrito después de generar boleta
+        carrito = [];
+        guardarCarrito();
+        renderizarCarrito();
+        calcularTotal();
+        
+        mostrarNotificacion('¡Compra realizada! Boleta generada correctamente ✓');
     }
 }
 
