@@ -151,29 +151,166 @@
             const contactos = JSON.parse(contactosRaw);
             if (Array.isArray(contactos) && contactos.length) {
                 contactosList.innerHTML = '';
-                contactos.forEach(c => {
+
+                // paleta interactiva
+                const colors = ['#ff6b6b', '#ffd93d', '#6bcB77', '#4da6ff', '#b98cff', '#ffa07a'];
+
+                contactos.forEach((c, i) => {
                     const li = document.createElement('li');
-                    li.textContent = `${c.fecha || ''} ${c.mensaje ? '- ' + c.mensaje : ''}`;
+                    li.style.display = 'flex';
+                    li.style.flexDirection = 'column';
+                    li.style.padding = '10px';
+                    li.style.marginBottom = '8px';
+                    li.style.borderRadius = '8px';
+                    li.style.cursor = 'pointer';
+                    li.style.transition = 'transform 0.12s ease, box-shadow 0.12s ease, background 0.12s';
+                    li.style.background = 'linear-gradient(90deg, rgba(255,255,255,0.9), rgba(250,250,250,0.9))';
+                    li.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)';
+                    li.style.borderLeft = `6px solid ${colors[i % colors.length]}`;
+
+                    // encabezado: fecha + asunto
+                    const header = document.createElement('div');
+                    header.style.display = 'flex';
+                    header.style.justifyContent = 'space-between';
+                    header.style.alignItems = 'center';
+                    header.style.gap = '12px';
+
+                    const left = document.createElement('div');
+                    left.style.display = 'flex';
+                    left.style.flexDirection = 'column';
+
+                    const asunto = document.createElement('strong');
+                    asunto.textContent = c.asunto || (c.mensaje ? (c.mensaje.slice(0,30) + (c.mensaje.length>30?'…':'')) : 'Contacto');
+                    asunto.style.fontSize = '0.98rem';
+                    asunto.style.color = '#222';
+
+                    const preview = document.createElement('small');
+                    const msgPreview = c.mensaje ? (c.mensaje.length > 80 ? c.mensaje.slice(0,80) + '…' : c.mensaje) : 'Sin mensaje';
+                    preview.textContent = msgPreview;
+                    preview.style.color = '#555';
+                    preview.style.marginTop = '6px';
+
+                    left.appendChild(asunto);
+                    left.appendChild(preview);
+
+                    const right = document.createElement('div');
+                    right.style.textAlign = 'right';
+                    right.style.minWidth = '100px';
+                    right.style.color = '#666';
+                    right.style.fontSize = '0.85rem';
+                    right.textContent = c.fecha || 'Fecha no disponible';
+
+                    header.appendChild(left);
+                    header.appendChild(right);
+
+                    // detalle expandible
+                    const detail = document.createElement('div');
+                    detail.style.marginTop = '8px';
+                    detail.style.padding = '8px';
+                    detail.style.borderRadius = '6px';
+                    detail.style.display = 'none';
+                    detail.style.background = 'rgba(0,0,0,0.03)';
+                    detail.style.color = '#333';
+                    detail.style.whiteSpace = 'pre-wrap';
+                    detail.textContent = c.mensaje || 'No hay más información.';
+
+                    li.appendChild(header);
+                    li.appendChild(detail);
+
+                    // interacciones
+                    li.addEventListener('mouseenter', () => {
+                        li.style.transform = 'translateY(-3px)';
+                        li.style.boxShadow = '0 6px 18px rgba(0,0,0,0.08)';
+                    });
+                    li.addEventListener('mouseleave', () => {
+                        li.style.transform = '';
+                        li.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)';
+                    });
+
+                    li.addEventListener('click', () => {
+                        const isOpen = detail.style.display === 'block';
+                        // cerrar otros detalles para comportamiento tipo acordeón
+                        Array.from(contactosList.children).forEach(other => {
+                            if (other !== li) {
+                                const d = other.querySelector('div:nth-child(2)');
+                                if (d) d.style.display = 'none';
+                            }
+                        });
+                        detail.style.display = isOpen ? 'none' : 'block';
+                    });
+
                     contactosList.appendChild(li);
                 });
+
+                // actualizar contadores o resúmenes si existen (compatibilidad con dashboard)
+                const cardContacts = document.getElementById('cardContacts') || document.getElementById('summaryContacts') || document.getElementById('cardContactsCount');
+                if (cardContacts) cardContacts.textContent = contactos.length;
+
+            } else {
+                contactosList.innerHTML = '<li style="color:#666;padding:8px;border-radius:6px;background:#fffef6;border-left:4px solid #ffd93d;">No hay contactos registrados.</li>';
             }
-        } catch (e) { /* ignore parse errors */ }
+        } catch (e) {
+            // silencioso en caso de error
+            contactosList.innerHTML = '<li style="color:#b00020">Error leyendo contactos.</li>';
+        }
     }
 
     // Cerrar sesión: limpia datos y redirige
     const logout = document.getElementById('logout');
+    // Actualiza la UI del perfil leyendo lo que haya en localStorage (soporta varias claves)
+    function refreshProfileFromStorage() {
+        const fromUserObj = (() => {
+            try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch (e) { return null; }
+        })();
+
+        const nombre = localStorage.getItem('nombre')
+            || localStorage.getItem('username')
+            || (fromUserObj && (fromUserObj.name || fromUserObj.nombre))
+            || 'Cliente';
+        const email = localStorage.getItem('email') || (fromUserObj && (fromUserObj.email)) || '—';
+        const telefono = localStorage.getItem('telefono') || (fromUserObj && (fromUserObj.phone || fromUserObj.telefono)) || '—';
+
+        const bien = document.getElementById('bienvenido');
+        if (bien) {
+            bien.textContent = `Bienvenido, ${nombre}`;
+            bien.style.color = '#2c3e50';
+            bien.style.fontWeight = '700';
+            bien.style.fontSize = '1.1rem';
+        }
+
+        const elNombre = document.getElementById('nombreUsuario');
+        const elEmail = document.getElementById('emailUsuario');
+        const elTelefono = document.getElementById('telefonoUsuario');
+        if (elNombre) elNombre.textContent = nombre;
+        if (elEmail) elEmail.textContent = email;
+        if (elTelefono) elTelefono.textContent = telefono;
+
+        // Pequeño toque visual si hay sesión iniciada
+        if (nombre && nombre !== 'Cliente') {
+            document.body.classList.add('perfil-activo');
+        } else {
+            document.body.classList.remove('perfil-activo');
+        }
+    }
+
+    // Ejecutar al cargar y cuando cambie localStorage en otras pestañas (login desde index)
+    refreshProfileFromStorage();
+    window.addEventListener('storage', refreshProfileFromStorage);
+
+    // Logout: borrar sólo las claves relacionadas con la sesión y redirigir
     if (logout) {
-        logout.addEventListener('click', function(e) {
-            // evitar seguir href antes de limpiar
+        logout.addEventListener('click', function (e) {
             e.preventDefault();
-            // borrar sólo las claves de sesión (ajusta según tu app)
-            localStorage.removeItem('nombre');
-            localStorage.removeItem('email');
-            localStorage.removeItem('telefono');
-            localStorage.removeItem('compras');
-            localStorage.removeItem('contactos');
-            // redirigir a la página principal (index.html)
-            window.location.href = this.getAttribute('href') || 'index.html';
+            // Ajusta estas claves según lo que use tu app
+            const keysToRemove = ['nombre', 'username', 'email', 'telefono', 'user', 'token', 'compras', 'contactos'];
+            keysToRemove.forEach(k => localStorage.removeItem(k));
+
+            // breve efecto y redirección
+            document.body.style.transition = 'opacity 0.15s';
+            document.body.style.opacity = '0.6';
+            setTimeout(() => {
+                window.location.href = this.getAttribute('href') || 'index.html';
+            }, 150);
         });
     }
 </script>
