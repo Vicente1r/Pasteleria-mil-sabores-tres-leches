@@ -1,6 +1,13 @@
-<h1 id="bienvenido"></h1>
-    <script src="../js/saludo.js"></script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Perfil Cliente</title>
+    <link rel="stylesheet" href="/assets/css/perfilcliente.css">
+</head>
 
+<<<<<<< Updated upstream
 
 <a href="../../index.html">Inicio</a>
 <a href="catalogo.html">Catalogo</a>
@@ -170,3 +177,277 @@
         });
     }
 </script>
+=======
+<body>
+    <!-- Layout sin CSS usando una tabla para ubicar elementos -->
+    <table width="100%" cellpadding="10" cellspacing="0" border="0">
+        <!-- fila superior: izquierda = bienvenida, derecha = cerrar sesión -->
+        <tr>
+            <td valign="top">
+                <h2>Bienvenido, <span id="username">Usuario</span></h2>
+            </td>
+            <td valign="top" align="right">
+                <button id="logout">Cerrar sesión</button>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top" width="25%">
+            <aside class="dashboard-sidebar" style="background:#fafafa;border:1px solid #eee;border-radius:6px;padding:12px;">
+                <div class="avatar-wrap" style="text-align:center;padding:6px 0;">
+                <img id="avatar" src="/assets/img/default-avatar.png" alt="Avatar" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid #ddd;">
+                </div>
+
+                <div class="profile-info" style="padding:8px 6px;">
+                <div id="profileName" style="text-align:center;margin-bottom:6px;font-weight:600;">Usuario</div>
+                <p style="text-align:center;margin:0 0 8px;color:#666;font-size:0.95rem;">Rol: <strong>Cliente</strong></p>
+
+                <div class="profile-actions" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;">
+                    <button id="editProfile" type="button">Editar perfil</button>
+                    <button id="btnOrders" type="button">Ver pedidos</button>
+                    <button id="btnContacts" type="button">Contactos</button>
+                </div>
+
+                <div class="profile-summary" style="border-top:1px solid #eee;padding-top:10px;margin-top:6px;">
+                    <dl style="margin:0;font-size:0.95rem;">
+                    <dt style="color:#666;font-size:0.85rem;margin-bottom:4px;">Compras registradas</dt>
+                    <dd id="summaryPurchases" style="margin:0 0 8px;color:#000;">—</dd>
+
+                    <dt style="color:#666;font-size:0.85rem;margin-bottom:4px;">Último contacto</dt>
+                    <dd id="summaryLastContact" style="margin:0;color:#000;">—</dd>
+
+                    <dt style="color:#666;font-size:0.85rem;margin-top:8px;margin-bottom:4px;">Total gastado</dt>
+                    <dd id="summaryTotal" style="margin:0;color:#000;">—</dd>
+                    </dl>
+                </div>
+                </div>
+            </aside>
+            </td>
+
+            <td valign="top" width="75%">
+            <nav class="dashboard-nav" style="padding:8px 12px;">
+                <ul style="list-style:none;padding:0;margin:0;display:flex;gap:12px;align-items:center;">
+                <li><a href="#userData">Perfil</a></li>
+                <li><a href="#purchases">Pedidos</a></li>
+                <li><a href="#contacts">Contactos</a></li>
+                <li style="margin-left:auto;color:#888;font-size:0.9rem;">Dashboard</li>
+                </ul>
+            </nav>
+
+            <div class="dashboard-cards" style="display:flex;gap:12px;padding:12px;">
+                <div class="card" style="flex:1;background:#fff;border:1px solid #eee;padding:12px;border-radius:6px;text-align:center;">
+                <div style="font-size:1.4rem;font-weight:700;" id="cardOrders">—</div>
+                <div style="color:#666;font-size:0.85rem;">Pedidos</div>
+                </div>
+                <div class="card" style="flex:1;background:#fff;border:1px solid #eee;padding:12px;border-radius:6px;text-align:center;">
+                <div style="font-size:1.4rem;font-weight:700;" id="cardContacts">—</div>
+                <div style="color:#666;font-size:0.85rem;">Contactos</div>
+                </div>
+                <div class="card" style="flex:1;background:#fff;border:1px solid #eee;padding:12px;border-radius:6px;text-align:center;">
+                <div style="font-size:1.4rem;font-weight:700;" id="cardSpent">—</div>
+                <div style="color:#666;font-size:0.85rem;">Total gastado</div>
+                </div>
+            </div>
+            </td>
+        </tr>
+
+        <script>
+            // Sincroniza nombre y métricas del sidebar con los elementos/resúmenes que rellenan otros scripts.
+            function updateDashboardFromDOM() {
+            const mainName = document.getElementById('username');
+            if (mainName) {
+                const p = document.getElementById('profileName');
+                if (p) p.textContent = mainName.textContent || 'Usuario';
+            }
+
+            const sp = document.getElementById('summaryPurchases');
+            const sl = document.getElementById('summaryLastContact');
+            const st = document.getElementById('summaryTotal');
+
+            const cOrders = document.getElementById('cardOrders');
+            const cContacts = document.getElementById('cardContacts');
+            const cSpent = document.getElementById('cardSpent');
+
+            if (sp && cOrders) cOrders.textContent = sp.textContent || '0';
+            if (sl && cContacts) {
+                // intenta extraer cantidad de la cadena "N pedido(s)" o deja la cadena tal cual
+                const m = (sp && sp.textContent.match(/\d+/)) ? sp.textContent.match(/\d+/)[0] : null;
+                cContacts.textContent = (m ? m : (sl.textContent === 'Sin contactos' ? '0' : sl.textContent));
+            }
+            if (st && cSpent) cSpent.textContent = st.textContent || '—';
+            }
+
+            // Espera breve para que el resto de scripts (fillMiniSummary / fillProfile) hayan llenado datos.
+            setTimeout(updateDashboardFromDOM, 120);
+            window.addEventListener('focus', updateDashboardFromDOM);
+        </script>
+
+        <script>
+            // Navegación local simple entre secciones
+            document.getElementById('btnOrders').addEventListener('click', () => {
+                const el = document.getElementById('purchases');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+            document.getElementById('btnContacts').addEventListener('click', () => {
+                const el = document.getElementById('contacts');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+
+            // Botón "Editar perfil" abre el formulario de datos si existe (comportamiento mínimo)
+            document.getElementById('editProfile').addEventListener('click', () => {
+                const el = document.getElementById('userData');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+
+            // Rellenar los resúmenes con los datos del cliente cuando el resto del script
+            // (que crea getUser / fillProfile) haya corrido. Reintento simple.
+            function fillMiniSummary() {
+                try {
+                    const raw = localStorage.getItem('user');
+                    const user = raw ? JSON.parse(raw) : null;
+                    const purchases = (user && Array.isArray(user.purchases)) ? user.purchases : [];
+                    const contacts = (user && Array.isArray(user.contacts)) ? user.contacts : [];
+
+                    document.getElementById('summaryPurchases').textContent = purchases.length ? `${purchases.length} pedido(s)` : '0';
+                    document.getElementById('summaryLastContact').textContent = contacts.length ? contacts[contacts.length - 1].date + ' — ' + contacts[contacts.length - 1].asunto : 'Sin contactos';
+                } catch (e) {
+                    // silencioso
+                }
+            }
+
+            // Espera breve para permitir que el script principal cargue y/o que sampleUser se use
+            setTimeout(fillMiniSummary, 50);
+            // También rellena cuando la página gana foco (por si se actualiza localStorage desde otra pestaña)
+            window.addEventListener('focus', fillMiniSummary);
+        </script>
+        <!-- contenido principal: historial de compras y de contacto en la izquierda -->
+        <tr>
+            <td valign="top">
+                <section>
+                    <h3>Historial de compras</h3>
+                    <ul id="purchases">
+                        <!-- Se rellenará con JavaScript -->
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Historial de contacto rellenados</h3>
+                    <ul id="contacts">
+                        <!-- Se rellenará con JavaScript -->
+                    </ul>
+                </section>
+            </td>
+            <td valign="top">
+                <!-- columna derecha vacía por ahora -->
+            </td>
+        </tr>
+
+        <!-- fila inferior: en la izquierda datos del usuario -->
+        <tr>
+            <td valign="bottom">
+                <section>
+                    <h3>Datos del usuario</h3>
+                    <dl id="userData">
+                        <!-- Se rellenará con JavaScript -->
+                    </dl>
+                </section>
+            </td>
+            <td valign="bottom">
+                <!-- columna derecha vacía -->
+            </td>
+        </tr>
+    </table>
+
+    <script>
+        // Intenta obtener datos de localStorage (clave "user"). Si no hay, usa datos de ejemplo.
+        // Estructura esperada: { name, email, phone, purchases: [{id,date,total}], contacts: [{date, asunto, mensaje}] }
+        const sampleUser = {
+            name: "Nombre Ejemplo",
+            email: "cliente@ejemplo.com",
+            phone: "+34 600 000 000",
+            purchases: [
+                { id: "A001", date: "2025-01-15", total: "25.00€" },
+                { id: "A023", date: "2025-03-02", total: "40.50€" }
+            ],
+            contacts: [
+                { date: "2025-02-01", asunto: "Consulta sabores", mensaje: "¿Tienen opción sin gluten?" },
+                { date: "2025-04-10", asunto: "Reclamación", mensaje: "Problema con la entrega" }
+            ]
+        };
+
+        function getUser() {
+            try {
+                const raw = localStorage.getItem('user');
+                if (!raw) return sampleUser;
+                return JSON.parse(raw);
+            } catch (e) {
+                return sampleUser;
+            }
+        }
+
+        function fillProfile() {
+            const user = getUser();
+
+            // Nombre en la bienvenida
+            document.getElementById('username').textContent = user.name || 'Usuario';
+
+            // Historial de compras
+            const purchasesEl = document.getElementById('purchases');
+            purchasesEl.innerHTML = '';
+            if (user.purchases && user.purchases.length) {
+                user.purchases.forEach(p => {
+                    const li = document.createElement('li');
+                    li.textContent = `Pedido ${p.id} — ${p.date} — ${p.total}`;
+                    purchasesEl.appendChild(li);
+                });
+            } else {
+                purchasesEl.innerHTML = '<li>No hay compras registradas.</li>';
+            }
+
+            // Historial de contactos rellenados
+            const contactsEl = document.getElementById('contacts');
+            contactsEl.innerHTML = '';
+            if (user.contacts && user.contacts.length) {
+                user.contacts.forEach(c => {
+                    const li = document.createElement('li');
+                    li.textContent = `${c.date} — ${c.asunto}: ${c.mensaje}`;
+                    contactsEl.appendChild(li);
+                });
+            } else {
+                contactsEl.innerHTML = '<li>No hay contactos registrados.</li>';
+            }
+
+            // Datos del usuario
+            const userDataEl = document.getElementById('userData');
+            userDataEl.innerHTML = '';
+            const ddName = document.createElement('dd'); ddName.textContent = user.name || '-';
+            const dtName = document.createElement('dt'); dtName.textContent = 'Nombre:';
+            const dtEmail = document.createElement('dt'); dtEmail.textContent = 'Email:';
+            const ddEmail = document.createElement('dd'); ddEmail.textContent = user.email || '-';
+            const dtPhone = document.createElement('dt'); dtPhone.textContent = 'Teléfono:';
+            const ddPhone = document.createElement('dd'); ddPhone.textContent = user.phone || '-';
+
+            userDataEl.appendChild(dtName);
+            userDataEl.appendChild(ddName);
+            userDataEl.appendChild(dtEmail);
+            userDataEl.appendChild(ddEmail);
+            userDataEl.appendChild(dtPhone);
+            userDataEl.appendChild(ddPhone);
+        }
+
+        // Cerrar sesión: limpia localStorage y redirige (ajusta la ruta si hace falta)
+        document.getElementById('logout').addEventListener('click', function () {
+            localStorage.removeItem('user');
+            // Redirigir a página de inicio o login; si no existe, recargar
+            if (location.pathname.endsWith('perfilCliente.html')) {
+                location.href = 'index.html';
+            } else {
+                location.reload();
+            }
+        });
+
+        // Ejecutar al cargar
+        fillProfile();
+    </script>
+</body>
+</html>
+>>>>>>> Stashed changes
