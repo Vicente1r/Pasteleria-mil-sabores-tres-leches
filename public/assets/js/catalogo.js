@@ -8,111 +8,156 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnBuscar = document.getElementById("btnBuscar");
   const carritoTotal = document.querySelector('.carrito-total');
   const btnVerTodos = document.getElementById("btnVerTodos");
+  const cartLink = document.getElementById("cart-link");
 
-  //Agregar referencia al botón del carrito
-  const btnCarrito = document.querySelector('.btn-carrito');
-
-  let productosGlobal = []; // Almacena todos los productos cargados desde Firestore
-  let carrito = JSON.parse(localStorage.getItem('carrito')) || []; // Carrito de compras
-  let categoriaActiva = 'todos'; // Categoría actualmente seleccionada
+  let productosGlobal = [];
+  let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+  let categoriaActiva = 'todos';
 
   // Configuración de Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
-    authDomain: "tiendanombretienda.firebaseapp.com",
-    projectId: "tiendanombretienda",
+    authDomain: "pasteleriamilsaborestresleches.web.app",
+    projectId: "pasteleriamilsaborestresleches",
   };
 
-  // Inicializar Firebase
-  firebase.initializeApp(firebaseConfig);
+  // Inicializar Firebase solo si no está inicializado
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
   const db = firebase.firestore();
 
   // Inicializar la aplicación
   actualizarCarritoTotal();
+  actualizarContadorCarrito();
   cargarProductos();
+
   // Función para cargar productos desde Firestore
   async function cargarProductos() {
     try {
-      tituloProductos.textContent = "Cargando productos...";
+      if (tituloProductos) {
+        tituloProductos.textContent = "Cargando productos...";
+      }
       
-      const snapshot = await db.collection("producto").get(); // Obtener colección "producto"
-      productosGlobal = snapshot.docs.map(doc => ({ // Mapear documentos a objetos
-        id: doc.id, // Incluir ID del documento
-        ...doc.data() // Incluir datos del documento
+      const snapshot = await db.collection("producto").get();
+      productosGlobal = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
       }));
       
-       // === DEBUG STOCK - AGREGAR ESTO ===
-      console.log("=== DEBUG STOCK EN FIREBASE ===");
-      productosGlobal.forEach((producto, index) => {
-        console.log(`Producto ${index}:`, {
-          nombre: producto.nombre,
-          stock: producto.stock,
-          tipoStock: typeof producto.stock,
-          id: producto.id
-        });
-      });
-      console.log("Productos completos:", productosGlobal);
-      // === FIN DEBUG ===
-
-      console.log("Productos cargados:", productosGlobal); 
-      inicializarInterfaz(productosGlobal); // Inicializar interfaz con productos
+      console.log("Productos cargados desde Firestore:", productosGlobal);
+      
+      if (productosGlobal.length > 0) {
+        inicializarInterfaz(productosGlobal);
+      } else {
+        console.log("No hay productos en Firestore, usando productos del HTML");
+        cargarProductosDelHTML();
+      }
       
     } catch (error) {
       console.error("Error cargando productos:", error);
-      tituloProductos.textContent = "Error al cargar productos";
-      productosGrid.innerHTML = "<p class='error'>No se pudieron cargar los productos. Intenta recargar la página.</p>";
+      console.log("Usando productos del HTML como fallback");
+      cargarProductosDelHTML();
     }
   }
+
+  // Función para cargar productos desde el HTML existente (fallback)
+  function cargarProductosDelHTML() {
+    const productosHTML = document.querySelectorAll('.item[data-id]');
+    productosGlobal = Array.from(productosHTML).map(item => {
+      const id = item.dataset.id;
+      const categoria = item.dataset.category;
+      const nombre = item.querySelector('h3').textContent;
+      const descripcion = item.querySelector('p:not(.precio)').textContent;
+      const precioText = item.querySelector('.precio').textContent;
+      const precio = parsearPrecio(precioText);
+      const imagen = item.querySelector('img').src;
+
+      return { id, categoria, nombre, descripcion, precio, imagen, stock: 100 };
+    });
+
+    console.log("Productos cargados del HTML:", productosGlobal);
+    
+    // Agregar eventos a los botones existentes en el HTML
+    agregarEventosBotonesHTML();
+    
+    if (tituloProductos) {
+      tituloProductos.textContent = `Todos los Productos (${productosGlobal.length})`;
+    }
+  }
+
+  // Función para parsear precios del formato "$45.000 CLP" o "Consultar"
+  function parsearPrecio(precioText) {
+    if (!precioText || precioText.includes('Consultar') || precioText.includes('Cotizar')) {
+      return 0;
+    }
+    const numeroLimpio = precioText.replace(/[^\d]/g, '');
+    return parseInt(numeroLimpio) || 0;
+  }
+
+  // Agregar eventos a los botones que ya están en el HTML
+  function agregarEventosBotonesHTML() {
+    document.querySelectorAll('.btn-comprar, .btn-agregar').forEach(btn => {
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      
+      newBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productId = this.dataset.id;
+        agregarAlCarrito(productId);
+      });
+    });
+  }
+
   // Inicializar la interfaz con categorías y productos
   function inicializarInterfaz(productos) {
-    const categorias = obtenerCategoriasUnicas(productos);// Obtener categorías únicas
+    const categorias = obtenerCategoriasUnicas(productos);
     
-    // Inicializar dropdown de categorías
-    mostrarDropdownCategorias(categorias);
+    if (dropdownCategorias) {
+      mostrarDropdownCategorias(categorias);
+    }
     
-    // Inicializar cards de categorías
-    mostrarCardsCategorias(categorias);
+    if (cardsCategorias) {
+      mostrarCardsCategorias(categorias);
+    }
     
-    // Mostrar todos los productos inicialmente
-    mostrarTodosLosProductos();
+    if (productos.length > 0 && productos[0].id) {
+      mostrarTodosLosProductos();
+    }
     
-    // Configurar eventos
     configurarEventos();
-
-    // AGREGAR ESTA LÍNEA para sincronización en tiempo real
-    escucharCambiosStock();
   }
-  // Obtener categorías únicas de los productos desde Firestore Database collection "producto"
+
+  // Obtener categorías únicas de los productos
   function obtenerCategoriasUnicas(productos) {
-    const categoriasSet = new Set(); // Usar Set para evitar duplicados
-    productos.forEach(producto => { // Asegurarse de que la categoría exista
-      if (producto.categoria) { // Validar que la categoría no sea nula o indefinida
-        categoriasSet.add(producto.categoria); // Agregar categoría al Set
+    const categoriasSet = new Set();
+    productos.forEach(producto => {
+      if (producto.categoria) {
+        categoriasSet.add(producto.categoria);
       }
     });
-    return Array.from(categoriasSet);// Convertir Set a Array
+    return Array.from(categoriasSet);
   }
-  // Mostrar categorías en el dropdown y en las cards
-  function mostrarDropdownCategorias(categorias) { // Incluye opción "Todos"
-    //dropdownCategorias para el dropdown de categorías en el HTML
+
+  // Mostrar categorías en el dropdown
+  function mostrarDropdownCategorias(categorias) {
     dropdownCategorias.innerHTML = categorias.map(categoria => `
       <a href="#" class="dropdown-item" data-categoria="${categoria}">
         ${categoria}
       </a>
-    `).join("");// Unir sin comas
+    `).join("");
 
-    // Evento para items del dropdown
-    dropdownCategorias.addEventListener('click', (e) => { // Delegación de eventos
-      e.preventDefault(); // Prevenir comportamiento por defecto
-      if (e.target.classList.contains('dropdown-item')) { // Verificar que el clic fue en un item
-        const categoria = e.target.dataset.categoria;// Obtener categoría del data-attribute
-        filtrarPorCategoria(categoria); // Filtrar productos por categoría
+    dropdownCategorias.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (e.target.classList.contains('dropdown-item')) {
+        const categoria = e.target.dataset.categoria;
+        filtrarPorCategoria(categoria);
       }
     });
   }
+
   // Mostrar categorías como cards
   function mostrarCardsCategorias(categorias) {
-    //cardsCategorias para el contenedor de las cards de categorías en el HTML
     cardsCategorias.innerHTML = categorias.map(categoria => `
       <div class="categoria-card" data-categoria="${categoria}">
         <div class="categoria-img">
@@ -122,47 +167,56 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `).join("");
 
-    // Evento para cards de categorías
-    cardsCategorias.addEventListener('click', (e) => { // Delegación de eventos
-      const card = e.target.closest('.categoria-card'); // Buscar el elemento padre con la clase .categoria-card
+    cardsCategorias.addEventListener('click', (e) => {
+      const card = e.target.closest('.categoria-card');
       if (card) {
-        const categoria = card.dataset.categoria; // Obtener categoría del data-attribute
-        filtrarPorCategoria(categoria); // Filtrar productos por categoría
+        const categoria = card.dataset.categoria;
+        filtrarPorCategoria(categoria);
       }
     });
   }
+
   // Obtener un icono representativo para cada categoría
   function obtenerIconoCategoria(categoria) {
     const iconos = {
-      'Ropa': '👕',
-      'Tecnología': '💻',
-      'Electrónica': '📱',
-      'Hogar': '🏠',
-      'Deportes': '⚽',
-      'Zapatos': '👟',
-      'Accesorios': '🕶️',
-      'Libros': '📚',
-      'Juguetes': '🧸',
-      'Belleza': '💄'
+      'tortas_cuadradas': '🎂',
+      'tortas_circulares': '🍰',
+      'postres_individuales': '🧁',
+      'productos_sin_azucar': '🍯',
+      'pasteleria_tradicional': '🥐',
+      'productos_sin_gluten': '🌾',
+      'vegano': '🌱',
+      'especiales': '✨'
     };
-    return iconos[categoria] || '📦';
+    return iconos[categoria] || '🍰';
   }
+
   // Filtrar productos por categoría
   function filtrarPorCategoria(categoria) {
-    const productosFiltrados = productosGlobal.filter(p => p.categoria === categoria); // Filtrar productos
-    tituloProductos.textContent = `${categoria} (${productosFiltrados.length} productos)`; // Actualizar título
-    categoriaActiva = categoria; // Actualizar categoría activa
-    mostrarProductos(productosFiltrados); // Mostrar productos filtrados
+    const productosFiltrados = productosGlobal.filter(p => p.categoria === categoria);
+    if (tituloProductos) {
+      tituloProductos.textContent = `${categoria} (${productosFiltrados.length} productos)`;
+    }
+    categoriaActiva = categoria;
+    mostrarProductos(productosFiltrados);
   }
+
   // Mostrar todos los productos
   function mostrarTodosLosProductos() {
-    tituloProductos.textContent = `Todos los productos (${productosGlobal.length})`; // Actualizar título
-    categoriaActiva = 'todos'; // Actualizar categoría activa
-    mostrarProductos(productosGlobal); // Mostrar todos los productos
-    buscador.value = ''; // Limpiar buscador
+    if (tituloProductos) {
+      tituloProductos.textContent = `Todos los productos (${productosGlobal.length})`;
+    }
+    categoriaActiva = 'todos';
+    mostrarProductos(productosGlobal);
+    if (buscador) {
+      buscador.value = '';
+    }
   }
+
   // Renderizar productos en el grid
   function mostrarProductos(productos) {
+    if (!productosGrid) return;
+
     if (productos.length === 0) {
       productosGrid.innerHTML = `
         <div class="no-productos" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
@@ -170,145 +224,205 @@ document.addEventListener("DOMContentLoaded", () => {
           <button onclick="mostrarTodosLosProductos()" class="btn-signup">Ver todos los productos</button>
         </div>
       `;
-      // Agregar evento al botón de "Ver Todos" en el mensaje de no productos
-      //document.querySelector('.no-productos .btn-ver-todos').addEventListener('click', mostrarTodosLosProductos);
       return;
     }
-    // Limpiar grid antes de renderizar
-    productosGrid.innerHTML = productos.map(producto => `
-      
-      <div class="producto-card">
-        <img src="${producto.imagen}" 
-             alt="${producto.nombre}" 
-             class="producto-imagen"
-             onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'">
-        <div class="producto-info">
-          <h3 class="producto-nombre">${producto.nombre || 'Sin nombre'}</h3>
-          <p class="producto-precio">$${(producto.precio || 0).toLocaleString('es-CL')}</p>
 
-          <!--AGREGAR ESTA LÍNEA PARA MOSTRAR STOCK -->
-          <p class="producto-stock">Stock: ${producto.stock}</p>
-          
-          <button class="btn-agregar" data-id="${producto.id}">
+    productosGrid.innerHTML = productos.map(producto => `
+      <article class="item producto-card" data-category="${producto.categoria}" data-id="${producto.id}">
+        <a href="productos/${producto.id}.html">
+          <img src="${producto.imagen}" 
+               alt="${producto.nombre}" 
+               class="producto-imagen"
+               onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'">
+        </a>
+        <div class="item-content producto-info">
+          <h3 class="producto-nombre">${producto.nombre || 'Sin nombre'}</h3>
+          <p>${producto.descripcion || ''}</p>
+          <p class="producto-precio precio">$${(producto.precio || 0).toLocaleString('es-CL')} CLP</p>
+          ${producto.stock ? `<p class="stock-info" style="font-size: 12px; color: #666;">Stock: ${producto.stock}</p>` : ''}
+          <button class="btn-agregar btn-comprar" data-id="${producto.id}">
             🛒 Agregar al carrito
           </button>
         </div>
-      </div>
+      </article>
     `).join("");
 
-    // Agregar eventos a los botones de comprar
-    document.querySelectorAll('.btn-agregar').forEach(btn => { // Seleccionar todos los botones
-      btn.addEventListener('click', function() { // Usar función normal para mantener el contexto de 'this'
-        const productId = this.dataset.id; // Obtener ID del producto desde data-attribute
-        agregarAlCarrito(productId); // Agregar producto al carrito
+    // Agregar eventos a los botones
+    document.querySelectorAll('.btn-agregar, .btn-comprar').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productId = this.dataset.id;
+        agregarAlCarrito(productId);
       });
     });
   }
-  // Agregar producto al carrito
-  function agregarAlCarrito(productId) { // productId es el ID del producto a agregar
-    const producto = productosGlobal.find(p => p.id === productId); // Buscar producto por ID
+
+  // Agregar producto al carrito - FUNCIÓN CLAVE ACTUALIZADA
+  async function agregarAlCarrito(productId) {
+    const producto = productosGlobal.find(p => p.id === productId);
     
-    //AGREGAR ESTA VALIDACIÓN SIMPLE
-    const stockActual = producto.stock !== undefined ? producto.stock : 100;
-    if (producto && stockActual <= 0) {
-        mostrarNotificacion('Producto sin stock disponible', 'error');
+    if (!producto) {
+      console.error('Producto no encontrado:', productId);
+      mostrarNotificacion('Error al agregar el producto', 'error');
+      return;
+    }
+
+    // Verificar stock si existe
+    if (producto.stock !== undefined && producto.stock <= 0) {
+      mostrarNotificacion('Producto sin stock disponible', 'error');
+      return;
+    }
+
+    // Obtener carrito actualizado del localStorage
+    carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    
+    // Verificar si el producto ya está en el carrito
+    const productoExistente = carrito.find(p => p.id === productId);
+    
+    if (productoExistente) {
+      // Verificar stock antes de incrementar
+      if (producto.stock !== undefined && productoExistente.cantidad >= producto.stock) {
+        mostrarNotificacion('No hay suficiente stock disponible', 'error');
         return;
+      }
+      productoExistente.cantidad = (productoExistente.cantidad || 1) + 1;
+    } else {
+      // Agregar nuevo producto con cantidad 1
+      carrito.push({
+        id: producto.id,
+        nombre: producto.nombre,
+        descripcion: producto.descripcion,
+        precio: producto.precio,
+        imagen: producto.imagen,
+        categoria: producto.categoria,
+        stock: producto.stock,
+        cantidad: 1
+      });
     }
     
-    if (producto) { // Validar que el producto exista
-      // cambiar carrito.push(producto); por 
-       // Verificar si el producto ya está en el carrito
-      const productoExistente = carrito.find(item => item.id === productId);
+    // Guardar en localStorage
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+    
+    // Actualizar stock en Firebase si existe
+    if (producto.stock !== undefined) {
+      await actualizarStockFirebase(productId, -1);
+    }
+    
+    // Actualizar UI
+    actualizarCarritoTotal();
+    actualizarContadorCarrito();
+    
+    mostrarNotificacion(`"${producto.nombre}" agregado al carrito ✓`);
+    console.log('Carrito actualizado:', carrito);
+  }
+
+  // Actualizar stock en Firebase
+  async function actualizarStockFirebase(productId, cambio) {
+    try {
+      const productoRef = db.collection("producto").doc(productId);
+      const productoDoc = await productoRef.get();
       
-      if (productoExistente) {
-        // Si ya existe, aumentar la cantidad
-        productoExistente.cantidad = (productoExistente.cantidad || 1) + 1;
-      } else {
-        // Si no existe, agregarlo con cantidad 1
-        carrito.push({
-          ...producto,
-          cantidad: 1
+      if (productoDoc.exists) {
+        const stockActual = productoDoc.data().stock;
+        const nuevoStock = Math.max(0, stockActual + cambio);
+        
+        await productoRef.update({
+          stock: nuevoStock
         });
+        
+        // Actualizar stock local
+        const producto = productosGlobal.find(p => p.id === productId);
+        if (producto) {
+          producto.stock = nuevoStock;
+        }
+        
+        console.log(`Stock actualizado en Firebase: ${nuevoStock}`);
       }
-
-      
-      localStorage.setItem('carrito', JSON.stringify(carrito)); // Guardar carrito en localStorage
-      actualizarCarritoTotal(); // Actualizar total del carrito
-      
-      // ACTUALIZAR STOCK EN FIREBASE - AGREGAR ESTA LÍNEA
-      actualizarStockFirebase(productId, 1);
-
-      // Mostrar feedback con notificación flotante
-      mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);// Mostrar notificación
-      console.log('Producto agregado al carrito:', producto); // Log para debugging
+    } catch (error) {
+      console.error("Error actualizando stock:", error);
     }
   }
- // Actualizar el total del carrito en el DOM
+
+  // Actualizar el total del carrito en el DOM
   function actualizarCarritoTotal() {
-    const total = carrito.reduce((sum, producto) => sum + ((producto.precio || 0) * (producto.cantidad || 1)), 0); // Sumar precios, Modificar para que sea más precisa
-    carritoTotal.textContent = total.toLocaleString('es-CL'); // Actualizar texto en el DOM con formato peso chileno
+    carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    
+    const total = carrito.reduce((sum, producto) => {
+      const precio = producto.precio || 0;
+      const cantidad = producto.cantidad || 1;
+      return sum + (precio * cantidad);
+    }, 0);
+    
+    if (carritoTotal) {
+      carritoTotal.textContent = total.toLocaleString('es-CL');
+    }
   }
-  // Mostrar una notificación flotante al agregar al carrito
-  function mostrarNotificacion(mensaje,  tipo = 'success') { // mensaje es el texto a mostrar // Se agrega tipo para futuros usos
-    const notificacion = document.createElement('div'); // Crear un nuevo div
 
-    //Agregar estilos al tipo de notificación
-    const backgroundColor = tipo === 'success' ? '#28a745' : '#dc3545';
+  // Actualizar contador de productos en el carrito
+  function actualizarContadorCarrito() {
+    carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    
+    const totalProductos = carrito.reduce((sum, p) => sum + (p.cantidad || 1), 0);
+    
+    if (cartLink) {
+      cartLink.textContent = `Carrito (${totalProductos})`;
+    }
+  }
 
-    //Cambiar background: #28a745; por backgroundColor y agregar transition: all 0.3s ease;
+  // Mostrar una notificación flotante
+  function mostrarNotificacion(mensaje, tipo = 'success') {
+    const notificacion = document.createElement('div');
+    const color = tipo === 'success' ? '#28a745' : '#dc3545';
+    
     notificacion.style.cssText = `
       position: fixed;
       top: 100px;
       right: 20px;
-      background: ${backgroundColor}; 
+      background: ${color};
       color: white;
       padding: 15px 20px;
-      border-radius: 5px;
+      border-radius: 8px;
       z-index: 10000;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       font-weight: 600;
-      transition: all 0.3s ease;
+      animation: slideIn 0.3s ease-out;
     `;
-    notificacion.textContent = mensaje; // Establecer el mensaje
-    document.body.appendChild(notificacion); // Agregar al body
+    notificacion.textContent = mensaje;
+    document.body.appendChild(notificacion);
     
-    setTimeout(() => { // Desaparecer después de 3 segundos
-      notificacion.remove(); // Remover del DOM
+    setTimeout(() => {
+      notificacion.style.animation = 'slideOut 0.3s ease-out';
+      setTimeout(() => notificacion.remove(), 300);
     }, 3000);
   }
+
   // Configurar eventos de botones y buscador
   function configurarEventos() {
-    // Botón Ver Todos
-    btnVerTodos.addEventListener('click', mostrarTodosLosProductos);
+    if (btnVerTodos) {
+      btnVerTodos.addEventListener('click', mostrarTodosLosProductos);
+    }
 
-    // Buscador
-    btnBuscar.addEventListener('click', buscarProductos);
-    buscador.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') buscarProductos();
-    });
+    if (btnBuscar && buscador) {
+      btnBuscar.addEventListener('click', buscarProductos);
+      buscador.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') buscarProductos();
+      });
+    }
 
-    // Agregar Botón carrito redirige a la página del carrito
-    btnCarrito.addEventListener('click', () => {
-      // Redirigir a la página del carrito
-      window.location.href = 'carrito.html';
-    });
-
-    // Carrito - mostrar resumen al hacer clic
-    //document.querySelector('.btn-carrito').addEventListener('click', () => {
-     // if (carrito.length === 0) {
-       // alert('El carrito está vacío');
-      //} else {
-        //const total = carrito.reduce((sum, producto) => sum + (producto.precio || 0), 0);
-      //  const productosLista = carrito.map(p => `• ${p.nombre} - $${p.precio?.toLocaleString('es-CL')}`).join('\n');
-      //  alert(`CARRITO (${carrito.length} productos)\n\n${productosLista}\n\nTOTAL: $${total.toLocaleString('es-CL')}`);
-     // }
-    //});
+    const btnCarrito = document.querySelector('.btn-carrito');
+    if (btnCarrito) {
+      btnCarrito.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'carrito.html';
+      });
+    }
   }
-  // Buscar productos por nombre, categoría o descripción
+
+  // Buscar productos
   function buscarProductos() {
     const termino = buscador.value.toLowerCase().trim();
+    
     if (!termino) {
-      // Si no hay término, volver a mostrar según categoría activa
       if (categoriaActiva === 'todos') {
         mostrarTodosLosProductos();
       } else {
@@ -316,163 +430,60 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       return;
     }
-    // Filtrar productos que coincidan con el término
+
     const productosFiltrados = productosGlobal.filter(p => 
       p.nombre?.toLowerCase().includes(termino) ||
       p.categoria?.toLowerCase().includes(termino) ||
       p.descripcion?.toLowerCase().includes(termino)
     );
-    // Actualizar título y mostrar resultados
-    tituloProductos.textContent = `Resultados para "${termino}" (${productosFiltrados.length})`;
+
+    if (tituloProductos) {
+      tituloProductos.textContent = `Resultados para "${termino}" (${productosFiltrados.length})`;
+    }
     mostrarProductos(productosFiltrados);
   }
 
-  // Funciones globales para debugging
-  window.mostrarTodosLosProductos = mostrarTodosLosProductos;
-  window.getProductosGlobal = () => productosGlobal;
-  window.getCarrito = () => carrito;
-
-  /**
-   * Obtener el número total de items en el carrito
-   */
-  function obtenerTotalItemsCarrito() {
-    return carrito.reduce((total, producto) => total + (producto.cantidad || 1), 0);
-  }
-
-  /**
-   * Actualizar el contador de items en el carrito (si existe en el HTML)
-   */
-  function actualizarContadorItemsCarrito() {
-    const contadorItems = document.querySelector('.carrito-count');
-    if (contadorItems) {
-      contadorItems.textContent = `(${obtenerTotalItemsCarrito()})`;
-    }
-  }
-
-  //INICIALIZACIÓN ADICIONAL: Actualizar contadores al cargar
-  actualizarContadorItemsCarrito();
-
-  // Funciones globales para debugging (SE MANTIENEN)
-  window.mostrarTodosLosProductos = mostrarTodosLosProductos;
-  window.getProductosGlobal = () => productosGlobal;
-  window.getCarrito = () => carrito;
-
-  //NUEVAS FUNCIONES GLOBALES PARA EL SISTEMA DE CARRITO
-  window.irAlCarrito = () => {
-    window.location.href = 'carrito.html';
-  };
-
-  window.limpiarCarrito = () => {
-    if (confirm('¿Estás seguro de que quieres limpiar todo el carrito?')) {
-      carrito = [];
-      localStorage.removeItem('carrito');
+  // Escuchar cambios en localStorage (sincronización entre pestañas)
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'carrito') {
       actualizarCarritoTotal();
-      actualizarContadorItemsCarrito();
-      mostrarNotificacion('Carrito limpiado correctamente');
+      actualizarContadorCarrito();
     }
-  };
+  });
 
-    /**
-   * Actualizar stock en Firebase cuando se agrega al carrito
-   */
-  async function actualizarStockFirebase(productId, cantidad) {
-      try {
-          const productoRef = db.collection("producto").doc(productId);
-          const productoDoc = await productoRef.get();
-          
-          if (productoDoc.exists) {
-              const stockActual = productoDoc.data().stock;
-              const nuevoStock = stockActual - cantidad;
-              
-              await productoRef.update({
-                  stock: nuevoStock
-              });
-              
-              console.log(`Stock actualizado: ${productoDoc.data().nombre} - Nuevo stock: ${nuevoStock}`);
-          }
-      } catch (error) {
-          console.error("Error actualizando stock en Firebase:", error);
-      }
-  }
-
-  /**
-   * Restaurar stock cuando se elimina del carrito
-   */
-  async function restaurarStockFirebase(productId, cantidad) {
-      try {
-          const productoRef = db.collection("producto").doc(productId);
-          const productoDoc = await productoRef.get();
-          
-          if (productoDoc.exists) {
-              const stockActual = productoDoc.data().stock;
-              const nuevoStock = stockActual + cantidad;
-              
-              await productoRef.update({
-                  stock: nuevoStock
-              });
-              
-              console.log(`Stock restaurado: ${productoDoc.data().nombre} - Nuevo stock: ${nuevoStock}`);
-          }
-      } catch (error) {
-          console.error("Error restaurando stock en Firebase:", error);
-      }
-  }
-
-  /**
-   * Escuchar cambios en el stock en tiempo real
-   */
-  function escucharCambiosStock() {
-      db.collection("producto").onSnapshot((snapshot) => {
-          snapshot.docChanges().forEach((change) => {
-              if (change.type === "modified") {
-                  const productoActualizado = {
-                      id: change.doc.id,
-                      ...change.doc.data()
-                  };
-                  
-                  // Actualizar en productosGlobal
-                  const index = productosGlobal.findIndex(p => p.id === productoActualizado.id);
-                  if (index !== -1) {
-                      productosGlobal[index] = productoActualizado;
-                      
-                      // Si estamos viendo productos de esta categoría, actualizar la vista
-                      const productosActuales = categoriaActiva === 'todos' 
-                          ? productosGlobal 
-                          : productosGlobal.filter(p => p.categoria === categoriaActiva);
-                      
-                      if (productosActuales.some(p => p.id === productoActualizado.id)) {
-                          mostrarProductos(productosActuales);
-                      }
-                  }
-              }
-          });
-      });
-  }
-
-  /**
-   * Limpiar carrito y restaurar todo el stock
-   */
-  async function limpiarCarritoYRestaurarStock() {
-      if (carrito.length === 0) return;
-      
-      try {
-          // Restaurar stock de todos los productos en el carrito
-          for (const producto of carrito) {
-              await restaurarStockFirebase(producto.id, producto.cantidad || 1);
-          }
-          
-          carrito = [];
-          localStorage.removeItem('carrito');
-          actualizarCarritoTotal();
-          actualizarContadorItemsCarrito();
-          mostrarNotificacion('Carrito limpiado y stock restaurado');
-      } catch (error) {
-          console.error("Error limpiando carrito:", error);
-      }
-  }
-
-  // Reemplazar la función global existente
-  window.limpiarCarrito = limpiarCarritoYRestaurarStock;
+  // Funciones globales
+  window.mostrarTodosLosProductos = mostrarTodosLosProductos;
+  window.getProductosGlobal = () => productosGlobal;
+  window.getCarrito = () => JSON.parse(localStorage.getItem('carrito')) || [];
 
   console.log("Catálogo inicializado correctamente");
 });
+
+// Agregar animaciones CSS
+const styles = `
+  @keyframes slideIn {
+    from {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+  }
+`;
+
+const styleSheet = document.createElement("style");
+styleSheet.textContent = styles;
+document.head.appendChild(styleSheet);
