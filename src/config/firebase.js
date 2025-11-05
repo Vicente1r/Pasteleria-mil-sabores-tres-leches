@@ -5,13 +5,13 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth"; //Importar auth
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
-  authDomain: "tiendanombretienda.firebaseapp.com",
-  projectId: "tiendanombretienda",
-  storageBucket: "tiendanombretienda.appspot.com", // Reemplaza con tu bucket de almacenamiento
-  messagingSenderId: "408928911689",
-  appId: "1:408928911689:web:d8b313c7e15fc528661a98",
-  measurementId: "G-Y1DW47VEWZ"
+  apiKey: "AIzaSyA1_om-_HPyYVnUo8ELiM5Zob2VSMGbWvw",
+  authDomain: "pasteleriamilsaborestresleches.firebaseapp.com",
+  projectId: "pasteleriamilsaborestresleches",
+  storageBucket: "pasteleriamilsaborestresleches.firebasestorage.app",
+  messagingSenderId: "724534518591",
+  appId: "1:724534518591:web:fda9e47afb93ed6854e98a",
+  measurementId: "G-FXQWCCHM83"
 };
 
 // Initialize Firebase

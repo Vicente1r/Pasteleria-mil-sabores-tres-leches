@@ -4,14 +4,28 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mil Sabores</title>
+  
   <link rel="stylesheet" href="assets/css/styles.css" />
-  <script src="assets/js/filtro.js" defer></script>
+
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+  
+  <script src= "assets/js/filtro.js" defer></script>
   <script src="assets/js/inicio_sesion.js" defer></script>
+  <!-- <script src="assets/js/validaciones.js" defer></script>
+  <script src="../public/js/usuario.js" defer></script> -->
+
+  <script src="assets/js/filtro.js" defer></script>
+  <script type="module" src="assets/js/firebase-config.js"></script>
+  <script type="module" src="assets/js/auth.js"></script>
   <script src="assets/js/validaciones.js" defer></script>
-  <script src="../public/js/usuario.js" defer></script>
+  
 </head>
 <body>
+  
   <!--======================= HEADER =======================-->
+
   <header class="topbar">
     <div class="logo">
       <img src="assets/Logo.png" alt="">
@@ -57,7 +71,7 @@
 
           <!--Panel: Login-->
           <div id="panel-login" role="tabpanel" aria-labelledby="tab-login">
-            <form id="form-login" method="post" autocomplete="on">
+            <form id="form-login" autocomplete="on">
               <div>
                 <label for="login-correo">Correo: </label><br>
                 <input type="email" id="login-correo" name="correo" maxlength="100" required><br><br>
@@ -75,7 +89,7 @@
 
           <!-- Panel: Registro -->
           <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden>
-            <form id="form-register" method="post">
+            <form id="form-register">
 
               <div class="form-group">
                 <label for="reg-run">RUN (sin puntos ni guión): </label>
@@ -511,6 +525,28 @@ Más que una pastelería, somos un espacio donde la dulzura se transforma en rec
       <button type="submit">Subscribirse</button>
     </form>
   </footer>
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const formLogin = document.getElementById("form-login");
+
+  formLogin.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById("login-correo").value.trim();
+    const pass = document.getElementById("login-clave").value.trim();
+
+    // Credenciales del administrador
+    const adminEmail = "admin@duocuc.cl";
+    const adminPass = "123456";
+
+    if (email === adminEmail && pass === adminPass) {
+      window.location.href = "../public/assets/page/admin.html";
+    } else {
+      window.location.href = "../public/assets/page/perfil.Cliente.html";
+    }
+  });
+});
+</script>
 </body>
 </html>
 
