@@ -1,3 +1,7 @@
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("formLogin");
     const correoInput = document.getElementById("correoLogin");
@@ -6,16 +10,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!form) return console.error("No se encontró #formLogin");
 
+
+
     // Inicializar Firebase
     const firebaseConfig = {
-        apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
-        authDomain: "Pasteleriamilsaborestresleches.firebaseapp.com",
-        projectId: "Pasteleriamilsaborestresleches",
-        storageBucket: "Pasteleriamilsaborestresleches.appspot.com",
-        messagingSenderId: "408928911689",
-        appId: "1:408928911689:web:d8b313c7e15fc528661a98",
-        measurementId: "G-Y1DW47VEWZ"
+    apiKey: "AIzaSyA1_om-_HPyYVnUo8ELiM5Zob2VSMGbWvw",
+    authDomain: "pasteleriamilsaborestresleches.firebaseapp.com",
+    projectId: "pasteleriamilsaborestresleches",
+    storageBucket: "pasteleriamilsaborestresleches.firebasestorage.app",
+    messagingSenderId: "724534518591",
+    appId: "1:724534518591:web:fda9e47afb93ed6854e98a",
+    measurementId: "G-FXQWCCHM83"
     };
+
+    
 
     if (!firebase.apps?.length) {
         firebase.initializeApp(firebaseConfig);
