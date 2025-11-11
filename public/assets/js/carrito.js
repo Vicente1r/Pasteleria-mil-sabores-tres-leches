@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /**
  * Inicializa la interfaz del carrito
- */
+ */-+
 function inicializarCarrito() {
     actualizarCarritoHeader();
     renderizarCarrito();
