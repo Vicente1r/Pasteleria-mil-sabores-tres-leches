@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ofertas - Mil Sabores</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="../js/ofertas.js"></script>
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="topbar" style="align-items:stretch;">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="logo">
+        <img src="../Logo.png" alt="Mil Sabores" style="height:60px;">
+      </div>
+      <div><strong>Tienda online - Mil Sabores</strong></div>
+    </div>
+
+    <nav class="navegacion" aria-label="Navegación principal" style="margin-left:auto;">
+      <a href="../../index.html">Home</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="ofertas.html">Ofertas</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="#contacto">Contacto</a>
+      <a href="login.html">Iniciar sesión</a>
+      <span class="separar">|</span>
+      <a href="carrito.html" id="cart-link">Carrito (0)</a>
+    </nav>
+  </header>
+
+  <main class="main">
+    <section class="filtros" aria-labelledby="categorias">
+      <h2 id="categorias">Categorías de Ofertas</h2>
+      <label for="filtro">Filtrar por categoría: </label>
+      <select id="filtro" name="filtro">
+        <option value="all">Todas</option>
+        <option value="tortas_cuadradas">Tortas Cuadradas</option>
+        <option value="tortas_circulares">Tortas Circulares</option>
+        <option value="postres_individuales">Postres Individuales</option>
+        <option value="productos_sin_azucar">Productos sin azúcar</option>
+        <option value="pasteleria_tradicional">Pastelería Tradicional</option>
+        <option value="productos_sin_gluten">Productos sin gluten</option>
+        <option value="vegano">Vegano</option>
+        <option value="especiales">Especiales</option>
+      </select>
+      <div id="mensaje" aria-live="polite" class="status"></div>
+    </section>
+
+    <section class="productos" aria-labelledby="titulo-productos">
+      <h2 id="titulo-productos">Todas las Ofertas</h2>
+
+      <div id="productosGrid" class="buscador">
+        <!-- Los productos se cargarán dinámicamente desde Firebase -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="contacto">
+    <nav aria-label="Redes">
+      <a href="#">X</a> ·
+      <a href="#" id="blog">Instagram</a> ·
+      <a href="#">WhatsApp</a>
+    </nav>
+  </footer>
+
+  <script src="../js/ofertas.js"></script>
+  <script src="../js/carrito.js"></script>
+</body>
+</html>

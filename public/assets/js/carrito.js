@@ -1,8 +1,8 @@
-// Configuración de Firebase (solo para el carrito, no para productos)
+// Configuración de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
-    authDomain: "tiendanombretienda.firebaseapp.com",
-    projectId: "tiendanombretienda",
+    authDomain: "pasteleriamilsaborestresleches.web.app",
+    projectId: "pasteleriamilsaborestresleches",
 };
 
 // Inicializar Firebase solo si no está inicializado
@@ -33,56 +33,27 @@ function inicializarCarrito() {
 }
 
 /**
- * Carga productos en oferta - VERSIÓN MODIFICADA
- * Ahora usa productos de pastelería estáticos en lugar de Firebase
+ * Carga productos en oferta desde Firebase
  */
 async function cargarProductosOferta() {
     try {
-        // PRODUCTOS DE PASTELERÍA EN OFERTA (estáticos)
-        productosOferta = [
-            {
-                id: "torta_cuadrada_chocolate",
-                nombre: "Torta Cuadrada de Chocolate",
-                descripcion: "Capas de ganache y avellanas. Personalizable.",
-                precio: 38000, // Precio con oferta
-                precioAnterior: 45000, // Precio original
-                imagen: "../torta_cuadrada_chocolate.png",
-                categoria: "tortas_cuadradas",
-                stock: 10
-            },
-            {
-                id: "torta_circular_vainilla",
-                nombre: "Torta Circular de Vainilla", 
-                descripcion: "Bizcocho clásico con crema pastelera.",
-                precio: 32000, // Precio con oferta
-                precioAnterior: 40000, // Precio original
-                imagen: "../torta_circular_vainilla.png",
-                categoria: "tortas_circulares",
-                stock: 8
-            },
-            {
-                id: "postre_individual_mousse",
-                nombre: "Postre Individual - Mousse",
-                descripcion: "Ligero y cremoso, porción individual.",
-                precio: 2500, // Precio con oferta
-                precioAnterior: 3200, // Precio original
-                imagen: "../individual_mousse_chocolate2.png",
-                categoria: "postres_individuales",
-                stock: 15
-            },
-            {
-                id: "sin_gluten_brownie",
-                nombre: "Brownie sin gluten",
-                descripcion: "Textura húmeda y sabor intenso.",
-                precio: 2200, // Precio con oferta
-                precioAnterior: 2800, // Precio original
-                imagen: "../sin_gluten_brownie.png",
-                categoria: "productos_sin_gluten",
-                stock: 12
+        const snapshot = await db.collection("oferta").get();
+        productosOferta = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+        console.log("Productos en oferta cargados desde Firebase:", productosOferta);
+
+        if (productosOferta.length > 0) {
+            renderizarProductosOferta(productosOferta);
+        } else {
+            console.log("No hay ofertas en Firebase");
+            const contenedor = document.getElementById('productosOferta');
+            if (contenedor) {
+                contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay productos en oferta en este momento.</p>';
             }
-        ];
-        
-        renderizarProductosOferta(productosOferta);
+        }
     } catch (error) {
         console.error("Error cargando productos en oferta:", error);
         // En caso de error, mostrar mensaje
@@ -116,8 +87,8 @@ function renderizarProductosOferta(productos) {
                 <h3 class="producto-nombre">${producto.nombre}</h3>
                 <p style="color: #666; font-size: 0.9rem; margin-bottom: 10px;">${producto.descripcion}</p>
                 <div class="precios-oferta" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <span class="precio-anterior" style="text-decoration: line-through; color: #999; font-size: 0.9rem;">$${producto.precioAnterior?.toLocaleString('es-CL')}</span>
-                    <span class="precio-actual" style="color: #e36b86; font-weight: bold; font-size: 1.1rem;">$${producto.precio?.toLocaleString('es-CL')}</span>
+                    <span class="precio-anterior" style="text-decoration: line-through; color: #999; font-size: 0.9rem;">$${producto["precio original"]?.toLocaleString('es-CL')}</span>
+                    <span class="precio-actual" style="color: #e36b86; font-weight: bold; font-size: 1.1rem;">$${(producto["precio oferta"] || producto.Precio || producto.precio)?.toLocaleString('es-CL')}</span>
                 </div>
                 <p class="stock-disponible" style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">Stock: ${producto.stock || 10}</p>
                 <button class="btn-agregar-oferta" data-id="${producto.id}" 
@@ -205,24 +176,24 @@ function renderizarCarrito() {
  */
 async function agregarProductoAlCarrito(productId) {
     const producto = productosOferta.find(p => p.id === productId);
-    
+
     if (!producto) {
         mostrarNotificacion('Producto no encontrado', 'error');
         return;
     }
-    
+
     // Verificar stock antes de agregar
     if (producto.stock !== undefined && producto.stock <= 0) {
         mostrarNotificacion('Producto sin stock disponible', 'error');
         return;
     }
-    
+
     // Recargar carrito del localStorage
     carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    
+
     // Verificar si el producto ya está en el carrito
     const productoExistente = carrito.find(item => item.id === productId);
-    
+
     if (productoExistente) {
         // Verificar stock antes de incrementar
         if (producto.stock !== undefined && productoExistente.cantidad >= producto.stock) {
@@ -236,26 +207,53 @@ async function agregarProductoAlCarrito(productId) {
             nombre: producto.nombre,
             descripcion: producto.descripcion,
             precio: producto.precio,
+            precioAnterior: producto.precioAnterior,
             imagen: producto.imagen,
             categoria: producto.categoria,
             stock: producto.stock,
             cantidad: 1
         });
     }
-    
+
     guardarCarrito();
     renderizarCarrito();
     calcularTotal();
-    
-    // Actualizar stock local (no en Firebase para productos estáticos)
+
+    // Actualizar stock en Firebase
     if (producto.stock !== undefined) {
-        const productoOferta = productosOferta.find(p => p.id === productId);
-        if (productoOferta) {
-            productoOferta.stock = Math.max(0, productoOferta.stock - 1);
-        }
+        await actualizarStockFirebase(productId, -1);
     }
-    
+
     mostrarNotificacion(`"${producto.nombre}" agregado al carrito ✓`);
+}
+
+/**
+ * Actualizar stock en Firebase
+ */
+async function actualizarStockFirebase(productId, cambio) {
+    try {
+        const productoRef = db.collection("oferta").doc(productId);
+        const productoDoc = await productoRef.get();
+
+        if (productoDoc.exists) {
+            const stockActual = productoDoc.data().stock;
+            const nuevoStock = Math.max(0, stockActual + cambio);
+
+            await productoRef.update({
+                stock: nuevoStock
+            });
+
+            // Actualizar stock local
+            const producto = productosOferta.find(p => p.id === productId);
+            if (producto) {
+                producto.stock = nuevoStock;
+            }
+
+            console.log(`Stock actualizado en Firebase: ${nuevoStock}`);
+        }
+    } catch (error) {
+        console.error("Error actualizando stock:", error);
+    }
 }
 
 // EL RESTO DEL CÓDIGO PERMANECE IGUAL (las funciones de aumentar/disminuir cantidad, eliminar, calcular total, etc.)
@@ -266,22 +264,27 @@ async function agregarProductoAlCarrito(productId) {
 async function aumentarCantidad(index) {
     // Recargar carrito del localStorage
     carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    
+
     const producto = carrito[index];
-    
+
     if (!producto) return;
-    
+
     // Verificar stock antes de aumentar
     if (producto.stock !== undefined && producto.cantidad >= producto.stock) {
         mostrarNotificacion('No hay suficiente stock disponible', 'error');
         return;
     }
-    
+
     carrito[index].cantidad = (carrito[index].cantidad || 1) + 1;
     guardarCarrito();
     renderizarCarrito();
     calcularTotal();
-    
+
+    // Si es un producto de oferta, actualizar stock en Firebase
+    if (producto.id && productosOferta.find(p => p.id === producto.id)) {
+        await actualizarStockFirebase(producto.id, -1);
+    }
+
     mostrarNotificacion('Cantidad actualizada', 'success');
 }
 
