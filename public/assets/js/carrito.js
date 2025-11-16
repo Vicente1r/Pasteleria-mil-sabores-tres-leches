@@ -358,14 +358,24 @@ function calcularTotal() {
 function actualizarCarritoHeader() {
     // Recargar carrito del localStorage
     carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    
+
+    const totalProductos = carrito.reduce((sum, producto) => {
+        return sum + (producto.cantidad || 1);
+    }, 0);
+
     const total = carrito.reduce((sum, producto) => {
         return sum + ((producto.precio || 0) * (producto.cantidad || 1));
     }, 0);
-    
+
     const carritoTotalElement = document.querySelector('.carrito-total');
     if (carritoTotalElement) {
         carritoTotalElement.textContent = total.toLocaleString('es-CL');
+    }
+
+    // Actualizar el enlace del carrito con la cantidad de productos
+    const carritoLinkElement = document.getElementById('carrito-link');
+    if (carritoLinkElement) {
+        carritoLinkElement.textContent = `Carrito (${totalProductos})`;
     }
 }
 

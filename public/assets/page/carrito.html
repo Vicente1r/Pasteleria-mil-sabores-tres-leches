@@ -12,38 +12,181 @@
 </head>
 <body>
   <!-- HEADER -->
-  <header class="header">
-    <div class="header-top">
-      <div class="search-container">
-        <input type="text" id="buscador" placeholder="Buscar productos..." class="search-input">
-        <button id="btnBuscar" class="btn-buscar">Buscar</button>
-      </div>
-      <div class="auth-buttons">
-        <button class="btn-login">Iniciar Sesión</button>
-        <button class="btn-signup">Crear Cuenta</button>
-      </div>
+  <header class="topbar">
+    <div class="logo">
+      <img src="../assets/Logo.png" alt="">
     </div>
 
-    <nav class="nav-main">
-      <div class="nav-center">
-        <a href="../../index.html" class="nav-link">Home</a>
-        <div class="dropdown">
-          <a href="#" class="nav-link">Categoría ⌄</a>
-          <div class="dropdown-content" id="dropdownCategorias"></div>
-        </div>
-        <a href="#" class="nav-link">Ofertas</a>
-        <a href="#mision">Nosotros</a>
-       <a href="assets/page/blog.html">Blog</a>
-        <a href="#contacto">Contacto</a>
-      </div>
-      
-      <div class="nav-right">
-        <button class="btn-carrito" onclick="window.location.href='carrito.html'">
-          <span class="carrito-icon">🛒</span>
-          Total: $<span class="carrito-total">0</span>
-        </button>
-      </div>
+    <div>
+      <strong>Tienda online - Mil Sabores</strong>
+    </div>
+
+    <nav class="navegacion" aria-label="Navegación principal">
+      <a href="../../index.html">Home</a>
+      <a href="catalogo.html">Productos</a>
+      <a href="#mision">Nosotros</a>
+      <a href="blog.html">Blog</a>
+      <a href="#contacto">Contacto</a>
+      <a href="login.html">Iniciar sesión</a>
     </nav>
+
+    <div class="usuario">
+      <a id="inicio_sesion">Iniciar sesión</a>
+      <div id="notificacion-bienvenida" style="display:none; background:#8B4513; color:#FFF; padding:8px 16px; border-radius:8px; margin-top:8px;">¡Bienvenido</div>
+
+      <!--=============== MODAL LOGIN / REGISTRO ===============-->
+      <dialog id="modal" aria-labelledby="modal-title">
+        <section>
+          <!--Header del modal-->
+          <header style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+            <h2 id="modal-title" style="margin:0">Cuenta</h2>
+            <button id="cerrar" type="button" aria-label="Cerrar">✕</button>
+          </header>
+
+          <!-- Tabs -->
+          <nav class="tabs" role="tablist" aria-label="Selector de formulario">
+            <button id="tab-login" class="tab" role="tab" aria-selected="true" aria-controls="panel-login">
+              Iniciar sesión
+            </button>
+            <button id="tab-register" class="tab" role="tab" aria-selected="false" aria-controls="panel-register">
+              Registrarse
+            </button>
+          </nav>
+
+          <!--Panel: Login-->
+          <div id="panel-login" role="tabpanel" aria-labelledby="tab-login">
+            <form id="form-login" autocomplete="on">
+              <div>
+                <label for="login-correo">Correo: </label><br>
+                <input type="email" id="login-correo" name="correo" maxlength="100" required><br><br>
+              </div>
+              <div>
+                <label for="login-clave">Clave: </label><br>
+                <input type="password" id="login-clave" name="clave" minlength="4" maxlength="10" required><br><br>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <button id="btn-login" class="btn-primaria" type="submit">Iniciar sesión</button>
+                <button type="button" id="btn-ir-registro" class="btn-secundaria">¿No tienes cuenta? Registrarse</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Panel: Registro -->
+          <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden>
+            <form id="form-register">
+
+              <div class="form-group">
+                <label for="reg-run">RUN (sin puntos ni guión): </label>
+                <input type="text" id="reg-run" name="run" minlength="7" maxlength="9" required />
+              </div>
+              <div class="form-group">
+                <label for="reg-nombre">NOMBRE COMPLETO</label>
+                <input type="text" id="nombre" name="nombre" required />
+              </div>
+
+              <div class="form-group">
+                <label for="reg-correo">CORREO</label>
+                <input type="email" id="correo_reg" name="correo" required />
+              </div>
+
+              <div class="form-group">
+                <label for="reg-correo2">CONFIRMAR CORREO</label>
+                <input type="email" id="correo2" name="correo2" required />
+              </div>
+
+              <div class="form-group">
+                <label for="reg-password">CONTRASEÑA</label>
+                <input type="password" id="password" name="password" minlength="4" maxlength="10" required />
+              </div>
+
+              <div class="form-group">
+                <label for="reg-password2">CONFIRMAR CONTRASEÑA</label>
+                <input type="password" id="password2" name="password2" required />
+              </div>
+
+              <div class="form-group">
+                <label for="reg-fecha">Fecha: </label>
+                <input type="date" id="reg-fecha" name="fecha" required />
+              </div>
+              <div class="form-group">
+                <label for="reg-telefono">TELÉFONO (opcional)</label>
+                <input type="tel" id="telefono" name="telefono" />
+              </div>
+
+              <div class="form-group">
+                <label for="comuna">COMUNA</label>
+                <select name="comuna" id="comuna" required>
+                  <option value="">-- Seleccione la comuna --</option>
+                  <option value="Cerrillos">Cerrillos</option>
+                  <option value="Cerro Navia">Cerro Navia</option>
+                  <option value="Conchalí">Conchalí</option>
+                  <option value="El Bosque">El Bosque</option>
+                  <option value="Estación Central">Estación Central</option>
+                  <option value="Huechuraba">Huechuraba</option>
+                  <option value="Independencia">Independencia</option>
+                  <option value="La Cisterna">La Cisterna</option>
+                  <option value="La Florida">La Florida</option>
+                  <option value="La Granja">La Granja</option>
+                  <option value="La Pintana">La Pintana</option>
+                  <option value="La Reina">La Reina</option>
+                  <option value="Las Condes">Las Condes</option>
+                  <option value="Lo Barnechea">Lo Barnechea</option>
+                  <option value="Lo Espejo">Lo Espejo</option>
+                  <option value="Lo Prado">Lo Prado</option>
+                  <option value="Macul">Macul</option>
+                  <option value="Maipú">Maipú</option>
+                  <option value="Ñuñoa">Ñuñoa</option>
+                  <option value="Pedro Aguirre Cerda">Pedro Aguirre Cerda</option>
+                  <option value="Peñalolén">Peñalolén</option>
+                  <option value="Providencia">Providencia</option>
+                  <option value="Pudahuel">Pudahuel</option>
+                  <option value="Quilicura">Quilicura</option>
+                  <option value="Quinta Normal">Quinta Normal</option>
+                  <option value="Recoleta">Recoleta</option>
+                  <option value="Renca">Renca</option>
+                  <option value="San Joaquín">San Joaquín</option>
+                  <option value="San Miguel">San Miguel</option>
+                  <option value="San Ramón">San Ramón</option>
+                  <option value="Santiago">Santiago</option>
+                  <option value="Vitacura">Vitacura</option>
+                  <option value="Puente Alto">Puente Alto</option>
+                  <option value="Pirque">Pirque</option>
+                  <option value="San José de Maipo">San José de Maipo</option>
+                  <option value="Colina">Colina</option>
+                  <option value="Lampa">Lampa</option>
+                  <option value="Tiltil">Tiltil</option>
+                  <option value="San Bernardo">San Bernardo</option>
+                  <option value="Buin">Buin</option>
+                  <option value="Calera de Tango">Calera de Tango</option>
+                  <option value="Paine">Paine</option>
+                  <option value="Melipilla">Melipilla</option>
+                  <option value="Alhué">Alhué</option>
+                  <option value="Curacaví">Curacaví</option>
+                  <option value="María Pinto">María Pinto</option>
+                  <option value="San Pedro">San Pedro</option>
+                  <option value="Talagante">Talagante</option>
+                  <option value="El Monte">El Monte</option>
+                  <option value="Isla de Maipo">Isla de Maipo</option>
+                  <option value="Padre Hurtado">Padre Hurtado</option>
+                  <option value="Peñaflor">Peñaflor</option>
+                </select>
+              </div>
+
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <button id="btn-register" class="btn-primaria" type="submit">Registrar</button>
+                <button type="button" id="btn-ir-login" class="btn-secundaria">¿Ya tienes cuenta? Iniciar sesión</button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </dialog>
+      <!-- =========== /MODAL =========== -->
+
+      <span class="separar">|</span>
+      <a id="registrarse">Registrarse</a>
+      <span class="separar">|</span>
+      <a href="carrito.html" id="carrito-link">Carrito (0)</a>
+    </div>
   </header>
 
   <!-- MAIN CONTENT -->
