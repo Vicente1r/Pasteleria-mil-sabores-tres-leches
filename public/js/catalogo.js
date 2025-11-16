@@ -16,12 +16,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Configuración de Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
-    authDomain: "tiendanombretienda.firebaseapp.com",
-    projectId: "tiendanombretienda",
+    authDomain: "pasteleriamilsaborestresleches.web.app",
+    projectId: "pasteleriamilsaborestresleches",
   };
 
   // Inicializar Firebase
-  firebase.initializeApp(firebaseConfig);
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
   const db = firebase.firestore();
 
   // Inicializar la aplicación
@@ -164,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
              onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'">
         <div class="producto-info">
           <h3 class="producto-nombre">${producto.nombre || 'Sin nombre'}</h3>
-          <p class="producto-precio">$${(producto.precio || 0).toLocaleString('es-CL')}</p>
+          <p class="producto-precio">$${(producto.precio || producto.Precio || 0).toLocaleString('es-CL')}</p>
           <button class="btn-agregar" data-id="${producto.id}">
             🛒 Agregar al carrito
           </button>
@@ -195,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
  // Actualizar el total del carrito en el DOM
   function actualizarCarritoTotal() {
-    const total = carrito.reduce((sum, producto) => sum + (producto.precio || 0), 0); // Sumar precios
+    const total = carrito.reduce((sum, producto) => sum + ((producto.precio || producto.Precio || 0)), 0); // Sumar precios
     carritoTotal.textContent = total.toLocaleString('es-CL'); // Actualizar texto en el DOM con formato peso chileno
   }
   // Mostrar una notificación flotante al agregar al carrito
@@ -236,8 +238,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (carrito.length === 0) {
         alert('El carrito está vacío');
       } else {
-        const total = carrito.reduce((sum, producto) => sum + (producto.precio || 0), 0);
-        const productosLista = carrito.map(p => `• ${p.nombre} - $${p.precio?.toLocaleString('es-CL')}`).join('\n');
+        const total = carrito.reduce((sum, producto) => sum + ((producto.precio || producto.Precio || 0)), 0);
+        const productosLista = carrito.map(p => `• ${p.nombre} - $${(p.precio || p.Precio || 0)?.toLocaleString('es-CL')}`).join('\n');
         alert(`CARRITO (${carrito.length} productos)\n\n${productosLista}\n\nTOTAL: $${total.toLocaleString('es-CL')}`);
       }
     });

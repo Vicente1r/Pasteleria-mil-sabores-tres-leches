@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /**
  * Inicializa la interfaz del carrito
- */-+
+ */
 function inicializarCarrito() {
     actualizarCarritoHeader();
     renderizarCarrito();
@@ -206,8 +206,8 @@ async function agregarProductoAlCarrito(productId) {
             id: producto.id,
             nombre: producto.nombre,
             descripcion: producto.descripcion,
-            precio: producto.precio,
-            precioAnterior: producto.precioAnterior,
+            precio: producto["precio oferta"] || producto.Precio || producto.precio || 0,
+            precioAnterior: producto["precio original"],
             imagen: producto.imagen,
             categoria: producto.categoria,
             stock: producto.stock,
