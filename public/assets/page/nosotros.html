@@ -1,38 +1,57 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carrito de Compras - Mi Tienda</title>
-  <link rel="stylesheet" href="../css/catalogo.css">
-  <link rel="stylesheet" href="../css/carrito.css">
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="../js/carrito.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nosotros - Mil Sabores</title>
+
+
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Pacifico&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/nosotros.css" />
+
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
+  <script src="../js/filtro.js" defer></script>
+  <script src="../js/inicio_sesion.js" defer></script>
+  <!-- <script src="assets/js/validaciones.js" defer></script>
+  <script src="../public/js/usuario.js" defer></script> -->
+
+  <script src="../js/filtro.js" defer></script>
+  <script type="module" src="../js/firebase-config.js"></script>
+  <script type="module" src="../js/auth.js"></script>
+  <script src="../js/validaciones.js" defer></script>
+
 </head>
 <body>
-  <!-- HEADER -->
+
+  <!--======================= HEADER =======================-->
+
   <header class="topbar">
     <div class="logo">
-      <img src="../assets/Logo.png" alt="">
+      <img src="../Logo.png" alt="">
     </div>
 
     <div>
       <strong>Tienda online - Mil Sabores</strong>
     </div>
 
+
+
     <nav class="navegacion" aria-label="Navegación principal">
-      <a href="../../index.html">Home</a>
-      <a href="catalogo.html">Productos</a>
-      <a href="nosotros.html">Nosotros</a>
-      <a href="blog.html">Blog</a>
-      <a href="#contacto">Contacto</a>
-      <a href="login.html">Iniciar sesión</a>
+  <a href="../index.html">Home</a>
+  <a href="catalogo.html">Productos</a>
+  <a href="nosotros.html">Nosotros</a>
+  <a href="blog.html">Blog</a>
+  <a href="contacto.html">Contacto</a>
+  <a href="login.html">Iniciar sesión</a>
     </nav>
 
     <div class="usuario">
       <a id="inicio_sesion">Iniciar sesión</a>
-      <div id="notificacion-bienvenida" style="display:none; background:#8B4513; color:#FFF; padding:8px 16px; border-radius:8px; margin-top:8px;">¡Bienvenido</div>
+  <div id="notificacion-bienvenida" style="display:none; background:#8B4513; color:#FFF; padding:8px 16px; border-radius:8px; margin-top:8px;">¡Bienvenido</div>
 
       <!--=============== MODAL LOGIN / REGISTRO ===============-->
       <dialog id="modal" aria-labelledby="modal-title">
@@ -185,57 +204,68 @@
       <span class="separar">|</span>
       <a id="registrarse">Registrarse</a>
       <span class="separar">|</span>
-      <a href="carrito.html" id="carrito-link">Carrito (0)</a>
+      <a href="carrito.html">Carrito (0) </a>
     </div>
   </header>
 
-  <!-- MAIN CONTENT -->
+  <!-- ======================= MAIN ======================= -->
   <main class="main">
-    <div class="carrito-container">
-      <!-- Lista de Productos con Ofertas -->
-      <section class="ofertas-section">
-        <h2 class="section-title">Productos en Oferta</h2>
-        <div id="productosOferta" class="productos-grid"></div>
-      </section>
+    <section class="nosotros-content">
+      <h1>Nosotros</h1>
+      <p>
+        Pastelería Mil Sabores celebra su 50 aniversario como un referente en la repostería chilena.
+        Es famosa por haber colaborado en la creación de la torta más grande del mundo en 1995, un evento que le valió un récord Guinness.
+      </p>
 
-      <!-- Resumen del Carrito -->
-      <section class="resumen-carrito">
-        <h2 class="section-title">Resumen del Carrito</h2>
-        
-        <!-- Tabla de productos en carrito -->
-        <div class="tabla-carrito-container">
-          <table class="tabla-carrito">
-            <thead>
-              <tr>
-                <th>Imagen</th>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Subtotal</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tablaCarritoBody">
-              <!-- Los productos del carrito se insertarán aquí -->
-            </tbody>
-          </table>
-        </div>
+      <h2>Misión 🎂</h2>
+      <p>
+        Ofrecer una experiencia dulce y memorable a nuestros clientes, proporcionando tortas y productos de repostería de alta calidad para todas las ocasiones. Al mismo tiempo, celebramos nuestras raíces históricas y fomentamos la creatividad en la repostería.
+      </p>
 
-        <!-- Total y Botones -->
-        <div class="carrito-footer">
-          <div class="total-container">
-            <span class="total-text">Total: $</span>
-            <span id="totalCarrito" class="total-precio">0</span>
-          </div>
-          <div class="botones-carrito">
-            <button id="btnLimpiarCarrito" class="btn-limpiar">Limpiar Carrito</button>
-            <button id="btnComprarAhora" class="btn-comprar-ahora">Comprar Ahora</button>
-          </div>
-        </div>
-      </section>
-    </div>
+      <h2>Visión ✨</h2>
+      <p>
+        Convertirnos en la tienda online líder de productos de repostería en Chile, siendo reconocidos por nuestra innovación, calidad y el impacto positivo en la comunidad, especialmente en la formación de nuevos talentos en gastronomía.
+      </p>
+
+      </ul>
+    </section>
   </main>
 
-  <script src="../assets/js/carrito.js"></script>
+  <!-- ======================= FOOTER ======================= -->
+  <footer class="footer" id="contacto">
+    <nav aria-label="Redes">
+      <a href="#">X</a> ·
+      <a href="#" id="blog">Instagram</a> ·
+      <a href="#">WhatsApp</a>
+    </nav>
+
+    <form class="newsletter" action="#" method="post">
+      <label for="email">Enter Email</label>
+      <input id="email" name="email" type="email" placeholder="tucorreo@ejemplo.com" />
+      <button type="submit">Subscribirse</button>
+    </form>
+  </footer>
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const formLogin = document.getElementById("form-login");
+
+  formLogin.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById("login-correo").value.trim();
+    const pass = document.getElementById("login-clave").value.trim();
+
+    // Credenciales del administrador
+    const adminEmail = "admin@duocuc.cl";
+    const adminPass = "123456";
+
+    if (email === adminEmail && pass === adminPass) {
+      window.location.href = "admin.html";
+    } else {
+      window.location.href = "perfilCliente.html";
+    }
+  });
+});
+</script>
 </body>
 </html>
