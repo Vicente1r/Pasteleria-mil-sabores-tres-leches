@@ -1,5 +1,21 @@
 /* CARITO.CSS - Estilos para el sistema de carrito de compras */
 
+body {
+  background: #FFF5E1;
+  color: #5D4037;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #FFC0CB; /* Rosa pastel sólido */
+}
+
 /* Contenedor principal del carrito */
 .carrito-container {
     display: grid;
@@ -16,7 +32,7 @@
   /* Resumen del carrito */
   .resumen-carrito {
     grid-column: 2;
-    background: white;
+    background: #FFF5E1;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.1);
@@ -29,7 +45,7 @@
     max-height: 400px;
     overflow-y: auto;
     margin-bottom: 20px;
-    border: 1px solid #e9ecef;
+    border: 1px solid #B0BEC5;
     border-radius: 8px;
   }
   
@@ -37,22 +53,22 @@
   .tabla-carrito {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    background: #FFF5E1;
   }
   
   .tabla-carrito th {
-    background: #f8f9fa;
+    background: #FFC0CB;
     padding: 15px 10px;
     text-align: left;
     font-weight: 600;
-    color: #333;
-    border-bottom: 2px solid #dee2e6;
+    color: #5D4037;
+    border-bottom: 2px solid #B0BEC5;
     font-size: 14px;
   }
   
   .tabla-carrito td {
     padding: 12px 10px;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid #B0BEC5;
     vertical-align: middle;
   }
   
@@ -74,8 +90,8 @@
   .btn-cantidad {
     width: 30px;
     height: 30px;
-    border: 1px solid #ddd;
-    background: white;
+    border: 1px solid #B0BEC5;
+    background: #FFF5E1;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -85,7 +101,7 @@
   }
   
   .btn-cantidad:hover {
-    background: #f8f9fa;
+    background: #FFC0CB;
   }
   
   .cantidad-actual {
@@ -96,7 +112,7 @@
   
   /* Botón eliminar */
   .btn-eliminar {
-    background: #dc3545;
+    background: #8B4513;
     color: white;
     border: none;
     padding: 6px 12px;
@@ -106,12 +122,12 @@
   }
   
   .btn-eliminar:hover {
-    background: #c82333;
+    background: #FFC0CB;
   }
   
   /* Footer del carrito */
   .carrito-footer {
-    border-top: 2px solid #e9ecef;
+    border-top: 2px solid #B0BEC5;
     padding-top: 20px;
   }
   
@@ -126,13 +142,13 @@
   .total-text {
     font-size: 18px;
     font-weight: 600;
-    color: #333;
+    color: #5D4037;
   }
   
   .total-precio {
     font-size: 24px;
     font-weight: bold;
-    color: #28a745;
+    color: #8B4513;
   }
   
   .botones-carrito {
@@ -143,7 +159,7 @@
   
   .btn-limpiar {
     padding: 12px 24px;
-    background: #6c757d;
+    background: #B0BEC5;
     color: white;
     border: none;
     border-radius: 8px;
@@ -153,7 +169,7 @@
   
   .btn-comprar-ahora {
     padding: 12px 24px;
-    background: #28a745;
+    background: #8B4513;
     color: white;
     border: none;
     border-radius: 8px;
@@ -162,11 +178,11 @@
   }
   
   .btn-limpiar:hover {
-    background: #5a6268;
+    background: #5D4037;
   }
   
   .btn-comprar-ahora:hover {
-    background: #218838;
+    background: #FFC0CB;
   }
   
   /* CHECKOUT STYLES */
@@ -184,18 +200,18 @@
   
   .checkout-titulos h1 {
     font-size: 28px;
-    color: #333;
+    color: #5D4037;
     margin-bottom: 5px;
   }
   
   .checkout-subtitulo {
-    color: #666;
+    color: #B0BEC5;
     font-size: 16px;
   }
   
   .btn-total-pagar {
     padding: 15px 25px;
-    background: #007bff;
+    background: #8B4513;
     color: white;
     border: none;
     border-radius: 10px;
@@ -207,7 +223,7 @@
   /* Tabla checkout */
   .tabla-checkout-container {
     margin-bottom: 40px;
-    border: 1px solid #e9ecef;
+    border: 1px solid #B0BEC5;
     border-radius: 8px;
     overflow: hidden;
   }
@@ -215,26 +231,26 @@
   .tabla-checkout {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    background: #FFF5E1;
   }
   
   .tabla-checkout th {
-    background: #f8f9fa;
+    background: #FFC0CB;
     padding: 15px 10px;
     text-align: left;
     font-weight: 600;
-    color: #333;
-    border-bottom: 2px solid #dee2e6;
+    color: #5D4037;
+    border-bottom: 2px solid #B0BEC5;
   }
   
   .tabla-checkout td {
     padding: 12px 10px;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid #B0BEC5;
   }
   
   /* Formularios */
   .info-cliente, .direccion-entrega {
-    background: white;
+    background: #FFF5E1;
     padding: 30px;
     border-radius: 10px;
     margin-bottom: 30px;
@@ -242,7 +258,7 @@
   }
   
   .section-subtitle {
-    color: #666;
+    color: #B0BEC5;
     margin-bottom: 20px;
     font-size: 16px;
   }
@@ -271,12 +287,12 @@
   .form-group label {
     margin-bottom: 8px;
     font-weight: 600;
-    color: #333;
+    color: #5D4037;
   }
   
   .form-group input, .form-group textarea {
     padding: 12px 15px;
-    border: 1px solid #ddd;
+    border: 1px solid #B0BEC5;
     border-radius: 8px;
     font-size: 14px;
     transition: border-color 0.3s;
@@ -284,7 +300,7 @@
   
   .form-group input:focus, .form-group textarea:focus {
     outline: none;
-    border-color: #007bff;
+    border-color: #8B4513;
   }
   
   .form-group textarea {
@@ -296,8 +312,8 @@
   .form-cliente.readonly .form-group input,
   .form-direccion.readonly .form-group input,
   .form-direccion.readonly .form-group textarea {
-    background: #f8f9fa;
-    color: #666;
+    background: #FFC0CB;
+    color: #B0BEC5;
     cursor: not-allowed;
   }
   
@@ -309,7 +325,7 @@
   
   .btn-pagar-ahora {
     padding: 18px 40px;
-    background: #28a745;
+    background: #8B4513;
     color: white;
     border: none;
     border-radius: 10px;
@@ -320,7 +336,7 @@
   }
   
   .btn-pagar-ahora:hover {
-    background: #218838;
+    background: #FFC0CB;
     transform: translateY(-2px);
   }
   
@@ -336,11 +352,11 @@
   
   .codigo-orden {
     display: block;
-    background: #f8f9fa;
+    background: #FFC0CB;
     padding: 8px 16px;
     border-radius: 20px;
     font-weight: 600;
-    color: #666;
+    color: #B0BEC5;
     margin-bottom: 20px;
     text-align: right;
     width: 100%;
@@ -361,12 +377,12 @@
   
   .exito-titulo h1 {
     font-size: 32px;
-    color: #28a745;
+    color: #8B4513;
     margin: 0;
   }
   
   .exito-subtitulo {
-    color: #666;
+    color: #B0BEC5;
     font-size: 18px;
     text-align: left;
   }
@@ -376,7 +392,7 @@
     text-align: center;
     margin: 30px 0;
     padding: 20px;
-    background: #f8f9fa;
+    background: #FFC0CB;
     border-radius: 10px;
   }
   
@@ -395,7 +411,7 @@
   
   .btn-imprimir-pdf {
     padding: 15px 30px;
-    background: #dc3545;
+    background: #8B4513;
     color: white;
     border: none;
     border-radius: 8px;
@@ -405,7 +421,7 @@
   
   .btn-enviar-email {
     padding: 15px 30px;
-    background: #28a745;
+    background: #8B4513;
     color: white;
     border: none;
     border-radius: 8px;
@@ -444,14 +460,14 @@
   }
   
   .error-subtitulo {
-    color: #333;
+    color: #5D4037;
     font-size: 20px;
     margin-bottom: 20px;
   }
   
   .btn-reintentar-pago {
     padding: 15px 30px;
-    background: #28a745;
+    background: #8B4513;
     color: white;
     border: none;
     border-radius: 8px;
@@ -498,7 +514,7 @@
   .carrito-vacio {
     text-align: center;
     padding: 60px 20px;
-    color: #666;
+    color: #B0BEC5;
   }
   
   .carrito-vacio .icono {
@@ -510,7 +526,7 @@
   .carrito-vacio h3 {
     font-size: 24px;
     margin-bottom: 10px;
-    color: #333;
+    color: #5D4037;
   }
   
   .carrito-vacio p {
@@ -520,7 +536,7 @@
   
   .btn-ir-catalogo {
     padding: 12px 24px;
-    background: #007bff;
+    background: #8B4513;
     color: white;
     border: none;
     border-radius: 8px;
@@ -533,23 +549,23 @@
   select {
       width: 100%;
       padding: 12px 15px;
-      border: 2px solid #e9ecef;
+      border: 2px solid #B0BEC5;
       border-radius: 8px;
       font-size: 14px;
-      background-color: white;
+      background-color: #FFF5E1;
       transition: all 0.3s ease;
       cursor: pointer;
   }
   
   select:focus {
       outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+      border-color: #8B4513;
+      box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
   }
   
   select:disabled {
-      background-color: #f8f9fa;
-      color: #6c757d;
+      background-color: #FFC0CB;
+      color: #B0BEC5;
       cursor: not-allowed;
   }
   
@@ -561,12 +577,12 @@
   .form-group {
       margin-bottom: 20px;
   }
-  
+
   .form-group label {
       display: block;
       margin-bottom: 8px;
       font-weight: 600;
-      color: #333;
+      color: #5D4037;
   }
   
   .form-row {

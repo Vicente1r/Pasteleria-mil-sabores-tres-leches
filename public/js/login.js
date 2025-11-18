@@ -8,13 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Inicializar Firebase
     const firebaseConfig = {
-  apiKey: "AIzaSyA1_om-_HPyYVnUo8ELiM5Zob2VSMGbWvw",
-  authDomain: "pasteleriamilsaborestresleches.firebaseapp.com",
+  apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
+  authDomain: "pasteleriamilsaborestresleches.web.app",
   projectId: "pasteleriamilsaborestresleches",
-  storageBucket: "pasteleriamilsaborestresleches.firebasestorage.app",
-  messagingSenderId: "724534518591",
-  appId: "1:724534518591:web:fda9e47afb93ed6854e98a",
-  measurementId: "G-FXQWCCHM83"
 };
 
     if (!firebase.apps?.length) {

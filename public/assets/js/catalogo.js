@@ -183,7 +183,8 @@ document.addEventListener("DOMContentLoaded", () => {
         id: oferta.id,
         nombre: oferta.nombre,
         descripcion: oferta.descripcion,
-        precio: oferta.precio,
+        precio: oferta["precio oferta"] || oferta.Precio || oferta.precio || 0,
+        precioAnterior: oferta["precio original"],
         imagen: oferta.imagen,
         categoria: oferta.categoria,
         stock: oferta.stock,
@@ -384,7 +385,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="item-content producto-info">
           <h3 class="producto-nombre">${producto.nombre || 'Sin nombre'}</h3>
           <p>${producto.descripcion || ''}</p>
-          <p class="producto-precio precio">$${(producto.Precio || 0).toLocaleString('es-CL')} CLP</p>
+          <p class="producto-precio precio">$${(producto.precio || 0).toLocaleString('es-CL')} CLP</p>
           ${producto.stock ? `<p class="stock-info" style="font-size: 12px; color: #666;">Stock: ${producto.stock}</p>` : ''}
           <button class="btn-agregar btn-comprar" data-id="${producto.id}">
             🛒 Agregar al carrito
@@ -438,7 +439,7 @@ document.addEventListener("DOMContentLoaded", () => {
         id: producto.id,
         nombre: producto.nombre,
         descripcion: producto.descripcion,
-        precio: producto.precio,
+        precio: producto.precio || 0,
         imagen: producto.imagen,
         categoria: producto.categoria,
         stock: producto.stock,

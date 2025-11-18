@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /**
  * Inicializa la interfaz del carrito
- */-+
+ */
 function inicializarCarrito() {
     actualizarCarritoHeader();
     renderizarCarrito();
@@ -206,8 +206,8 @@ async function agregarProductoAlCarrito(productId) {
             id: producto.id,
             nombre: producto.nombre,
             descripcion: producto.descripcion,
-            precio: producto.precio,
-            precioAnterior: producto.precioAnterior,
+            precio: producto["precio oferta"] || producto.Precio || producto.precio || 0,
+            precioAnterior: producto["precio original"],
             imagen: producto.imagen,
             categoria: producto.categoria,
             stock: producto.stock,
@@ -358,14 +358,24 @@ function calcularTotal() {
 function actualizarCarritoHeader() {
     // Recargar carrito del localStorage
     carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    
+
+    const totalProductos = carrito.reduce((sum, producto) => {
+        return sum + (producto.cantidad || 1);
+    }, 0);
+
     const total = carrito.reduce((sum, producto) => {
         return sum + ((producto.precio || 0) * (producto.cantidad || 1));
     }, 0);
-    
+
     const carritoTotalElement = document.querySelector('.carrito-total');
     if (carritoTotalElement) {
         carritoTotalElement.textContent = total.toLocaleString('es-CL');
+    }
+
+    // Actualizar el enlace del carrito con la cantidad de productos
+    const carritoLinkElement = document.getElementById('carrito-link');
+    if (carritoLinkElement) {
+        carritoLinkElement.textContent = `Carrito (${totalProductos})`;
     }
 }
 
