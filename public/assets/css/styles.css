@@ -5,10 +5,13 @@
   box-sizing: border-box; 
 }
 
-html, body { 
-  margin: 0; 
-  padding: 0; 
-  font-family: 'Lato', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; 
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Lato', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   color: #5D4037; /* Texto principal */
   background: #FFF5E1; /* Fondo crema pastel */
 }
@@ -181,10 +184,10 @@ h1, h2, h3, h4, h5, h6, .topbar strong {
 }
 
 /* ================== Footer ================== */
-.footer { 
-  margin-top: 24px; 
-  padding: 16px; 
-  border-top: 1px solid #e5e7eb; 
+.footer {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid #e5e7eb;
   background: #FFC0CB; /* Rosa suave */
 }
 

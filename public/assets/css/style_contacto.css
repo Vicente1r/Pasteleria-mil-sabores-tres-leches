@@ -1,8 +1,29 @@
 /* Estilos personalizados para la página de contacto de Pastelería Mil Sabores */
 
-/* Barra de navegación rosa pastel */
+/* Import Google Fonts (Lato + Pacifico) - usado en páginas estáticas */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Pacifico&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Lato', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: #5D4037; /* Texto principal */
+  background: #FFF5E1; /* Fondo crema pastel */
+}
+
+/* Encabezados con Pacifico para un toque artístico */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Pacifico', cursive;
+}
+
+/* Barra de navegación rosa suave */
 .navbar-custom {
-    background-color: #f3d3fa !important; /* Rosa pastel */
+    background-color: #FFC0CB !important; /* Rosa suave */
+    border: none;
 }
 
 /* Logo en la barra de navegación */
@@ -10,47 +31,75 @@
     max-height: 40px;
 }
 
-/* Enlaces de color gris */
+/* Enlaces de color chocolate */
 .nav-link-custom {
-    color: #555555 !important; /* Gris */
+    color: #8B4513 !important; /* Chocolate */
 }
 
 .nav-link-custom:hover {
-    color: #606060 !important; /* Gris oscuro al pasar el ratón */
+    color: #5D4037 !important; /* Texto principal al pasar el ratón */
     text-decoration: none;
 }
 
-/* Carrito de compras en gris */
+/* Carrito de compras en chocolate */
 .cart-custom {
-    color: #808080 !important; /* Gris para el carrito */
+    color: #8B4513 !important; /* Chocolate */
 }
 
 .cart-custom:hover {
-    color: #606060 !important; /* Gris oscuro al pasar el ratón */
+    color: #5D4037 !important; /* Texto principal al pasar el ratón */
     text-decoration: none;
 }
 
 /* Contenedor del logo principal */
 .logo-container {
-    width: 150px; 
+    width: 150px;
     height: 150px;
 }
 
-/* Estilos adicionales para mejorar la apariencia */
-body {
-    font-family: 'Arial', sans-serif;
-}
-
+/* Fondo principal crema pastel */
 .bg-light {
-    background-color: #f8f9fa!important;
+    background-color: #FFF5E1 !important;
 }
 
+/* Formulario */
+.bg-secondary {
+    background-color: #FFC0CB !important; /* Rosa suave */
+    border: 1px solid #8B4513;
+}
+
+.bg-light.text-center.font-weight-bold.p-2.mb-3 {
+    background-color: #FFF5E1 !important;
+    color: #5D4037;
+}
+
+/* Botones */
 .btn-light {
-    background-color: #f8f9fa;
-    border-color: #343a40;
+    background-color: #8B4513; /* Chocolate */
+    border-color: #8B4513;
+    color: #fff;
 }
 
 .btn-light:hover {
-    background-color: #e2e6ea;
-    border-color: #343a40;
+    background-color: #FFC0CB; /* Rosa suave */
+    border-color: #FFC0CB;
+    color: #5D4037;
+}
+
+/* Inputs */
+.form-control {
+    background-color: #FFF5E1;
+    border-color: #8B4513;
+    color: #5D4037;
+}
+
+.form-control:focus {
+    background-color: #FFF5E1;
+    border-color: #5D4037;
+    color: #5D4037;
+}
+
+/* Labels */
+label {
+    color: #5D4037;
 }
