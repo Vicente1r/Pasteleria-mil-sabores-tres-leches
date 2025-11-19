@@ -37,9 +37,41 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    // Credenciales de prueba locales (útiles si no tienes usuarios creados en Firebase)
+    // Contraseñas temporales: admin -> "admin123", cliente -> "cliente123"
+    if (correo === 'admin@duoc.cl' && clave === 'admin123') {
+        const usuario = { nombre: 'Administrador', correo, rol: 'admin' };
+        localStorage.setItem('usuario', JSON.stringify(usuario));
+        mensaje.style.color = 'green';
+        mensaje.innerText = 'Bienvenido Administrador (modo prueba), redirigiendo...';
+        setTimeout(() => {
+            // Redirigir al panel de administración
+            window.location.href = 'admin.html';
+        }, 1000);
+        return;
+    }
+
+    if (correo === 'cliente@duoc.cl' && clave === 'cliente123') {
+        const usuario = { nombre: 'Cliente Demo', correo, rol: 'cliente' };
+        localStorage.setItem('usuario', JSON.stringify(usuario));
+        mensaje.style.color = 'green';
+        mensaje.innerText = 'Bienvenido Cliente (modo prueba), redirigiendo...';
+        setTimeout(() => {
+            window.location.href = `perfilCliente.html`;
+        }, 1000);
+        return;
+    }
+
     // Admin: autenticar con Firebase Auth
     if (correo === "admin@duoc.cl") {
         try {
+            // Asegurar persistencia local de la sesión antes de iniciar (permanece tras redirect)
+            try {
+                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+            } catch (pErr) {
+                console.warn('No se pudo establecer persistencia explícita:', pErr);
+            }
+
             await auth.signInWithEmailAndPassword(correo, clave);
             // Guardar usuario en localStorage
             const usuario = { nombre: "Administrador", correo, rol: "admin" };
@@ -48,7 +80,13 @@ document.addEventListener("DOMContentLoaded", () => {
             mensaje.style.color = "green";
             mensaje.innerText = "Bienvenido Administrador, redirigiendo...";
             setTimeout(() => {
-                window.location.href = `perfilAdmin.html`;
+                const redirect = localStorage.getItem('redirigirDespuesLogin');
+                if (redirect) {
+                    localStorage.removeItem('redirigirDespuesLogin');
+                    window.location.href = redirect;
+                } else {
+                    window.location.href = `admin.html`;
+                }
             }, 1000);
         } catch (error) {
             console.error("Error login admin:", error);
@@ -76,7 +114,13 @@ document.addEventListener("DOMContentLoaded", () => {
             mensaje.style.color = "green";
             mensaje.innerText = "Bienvenido cliente, redirigiendo...";
             setTimeout(() => {
-                window.location.href = `perfilCliente.html`;
+                const redirect = localStorage.getItem('redirigirDespuesLogin');
+                if (redirect) {
+                    localStorage.removeItem('redirigirDespuesLogin');
+                    window.location.href = redirect;
+                } else {
+                    window.location.href = `perfilCliente.html`;
+                }
             }, 1000);
         } else {
             mensaje.style.color = "red";

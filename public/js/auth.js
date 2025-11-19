@@ -13,8 +13,10 @@ import {
 
 // ================== ELEMENTOS DEL DOM ==================
 const modal = document.getElementById('modal');
-const btnInicioSesion = document.getElementById('inicio_sesion');
-const btnRegistrarse = document.getElementById('registrarse');
+// Buscar elemento de inicio de sesión: preferir id pero aceptar clase (.btn-login)
+let btnInicioSesion = document.getElementById('inicio_sesion') || document.querySelector('.btn-login');
+// Buscar elemento de registrarse: preferir id pero aceptar clase (.btn-signup)
+let btnRegistrarse = document.getElementById('registrarse') || document.querySelector('.btn-signup');
 const btnCerrar = document.getElementById('cerrar');
 
 const tabLogin = document.getElementById('tab-login');
@@ -104,31 +106,65 @@ function actualizarUIUsuario(userData) {
       });
       
       // Insertar después del botón de inicio de sesión
-      const usuarioDiv = document.querySelector('.usuario');
-      const separadorAnterior = btnInicioSesion.nextElementSibling;
-      
-      if (separadorAnterior && separadorAnterior.classList.contains('separar')) {
+      const usuarioDiv = document.querySelector('.usuario') || document.querySelector('.auth-buttons') || document.querySelector('.nav-right');
+      const separadorAnterior = btnInicioSesion ? btnInicioSesion.nextElementSibling : null;
+
+      if (separadorAnterior && separadorAnterior.classList && separadorAnterior.classList.contains('separar')) {
         separadorAnterior.after(separador);
         separador.after(btnCerrarSesion);
+      } else if (usuarioDiv) {
+        // Agregar separador si no existe
+        usuarioDiv.appendChild(separador);
+        usuarioDiv.appendChild(btnCerrarSesion);
+      }
+
+      // Agregar enlace a perfil de usuario
+      let btnPerfil = document.getElementById('btn-perfil');
+      if (!btnPerfil && usuarioDiv) {
+        btnPerfil = document.createElement('a');
+        btnPerfil.id = 'btn-perfil';
+        btnPerfil.textContent = 'Mi Perfil';
+        btnPerfil.href = userData && (userData.rol === 'admin' || userData.role === 'admin') ? 'admin.html' : 'perfilCliente.html';
+        btnPerfil.style.marginRight = '10px';
+        usuarioDiv.insertBefore(btnPerfil, separador || null);
+      }
+
+      // Si es admin, agregar enlace al panel de administración
+      const isAdmin = userData && (userData.rol === 'admin' || userData.role === 'admin');
+      let btnPanelAdmin = document.getElementById('btn-panel-admin');
+      if (isAdmin && !btnPanelAdmin && usuarioDiv) {
+        btnPanelAdmin = document.createElement('a');
+        btnPanelAdmin.id = 'btn-panel-admin';
+        btnPanelAdmin.textContent = 'Panel Admin';
+        btnPanelAdmin.href = 'admin.html';
+        btnPanelAdmin.style.marginRight = '10px';
+        usuarioDiv.insertBefore(btnPanelAdmin, document.getElementById('separador-cerrar-sesion') || null);
       }
     }
     
     // Cambiar comportamiento del click en "Iniciar sesión"
-    const nuevoBtn = btnInicioSesion.cloneNode(true);
-    btnInicioSesion.parentNode.replaceChild(nuevoBtn, btnInicioSesion);
+    if (btnInicioSesion && btnInicioSesion.parentNode) {
+      const nuevoBtn = btnInicioSesion.cloneNode(true);
+      btnInicioSesion.parentNode.replaceChild(nuevoBtn, btnInicioSesion);
+      btnInicioSesion = document.getElementById('inicio_sesion') || document.querySelector('.btn-login');
+    }
     
   } else {
     // Usuario no autenticado
     currentUserData = null;
-    const btnActual = document.getElementById('inicio_sesion');
+    const btnActual = document.getElementById('inicio_sesion') || document.querySelector('.btn-login');
     if (btnActual) {
       btnActual.textContent = 'Iniciar sesión';
       btnActual.style.cursor = 'pointer';
       
-      // Restaurar funcionalidad de abrir modal
-      const nuevoBtn = btnActual.cloneNode(true);
-      btnActual.parentNode.replaceChild(nuevoBtn, btnActual);
-      nuevoBtn.addEventListener('click', () => abrirModal(false));
+      // Restaurar funcionalidad de abrir modal (si existe)
+      try {
+        const nuevoBtn = btnActual.cloneNode(true);
+        if (btnActual.parentNode) btnActual.parentNode.replaceChild(nuevoBtn, btnActual);
+        nuevoBtn.addEventListener('click', () => abrirModal(false));
+      } catch (e) {
+        // ignore
+      }
     }
     
     if (btnRegistrarse) {
@@ -138,8 +174,12 @@ function actualizarUIUsuario(userData) {
     // Eliminar botón de cerrar sesión
     const btnCerrarSesion = document.getElementById('btn-cerrar-sesion');
     const separadorCerrarSesion = document.getElementById('separador-cerrar-sesion');
+    const btnPerfil = document.getElementById('btn-perfil');
+    const btnPanelAdmin = document.getElementById('btn-panel-admin');
     if (btnCerrarSesion) btnCerrarSesion.remove();
     if (separadorCerrarSesion) separadorCerrarSesion.remove();
+    if (btnPerfil) btnPerfil.remove();
+    if (btnPanelAdmin) btnPanelAdmin.remove();
   }
 }
 
@@ -340,7 +380,7 @@ if (formLogin) {
     const clave = document.getElementById("login-clave")?.value;
 
     // Mini "base de datos" local
-    const adminEmail = "admin@duocuc.cl";
+    const adminEmail = "admin@duoc.cl";
     const adminPass = "123456";
 
     if (correo === adminEmail && clave === adminPass) {
@@ -364,7 +404,7 @@ onAuthStateChanged(auth, async (user) => {
       const docSnap = await getDoc(docRef);
 
       // Si el admin no está en Firestore con rol, lo definimos aquí
-if (user.email === "admin@duocuc.cl") {
+if (user.email === "admin@duoc.cl") {
   if (!userData.role || userData.role !== "admin") {
     userData.role = "admin";
   }

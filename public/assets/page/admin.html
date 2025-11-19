@@ -275,5 +275,70 @@
       }
     });
   </script>
+  <!-- Firebase (necesario para verificar rol de admin) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script>
+    (function() {
+      // Configuración mínima de Firebase (usar la misma que en la app)
+      const firebaseConfig = {
+        apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
+        authDomain: "pasteleriamilsaborestresleches.web.app",
+        projectId: "pasteleriamilsaborestresleches",
+      };
+
+      if (!window.firebase.apps?.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      async function checkAdmin() {
+        // Primer intento: comprobar localStorage
+        try {
+          const usuarioRaw = localStorage.getItem('usuario');
+          if (usuarioRaw) {
+            const usuario = JSON.parse(usuarioRaw);
+            if (usuario && usuario.rol === 'admin') {
+              return; // permitido
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
+
+        // Segundo intento: si hay user de Firebase, comprobar rol en Firestore
+        const user = auth.currentUser;
+        if (user) {
+          try {
+            const docRef = db.collection('users').doc(user.uid);
+            const doc = await docRef.get();
+            if (doc.exists) {
+              const data = doc.data();
+              if (data && data.role === 'admin') return; // permitido
+            }
+          } catch (e) {
+            console.warn('Error comprobando rol en Firestore', e);
+          }
+        }
+
+        // Si llegamos aquí, no es admin: redirigir al login
+        alert('Acceso restringido: debes iniciar sesión como administrador');
+        window.location.href = 'login.html';
+      }
+
+      // Si auth aún no ha inicializado el usuario, esperar al onAuthStateChanged
+      auth.onAuthStateChanged(() => {
+        checkAdmin();
+      });
+
+      // También ejecutar inmediatamente (en caso de localStorage)
+      checkAdmin();
+    })();
+  </script>
 </body>
 </html>
+
+<script type="module" src="../../js/auth.js"></script>

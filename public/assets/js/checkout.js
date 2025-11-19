@@ -34,6 +34,25 @@ const regionesComunas = {
 
 // Inicializar checkout cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
+
+    // Comprobar si hay sesión: ya sea a través de localStorage (app antigua) o Firebase Auth
+    const usuarioStorage = localStorage.getItem('usuario');
+    let user = null;
+    try {
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+            user = firebase.auth().currentUser;
+        }
+    } catch (e) {
+        user = null;
+    }
+
+    if (!usuarioStorage && !user) {
+        alert('Debes iniciar sesión para poder comprar.');
+        localStorage.setItem('redirigirDespuesLogin', 'checkout.html');
+        window.location.href = 'login.html';
+        return;
+    }
+
     inicializarCheckout();
     configurarEventosCheckout();
     cargarRegiones(); // Cargar las regiones al iniciar
@@ -167,6 +186,20 @@ async function procesarPago() {
         const datosDireccion = obtenerDatosDireccion();
         const total = carrito.reduce((sum, producto) => sum + ((producto.precio || 0) * (producto.cantidad || 1)), 0);
 
+        // Determinar si la compra es de un usuario autenticado o invitado
+        let authUser = null;
+        try {
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                authUser = firebase.auth().currentUser;
+            }
+        } catch (e) {
+            authUser = null;
+        }
+
+        const usuarioStorageRaw = localStorage.getItem('usuario');
+        const usuarioStorageParsed = usuarioStorageRaw ? JSON.parse(usuarioStorageRaw) : null;
+        const isGuest = !authUser && !usuarioStorageParsed;
+
         // Crear objeto de compra
         const compra = {
             fecha: new Date(),
@@ -175,7 +208,9 @@ async function procesarPago() {
             productos: [...carrito], // Copia del carrito
             total: total,
             estado: 'pendiente',
-            numeroOrden: generarNumeroOrden()
+            numeroOrden: generarNumeroOrden(),
+            userId: authUser ? authUser.uid : (usuarioStorageParsed ? (usuarioStorageParsed.correo || usuarioStorageParsed.nombre || null) : null),
+            guest: !!isGuest
         };
 
         // Guardar en Firestore
@@ -297,3 +332,8 @@ function validarCampo(campo) {
         campo.style.borderColor = '#28a745';
     }
 }
+
+
+
+
+
