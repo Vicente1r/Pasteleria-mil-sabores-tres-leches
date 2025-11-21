@@ -419,7 +419,7 @@ function irAlCheckout() {
         mostrarNotificacion('Agrega productos al carrito antes de continuar', 'error');
         return;
     }
-    // Comprobar si el usuario está autenticado (Firebase Auth) o existe un usuario en localStorage
+    // Comprobar si el usuario está autenticado mediante Firebase Auth (no se permiten sesiones por localStorage)
     let user = null;
     try {
         if (typeof firebase !== 'undefined' && firebase.auth) {
@@ -429,21 +429,18 @@ function irAlCheckout() {
         user = null;
     }
 
-    const usuarioStorage = localStorage.getItem('usuario');
-
-    if (user || usuarioStorage) {
-        console.log("Usuario autenticado, yendo a checkout");
+    if (user) {
+        console.log("Usuario autenticado (Firebase), yendo a checkout");
         window.location.href = 'checkout.html';
         return;
     }
 
-    // Si no está autenticado, guardar la página de destino y redirigir al login (inicio de sesión obligatorio)
-    console.log("Usuario no autenticado, redirigiendo a login");
+    // Si no está autenticado via Firebase, bloquear y forzar login
+    console.log("Usuario no autenticado (Firebase), bloqueando acceso al checkout");
     localStorage.setItem('redirigirDespuesLogin', 'checkout.html');
+    alert('No has iniciado sesión. Por favor inicia sesión para continuar con la compra.');
     mostrarNotificacion('Debes iniciar sesión para poder comprar', 'error');
-    setTimeout(() => {
-        window.location.href = 'login.html';
-    }, 800);
+    setTimeout(() => { window.location.href = 'login.html'; }, 800);
     return;
     const total = carrito.reduce((sum, p) => sum + ((p.precio || 0) * (p.cantidad || 1)), 0);
     const totalProductos = carrito.reduce((sum, p) => sum + (p.cantidad || 1), 0);

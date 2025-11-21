@@ -35,8 +35,7 @@ const regionesComunas = {
 // Inicializar checkout cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
 
-    // Comprobar si hay sesión: ya sea a través de localStorage (app antigua) o Firebase Auth
-    const usuarioStorage = localStorage.getItem('usuario');
+    // Comprobar si hay sesión activa únicamente mediante Firebase Auth
     let user = null;
     try {
         if (typeof firebase !== 'undefined' && firebase.auth) {
@@ -46,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         user = null;
     }
 
-    if (!usuarioStorage && !user) {
+    if (!user) {
         alert('Debes iniciar sesión para poder comprar.');
         localStorage.setItem('redirigirDespuesLogin', 'checkout.html');
         window.location.href = 'login.html';
@@ -181,12 +180,28 @@ async function procesarPago() {
     }
 
     try {
+        // Verificar sesión obligatoria: sólo Firebase Auth (no se permiten sesiones por localStorage)
+        let authUserCheck = null;
+        try {
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                authUserCheck = firebase.auth().currentUser;
+            }
+        } catch (e) {
+            authUserCheck = null;
+        }
+
+        if (!authUserCheck) {
+            alert('Debes iniciar sesión para completar la compra.');
+            localStorage.setItem('redirigirDespuesLogin', 'checkout.html');
+            setTimeout(() => { window.location.href = 'login.html'; }, 600);
+            return;
+        }
+
         // Obtener datos del formulario
         const datosCliente = obtenerDatosCliente();
         const datosDireccion = obtenerDatosDireccion();
         const total = carrito.reduce((sum, producto) => sum + ((producto.precio || 0) * (producto.cantidad || 1)), 0);
-
-        // Determinar si la compra es de un usuario autenticado o invitado
+        // Determinar usuario autenticado (se asume sesión iniciada)
         let authUser = null;
         try {
             if (typeof firebase !== 'undefined' && firebase.auth) {
@@ -198,9 +213,8 @@ async function procesarPago() {
 
         const usuarioStorageRaw = localStorage.getItem('usuario');
         const usuarioStorageParsed = usuarioStorageRaw ? JSON.parse(usuarioStorageRaw) : null;
-        const isGuest = !authUser && !usuarioStorageParsed;
 
-        // Crear objeto de compra
+        // Crear objeto de compra (no se permite guest)
         const compra = {
             fecha: new Date(),
             cliente: datosCliente,
@@ -209,8 +223,7 @@ async function procesarPago() {
             total: total,
             estado: 'pendiente',
             numeroOrden: generarNumeroOrden(),
-            userId: authUser ? authUser.uid : (usuarioStorageParsed ? (usuarioStorageParsed.correo || usuarioStorageParsed.nombre || null) : null),
-            guest: !!isGuest
+            userId: authUser ? authUser.uid : (usuarioStorageParsed ? (usuarioStorageParsed.correo || usuarioStorageParsed.nombre || null) : null)
         };
 
         // Guardar en Firestore
