@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard de Usuario</title>
   <link rel="stylesheet" href="../css/perfilcliente.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
   <div class="admin-container">
@@ -12,7 +14,7 @@
     <div class="sidebar">
       <div class="logo">
         <div class="logo-icon">⚙</div>
-        <span>Bienvenido *Usuario</span>
+        <span id="sidebar-username">Bienvenido *Usuario</span>
       </div>
       
       <nav class="nav-menu">
@@ -131,52 +133,53 @@
               <div class="form-row">
                 <div class="form-group half">
                   <label>NOMBRE</label>
-                  <input type="text" class="form-input" value="Juan" required>
-                </div>
-                
-                <div class="form-group half">
-                  <label>APELLIDO</label>
-                  <input type="text" class="form-input" value="Pérez" required>
-                </div>
-              </div>
-              
-              <div class="form-group">
-                <label>NOMBRE DE USUARIO</label>
-                <input type="text" class="form-input" value="juanperez" required>
-              </div>
-              
-              <div class="form-group">
-                <label>CORREO ELECTRÓNICO</label>
-                <input type="email" class="form-input" value="juan.perez@ejemplo.com" required>
-              </div>
-              
-              <div class="form-group">
-                <label>TELÉFONO</label>
-                <input type="tel" class="form-input" value="+56 9 1234 5678">
-              </div>
-              
-              <div class="section-header">Cambiar contraseña</div>
-              
-              <div class="form-group">
-                <label>CONTRASEÑA ACTUAL</label>
-                <input type="password" class="form-input">
-              </div>
-              
-              <div class="form-group">
-                <label>NUEVA CONTRASEÑA</label>
-                <input type="password" class="form-input">
-              </div>
-              
-              <div class="form-group">
-                <label>CONFIRMAR NUEVA CONTRASEÑA</label>
-                <input type="password" class="form-input">
-              </div>
-            </div>
-            
-            <div class="form-actions">
-              <button type="submit" class="btn-register">GUARDAR CAMBIOS</button>
-            </div>
-          </form>
+          <input type="text" class="form-input" id="input-nombre" required>
+        </div>
+        
+        <div class="form-group half">
+          <label>APELLIDO</label>
+          <input type="text" class="form-input" id="input-apellido" required>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>NOMBRE DE USUARIO</label>
+        <input type="text" class="form-input" id="input-username" required>
+      </div>
+      
+      <div class="form-group">
+        <label>CORREO ELECTRÓNICO</label>
+        <input type="email" class="form-input" id="input-correo" required readonly>
+      </div>
+      
+      <div class="form-group">
+        <label>TELÉFONO</label>
+        <input type="tel" class="form-input" id="input-telefono">
+      </div>
+      
+      <div class="section-header">Cambiar contraseña</div>
+      
+      <div class="form-group">
+        <label>CONTRASEÑA ACTUAL</label>
+        <input type="password" class="form-input" id="input-pass-actual">
+      </div>
+      
+      <div class="form-group">
+        <label>NUEVA CONTRASEÑA</label>
+        <input type="password" class="form-input" id="input-pass-nueva">
+      </div>
+      
+      <div class="form-group">
+        <label>CONFIRMAR NUEVA CONTRASEÑA</label>
+        <input type="password" class="form-input" id="input-pass-confirmar">
+      </div>
+    </div>
+    
+    <div class="form-actions">
+      <button type="submit" class="btn-register">GUARDAR CAMBIOS</button>
+    </div>
+  </form>
+  <div id="update-message" style="margin-top: 1rem; font-weight: bold;"></div>
         </div>
       </div>
     </div>
@@ -189,19 +192,16 @@
       const pageTitle = document.getElementById('page-title');
       const newUserBtn = document.getElementById('new-user-btn');
       const profileBtn = document.getElementById('profile-btn');
+      const sidebarUsername = document.getElementById('sidebar-username');
+      const updateMessage = document.getElementById('update-message');
 
       // Función para cambiar vistas
       function showView(viewName, title) {
-        // Ocultar todas las vistas
         contentViews.forEach(view => view.classList.add('hidden'));
-        
-        // Mostrar la vista seleccionada
         const targetView = document.getElementById(viewName + '-view');
         if (targetView) {
           targetView.classList.remove('hidden');
         }
-        
-        // Actualizar título
         pageTitle.textContent = title;
       }
 
@@ -209,12 +209,8 @@
       navItems.forEach(item => {
         item.addEventListener('click', function() {
           const viewName = this.getAttribute('data-view');
-          
-          // Actualizar navegación activa
           navItems.forEach(nav => nav.classList.remove('active'));
           this.classList.add('active');
-          
-          // Mostrar vista correspondiente
           switch(viewName) {
             case 'dashboard':
               showView('dashboard', '¡HOLA --------!');
@@ -226,23 +222,110 @@
         });
       });
 
-      // Botón "Mi Perfil"
       if (profileBtn) {
         profileBtn.addEventListener('click', function() {
-          // Quitar activo de otros elementos de navegación
           navItems.forEach(nav => nav.classList.remove('active'));
-          
-          // Mostrar vista de perfil
           showView('profile', 'Mi Perfil');
         });
       }
 
-      // Botón "NUEVO USUARIO"
       if (newUserBtn) {
         newUserBtn.addEventListener('click', function() {
           showView('profile', 'Mi Perfil');
         });
       }
+
+      // Load user data from localStorage on profile view
+      function loadUserData() {
+        try {
+          const user = JSON.parse(localStorage.getItem('usuario'));
+          if (user) {
+            document.getElementById('input-nombre').value = user.nombre || '';
+            // Other fields can be set similarly if stored (sample placeholders):
+            // document.getElementById('input-apellido').value = user.apellido || '';
+            // document.getElementById('input-username').value = user.nombreDeUsuario || '';
+            document.getElementById('input-correo').value = user.correo || '';
+            // document.getElementById('input-telefono').value = user.telefono || '';
+
+            if (sidebarUsername) sidebarUsername.textContent = `Bienvenido ${user.nombre}`;
+            if (pageTitle && pageTitle.textContent === '¡HOLA --------!') {
+              pageTitle.textContent = `¡HOLA ${user.nombre}!`;
+            }
+          }
+        } catch(e) {
+          console.error('Error loading user data:', e);
+        }
+      }
+
+      // Save updated name to Firestore
+      async function updateUserNameInFirestore(email, newName) {
+        try {
+          if (!window.firebase || !firebase.firestore) {
+            throw new Error('Firebase Firestore no está disponible');
+          }
+          const db = firebase.firestore();
+
+          const query = await db.collection('usuario').where('correo', '==', email).get();
+          if (!query.empty) {
+            const doc = query.docs[0];
+            await db.collection('usuario').doc(doc.id).update({ nombre: newName });
+            return true;
+          } else {
+            throw new Error('No se encontró el usuario en Firestore');
+          }
+        } catch (error) {
+          console.error('Error updating user name in Firestore:', error);
+          return false;
+        }
+      }
+
+      // Form submission handler to save updated name
+      const userForm = document.querySelector('.user-form');
+      if (userForm) {
+        userForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          updateMessage.textContent = '';
+
+          const newName = document.getElementById('input-nombre').value.trim();
+          const email = document.getElementById('input-correo').value.trim();
+
+          if (!newName) {
+            updateMessage.style.color = 'red';
+            updateMessage.textContent = 'El nombre no puede estar vacío.';
+            return;
+          }
+
+          // Update localStorage
+          try {
+            const user = JSON.parse(localStorage.getItem('usuario')) || {};
+            user.nombre = newName;
+            localStorage.setItem('usuario', JSON.stringify(user));
+            if (sidebarUsername) sidebarUsername.textContent = `Bienvenido ${newName}`;
+            if (pageTitle) pageTitle.textContent = `¡HOLA ${newName}!`;
+          } catch(e) {
+            console.error('Error updating localStorage:', e);
+          }
+
+          // Update Firestore
+          const success = await updateUserNameInFirestore(email, newName);
+          if (success) {
+            updateMessage.style.color = 'green';
+            updateMessage.textContent = 'Nombre actualizado correctamente.';
+            setTimeout(() => {
+              updateMessage.textContent = '';
+            }, 2000);
+          } else {
+            updateMessage.style.color = 'red';
+            updateMessage.textContent = 'Error , nombre no se pudo actualizar.';
+            setTimeout(() => {
+              updateMessage.textContent = '';
+            }, 4000);
+          }
+        });
+      }
+
+      // Initial load user data
+      loadUserData();
     });
   </script>
 </body>

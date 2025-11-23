@@ -175,6 +175,22 @@ function renderizarCarrito() {
  * Agrega un producto al carrito desde la sección de ofertas
  */
 async function agregarProductoAlCarrito(productId) {
+    // Verificar si el usuario está autenticado mediante Firebase Auth (no se permiten sesiones por localStorage)
+    let user = null;
+    try {
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+            user = firebase.auth().currentUser;
+        }
+    } catch (e) {
+        user = null;
+    }
+
+    if (!user) {
+        alert('Debes iniciar sesión para poder agregar productos al carrito.');
+        mostrarNotificacion('Debes iniciar sesión para poder agregar productos al carrito.', 'error');
+        return;
+    }
+
     const producto = productosOferta.find(p => p.id === productId);
 
     if (!producto) {
