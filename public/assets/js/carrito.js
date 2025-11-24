@@ -15,12 +15,23 @@ const db = firebase.firestore();
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 let productosOferta = [];
 
-// Inicializar la aplicación cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("Carrito cargado:", carrito);
+let currentUser = null;  // Global variable to hold auth state
+
+// Listen for Firebase auth state changes
+firebase.auth().onAuthStateChanged(function(user) {
+    currentUser = user;
+    console.log("Auth state changed. Current user:", currentUser);
+
+    // Optionally reinitialize carrito UI or enable actions after login
     inicializarCarrito();
     cargarProductosOferta();
     configurarEventos();
+});
+
+// Inicializar la aplicación cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Carrito cargado:", carrito);
+    // Previously duplicated calls removed - auth state listener now handles init
 });
 
 /**
@@ -435,17 +446,8 @@ function irAlCheckout() {
         mostrarNotificacion('Agrega productos al carrito antes de continuar', 'error');
         return;
     }
-    // Comprobar si el usuario está autenticado mediante Firebase Auth (no se permiten sesiones por localStorage)
-    let user = null;
-    try {
-        if (typeof firebase !== 'undefined' && firebase.auth) {
-            user = firebase.auth().currentUser;
-        }
-    } catch (e) {
-        user = null;
-    }
-
-    if (user) {
+    // Use global currentUser set by auth state listener
+    if (currentUser) {
         console.log("Usuario autenticado (Firebase), yendo a checkout");
         window.location.href = 'checkout.html';
         return;
@@ -453,7 +455,8 @@ function irAlCheckout() {
 
     // Si no está autenticado via Firebase, bloquear y forzar login
     console.log("Usuario no autenticado (Firebase), bloqueando acceso al checkout");
-    localStorage.setItem('redirigirDespuesLogin', 'checkout.html');
+    // Establecer redirección posterior a carrito.html para reanudar compra
+    localStorage.setItem('redirigirDespuesLogin', 'carrito.html');
     alert('No has iniciado sesión. Por favor inicia sesión para continuar con la compra.');
     mostrarNotificacion('Debes iniciar sesión para poder comprar', 'error');
     setTimeout(() => { window.location.href = 'login.html'; }, 800);
