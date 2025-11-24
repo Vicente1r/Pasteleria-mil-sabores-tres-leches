@@ -8,7 +8,7 @@
 <body>
   <div class="main">
     <h2>Registro de usuario</h2>
-  <form id="form-registro" autocomplete="off">
+  <form id="form-register" autocomplete="off">
     <div class="form-group">
                 <label for="reg-run">RUN (sin puntos ni guión): </label>
                 <input type="text" id="reg-run" name="run" minlength="7" maxlength="9" required />
@@ -16,27 +16,27 @@
     
       <div class="form-group">
         <label for="nombre">NOMBRE COMPLETO</label>
-        <input type="text" id="nombre" name="nombre">
+        <input type="text" id="nombre" name="nombre" required>
       </div>
 
       <div class="form-group">
-        <label for="correo">CORREO</label>
-        <input type="email" id="correo" name="correo">
+        <label for="correo_reg">CORREO</label>
+        <input type="email" id="correo_reg" name="correo_reg" required>
       </div>
 
       <div class="form-group">
         <label for="correo2">CONFIRMAR CORREO</label>
-        <input type="email" id="correo2" name="correo2">
+        <input type="email" id="correo2" name="correo2" required>
       </div>
 
       <div class="form-group">
         <label for="password">CONTRASEÑA</label>
-        <input type="password" id="password" name="password">
+        <input type="password" id="password" name="password" required>
       </div>
 
       <div class="form-group">
         <label for="password2">CONFIRMAR CONTRASEÑA</label>
-        <input type="password" id="password2" name="password2">
+        <input type="password" id="password2" name="password2" required>
       </div>
 
       <div class="form-group">
@@ -45,13 +45,13 @@
       </div>
 
         <div class="form-group">
-          <label for="fecha_nacimiento">FECHA DE NACIMIENTO</label>
-          <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+          <label for="reg-fecha">FECHA DE NACIMIENTO</label>
+          <input type="date" id="reg-fecha" name="reg-fecha" required>
         </div>
 
       <div class="form-group">
         <label for="comuna">COMUNA</label>
-        <select name="comuna" id="comuna">
+        <select name="comuna" id="comuna" required>
           <option value="">-- Seleccione la comuna --</option>
           <!-- Comunas de la Región Metropolitana -->
           <option value="Cerrillos">Cerrillos</option>
@@ -109,10 +109,101 @@
         </select>
       </div>
 
-      <button type="submit" class="btn">REGISTRAR</button>
+      <button type="submit" class="btn" id="btn-register">REGISTRAR</button>
     </form>
   </div>
-  <script type="module" src="../../js/auth.js"></script>
+  <!-- Firebase y registro desde CDN -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA1_om-_HPyYVnUo8ELiM5Zob2VSMGbWvw",
+      authDomain: "pasteleriamilsaborestresleches.firebaseapp.com",
+      projectId: "pasteleriamilsaborestresleches",
+      storageBucket: "pasteleriamilsaborestresleches.firebasestorage.app",
+      messagingSenderId: "724534518591",
+      appId: "1:724534518591:web:fda9e47afb93ed6854e98a",
+      measurementId: "G-FXQWCCHM83",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const formRegister = document.getElementById("form-register");
+
+    if (formRegister) {
+      formRegister.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btnRegister = document.getElementById("btn-register");
+        if (!btnRegister) return;
+        btnRegister.disabled = true;
+        btnRegister.textContent = "Registrando...";
+
+        try {
+          const correo = document.getElementById("correo_reg")?.value.trim();
+          const password = document.getElementById("password")?.value;
+
+          if (!correo || !password) {
+            alert("Por favor, completa correo y contraseña");
+            btnRegister.disabled = false;
+            btnRegister.textContent = "Registrar";
+            return;
+          }
+
+          const userCredential = await createUserWithEmailAndPassword(auth, correo, password);
+          const user = userCredential.user;
+
+          const runInput = document.getElementById("reg-run");
+          const nombreInput = document.getElementById("nombre");
+          const correo2Input = document.getElementById("correo2");
+          const telefonoInput = document.getElementById("telefono");
+          const comunaInput = document.getElementById("comuna");
+          const fechaInput = document.getElementById("reg-fecha");
+
+          const run = runInput ? parseInt(runInput.value.trim()) : null;
+          const nombre = nombreInput ? nombreInput.value.trim() : "";
+          const correo2 = correo2Input ? correo2Input.value.trim() : "";
+          const telefono = telefonoInput ? parseInt(telefonoInput.value.trim()) : null;
+          const comuna = comunaInput ? comunaInput.value : "";
+          const fechaNacimiento = fechaInput && fechaInput.value ? new Date(fechaInput.value) : null;
+
+          // Para seguridad, NO guardar password en Firestore
+          // Construimos el objeto userData sin password y sin correo2 (confirmación correo)
+          const userData = {
+            run: run,
+            nombre: nombre,
+            correo: correo,
+            telefono: telefono,
+            comuna: comuna,
+            fechaNacimiento: fechaNacimiento,
+            createdAt: new Date().toISOString(),
+          };
+
+          await setDoc(doc(db, "usuario", user.uid), userData);
+
+          alert("¡Registro exitoso! Usuario creado y guardado en Firestore.");
+        } catch (error) {
+          console.error("Error en registro:", error);
+          alert("Error al registrar usuario: " + (error.message || error.code));
+        } finally {
+          btnRegister.disabled = false;
+          btnRegister.textContent = "Registrar";
+        }
+      });
+    }
+
+  </script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const form = document.getElementById('form-registro');
