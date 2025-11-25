@@ -1,0 +1,28 @@
+useEffect(() => {
+    const carritoGuardado = JSON.parse(localStorage.getItem('carrito')) || [];
+    setCarrito(carritoGuardado);
+    cargarProductosOferta();
+    cargarProductosGenerales();
+  }, []);
+=======
+  // Cargar carrito desde localStorage al inicializar
+  useEffect(() => {
+    const carritoGuardado = JSON.parse(localStorage.getItem('carrito')) || [];
+    setCarrito(carritoGuardado);
+    cargarProductosOferta();
+    cargarProductosGenerales();
+  }, []);
+
+  // Escuchar cambios en localStorage (para sincronizar con cambios desde otras pestañas o carrito.html)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'carrito') {
+        const nuevoCarrito = JSON.parse(e.newValue) || [];
+        setCarrito(nuevoCarrito);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);

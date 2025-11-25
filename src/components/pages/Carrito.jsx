@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../../services/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../config/firebase';
+import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import './Carrito.css';
 
 /**
  * Componente del Carrito de Compras
- * Muestra productos en oferta y el resumen del carrito
+ * Muestra productos en oferta y productos generales y el resumen del carrito
  */
 const Carrito = () => {
   const [carrito, setCarrito] = useState([]);
   const [productosOferta, setProductosOferta] = useState([]);
-  const [cargando, setCargando] = useState(true);
+  const [productosGenerales, setProductosGenerales] = useState([]);
+  const [cargandoOferta, setCargandoOferta] = useState(true);
+  const [cargandoGenerales, setCargandoGenerales] = useState(true);
   const navigate = useNavigate();
 
   // Cargar carrito desde localStorage al inicializar
@@ -19,56 +21,154 @@ const Carrito = () => {
     const carritoGuardado = JSON.parse(localStorage.getItem('carrito')) || [];
     setCarrito(carritoGuardado);
     cargarProductosOferta();
+    cargarProductosGenerales();
+  }, []);
+
+  // Escuchar cambios en localStorage (para sincronizar con cambios desde otras pestañas o carrito.html)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'carrito') {
+        const nuevoCarrito = JSON.parse(e.newValue) || [];
+        setCarrito(nuevoCarrito);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   /**
-   * Carga productos en oferta desde Firestore
+   * Carga productos en oferta desde Firestore (colección "oferta")
    */
   const cargarProductosOferta = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, 'oferta'));
+      const productos = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setProductosOferta(productos);
+    } catch (error) {
+      console.error('Error cargando productos en oferta:', error);
+      setProductosOferta([]);
+    } finally {
+      setCargandoOferta(false);
+    }
+  };
+
+  /**
+   * Carga productos generales desde Firestore (colección "producto")
+   */
+  const cargarProductosGenerales = async () => {
     try {
       const snapshot = await getDocs(collection(db, 'producto'));
       const productos = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      
-      // Filtrar productos con precio anterior (en oferta)
-      const productosConOferta = productos.filter(producto => producto.precioAnterior);
-      setProductosOferta(productosConOferta);
+      setProductosGenerales(productos);
     } catch (error) {
-      console.error('Error cargando productos en oferta:', error);
+      console.error('Error cargando productos generales:', error);
+      setProductosGenerales([]);
     } finally {
-      setCargando(false);
+      setCargandoGenerales(false);
     }
   };
 
   /**
-   * Agrega un producto al carrito
+   * Actualiza stock en Firestore
    */
-  const agregarAlCarrito = (producto) => {
+  const actualizarStockFirebase = async (productId, cambio, tipoProducto) => {
+    try {
+      const collectionName = tipoProducto === 'oferta' ? 'oferta' : 'producto';
+      const productoRef = doc(db, collectionName, productId);
+      const productoSnap = await getDocs(collection(db, collectionName));
+      const productoData = productosOferta.find(p => p.id === productId) || productosGenerales.find(p => p.id === productId);
+
+      if (!productoData) {
+        console.warn('Producto no encontrado para actualizar stock:', productId);
+        return;
+      }
+
+      const nuevoStock = (productoData.stock || 0) + cambio;
+      if (nuevoStock < 0) {
+        alert('No hay suficiente stock disponible para este producto.');
+        return;
+      }
+
+      await updateDoc(productoRef, {
+        stock: nuevoStock,
+      });
+
+      // Actualizar stock local
+      if (tipoProducto === 'oferta') {
+        setProductosOferta(prev => prev.map(p => p.id === productId ? { ...p, stock: nuevoStock } : p));
+      } else {
+        setProductosGenerales(prev => prev.map(p => p.id === productId ? { ...p, stock: nuevoStock } : p));
+      }
+    } catch (error) {
+      console.error('Error actualizando stock en Firestore:', error);
+    }
+  };
+
+  /**
+   * Agrega un producto al carrito con verificación de stock y actualización Firestore
+   */
+  const agregarAlCarrito = async (producto, tipoProducto) => {
+    if (!producto || producto.stock <= 0) {
+      alert('Producto sin stock disponible');
+      return;
+    }
     const productoExistente = carrito.find(item => item.id === producto.id);
     let nuevoCarrito;
 
     if (productoExistente) {
+      // Verificar stock antes de incrementar
+      if (productoExistente.cantidad >= producto.stock) {
+        alert('No hay suficiente stock disponible para incrementar cantidad');
+        return;
+      }
       nuevoCarrito = carrito.map(item =>
         item.id === producto.id
           ? { ...item, cantidad: (item.cantidad || 1) + 1 }
           : item
       );
     } else {
-      nuevoCarrito = [...carrito, { ...producto, cantidad: 1 }];
+      nuevoCarrito = [...carrito, { ...producto, cantidad: 1, tipo: tipoProducto }];
     }
 
     setCarrito(nuevoCarrito);
     guardarCarrito(nuevoCarrito);
     mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
+
+    // Actualizar stock en Firestore
+    await actualizarStockFirebase(producto.id, -1, tipoProducto);
   };
 
   /**
-   * Actualiza la cantidad de un producto en el carrito
+   * Actualiza la cantidad de un producto en el carrito, validando stock y cambiando Firestore
    */
-  const actualizarCantidad = (index, nuevaCantidad) => {
+  const actualizarCantidad = async (index, nuevaCantidad) => {
     if (nuevaCantidad < 1) return;
+
+    const producto = carrito[index];
+    if (!producto) return;
+
+    // Verificar stock para incremento
+    if (nuevaCantidad > producto.cantidad) {
+      const incremento = nuevaCantidad - producto.cantidad;
+      if ((producto.stock || 0) < incremento) {
+        alert('No hay suficiente stock disponible para incrementar cantidad');
+        return;
+      }
+      // Actualizar stock Firestore restando incremento
+      await actualizarStockFirebase(producto.id, -incremento, producto.tipo);
+    } else if (nuevaCantidad < producto.cantidad) {
+      // Incrementar stock Firestore al reducir cantidad
+      const decremento = producto.cantidad - nuevaCantidad;
+      await actualizarStockFirebase(producto.id, decremento, producto.tipo);
+    }
 
     const nuevoCarrito = carrito.map((item, i) =>
       i === index ? { ...item, cantidad: nuevaCantidad } : item
@@ -79,15 +179,19 @@ const Carrito = () => {
   };
 
   /**
-   * Elimina un producto del carrito
+   * Elimina un producto del carrito y actualiza stock Firestore
    */
-  const eliminarDelCarrito = (index) => {
+  const eliminarDelCarrito = async (index) => {
     const producto = carrito[index];
+    if (!producto) return;
+
     const nuevoCarrito = carrito.filter((_, i) => i !== index);
-    
     setCarrito(nuevoCarrito);
     guardarCarrito(nuevoCarrito);
     mostrarNotificacion(`"${producto.nombre}" eliminado del carrito`);
+
+    // Restaurar stock Firestore por cantidad eliminada
+    await actualizarStockFirebase(producto.id, producto.cantidad, producto.tipo);
   };
 
   /**
@@ -98,15 +202,19 @@ const Carrito = () => {
   };
 
   /**
-   * Limpia todo el carrito
+   * Limpia todo el carrito y actualiza stocks en Firestore
    */
-  const limpiarCarrito = () => {
+  const limpiarCarrito = async () => {
     if (carrito.length === 0) {
       alert('El carrito ya está vacío');
       return;
     }
 
     if (window.confirm('¿Estás seguro de que quieres limpiar todo el carrito?')) {
+      // Restaurar stock de todos los productos antes de limpiar
+      for (const producto of carrito) {
+        await actualizarStockFirebase(producto.id, producto.cantidad, producto.tipo);
+      }
       setCarrito([]);
       localStorage.removeItem('carrito');
       mostrarNotificacion('Carrito limpiado correctamente');
@@ -128,8 +236,7 @@ const Carrito = () => {
    * Muestra una notificación temporal
    */
   const mostrarNotificacion = (mensaje) => {
-    // Implementación simple de notificación
-    alert(mensaje); // En una app real usarías un sistema de notificaciones
+    alert(mensaje);
   };
 
   /**
@@ -141,11 +248,11 @@ const Carrito = () => {
     }, 0);
   };
 
-  if (cargando) {
+  if (cargandoOferta || cargandoGenerales) {
     return (
       <div className="cargando">
         <div className="spinner">🔄</div>
-        <p>Cargando productos en oferta...</p>
+        <p>Cargando productos...</p>
       </div>
     );
   }
@@ -180,13 +287,55 @@ const Carrito = () => {
                     </span>
                   </div>
                   <p className="stock-disponible">
-                    Stock: {producto.stock || 10}
+                    Stock: {producto.stock || 0}
                   </p>
                   <button 
                     className="btn-agregar-oferta"
-                    onClick={() => agregarAlCarrito(producto)}
+                    disabled={producto.stock <= 0}
+                    onClick={() => agregarAlCarrito(producto, 'oferta')}
                   >
-                    Añadir
+                    {producto.stock > 0 ? 'Añadir' : 'Sin Stock'}
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
+      {/* Productos Generales */}
+      <section className="generales-section">
+        <h2 className="section-title">Productos Generales</h2>
+        <div className="productos-grid">
+          {productosGenerales.length === 0 ? (
+            <p className="sin-generales">No hay productos disponibles en este momento.</p>
+          ) : (
+            productosGenerales.map(producto => (
+              <div key={producto.id} className="producto-card">
+                <img
+                  src={producto.imagen}
+                  alt={producto.nombre}
+                  className="producto-imagen"
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible';
+                  }}
+                />
+                <div className="producto-info">
+                  <h3 className="producto-nombre">{producto.nombre}</h3>
+                  <div className="precios-generales">
+                    <span className="precio">
+                      ${producto.precio?.toLocaleString('es-CL')}
+                    </span>
+                  </div>
+                  <p className="stock-disponible">
+                    Stock: {producto.stock || 0}
+                  </p>
+                  <button
+                    className="btn-agregar-general"
+                    disabled={producto.stock <= 0}
+                    onClick={() => agregarAlCarrito(producto, 'general')}
+                  >
+                    {producto.stock > 0 ? 'Añadir' : 'Sin Stock'}
                   </button>
                 </div>
               </div>
@@ -269,7 +418,7 @@ const Carrito = () => {
                         className="btn-eliminar"
                         onClick={() => eliminarDelCarrito(index)}
                       >
-                       Eliminar
+                        Eliminar
                       </button>
                     </td>
                   </tr>

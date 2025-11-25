@@ -1,4 +1,4 @@
-// Configuración de Firebase
+ // Configuración de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
     authDomain: "pasteleriamilsaborestresleches.web.app",
@@ -14,8 +14,17 @@ const db = firebase.firestore();
 // Variables globales
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 let productosOferta = [];
+let productosGenerales = [];
 
 let currentUser = null;  // Global variable to hold auth state
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Carrito cargado:", carrito);
+    inicializarCarrito();
+    cargarProductosOferta();
+    cargarProductosGenerales();
+    configurarEventos();
+});
 
 // Listen for Firebase auth state changes
 firebase.auth().onAuthStateChanged(function(user) {
@@ -25,13 +34,8 @@ firebase.auth().onAuthStateChanged(function(user) {
     // Optionally reinitialize carrito UI or enable actions after login
     inicializarCarrito();
     cargarProductosOferta();
+    cargarProductosGenerales();
     configurarEventos();
-});
-
-// Inicializar la aplicación cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("Carrito cargado:", carrito);
-    // Previously duplicated calls removed - auth state listener now handles init
 });
 
 /**
@@ -42,6 +46,7 @@ function inicializarCarrito() {
     renderizarCarrito();
     calcularTotal();
 }
+
 
 /**
  * Carga productos en oferta desde Firebase
@@ -71,6 +76,37 @@ async function cargarProductosOferta() {
         const contenedor = document.getElementById('productosOferta');
         if (contenedor) {
             contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay productos en oferta en este momento.</p>';
+        }
+    }
+}
+
+/**
+ * Carga productos generales desde Firebase (colección "producto")
+ */
+async function cargarProductosGenerales() {
+    try {
+        const snapshot = await db.collection("producto").get();
+        productosGenerales = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+        console.log("Productos generales cargados desde Firebase:", productosGenerales);
+
+        if (productosGenerales.length > 0) {
+            renderizarProductosGenerales(productosGenerales);
+        } else {
+            console.log("No hay productos generales en Firebase");
+            const contenedor = document.getElementById('productosGenerales');
+            if (contenedor) {
+                contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay productos disponibles en este momento.</p>';
+            }
+        }
+    } catch (error) {
+        console.error("Error cargando productos generales:", error);
+        const contenedor = document.getElementById('productosGenerales');
+        if (contenedor) {
+            contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay productos disponibles en este momento.</p>';
         }
     }
 }
@@ -114,7 +150,50 @@ function renderizarProductosOferta(productos) {
     document.querySelectorAll('.btn-agregar-oferta').forEach(btn => {
         btn.addEventListener('click', function() {
             const productId = this.getAttribute('data-id');
-            agregarProductoAlCarrito(productId);
+            agregarProductoAlCarrito(productId, 'oferta');
+        });
+    });
+}
+
+/**
+ * Renderiza los productos generales
+ */
+function renderizarProductosGenerales(productos) {
+    const contenedor = document.getElementById('productosGenerales');
+    
+    if (!contenedor) return;
+    
+    if (productos.length === 0) {
+        contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay productos disponibles en este momento.</p>';
+        return;
+    }
+
+    contenedor.innerHTML = productos.map(producto => `
+        <div class="producto-card">
+            <img src="${producto.imagen}" 
+                 alt="${producto.nombre}" 
+                 class="producto-imagen"
+                 onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Pastel+No+Disponible'">
+            <div class="producto-info">
+                <h3 class="producto-nombre">${producto.nombre}</h3>
+                <p style="color: #666; font-size: 0.9rem; margin-bottom: 10px;">${producto.descripcion}</p>
+                <div class="precios-generales" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <span class="precio" style="color: #007bff; font-weight: bold; font-size: 1.1rem;">$${(producto.precio || producto.Precio)?.toLocaleString('es-CL')}</span>
+                </div>
+                <p class="stock-disponible" style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">Stock: ${producto.stock || 10}</p>
+                <button class="btn-agregar-general" data-id="${producto.id}" 
+                        style="background: linear-gradient(90deg, #007bff, #0062cc); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;">
+                    🛒 Añadir al carrito
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    // Agregar eventos a los botones de añadir productos generales
+    document.querySelectorAll('.btn-agregar-general').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const productId = this.getAttribute('data-id');
+            agregarProductoAlCarrito(productId, 'general');
         });
     });
 }
@@ -185,7 +264,8 @@ function renderizarCarrito() {
 /**
  * Agrega un producto al carrito desde la sección de ofertas
  */
-async function agregarProductoAlCarrito(productId) {
+
+async function agregarProductoAlCarrito(productId, tipoProducto = 'oferta') {
     // Verificar si el usuario está autenticado mediante Firebase Auth (no se permiten sesiones por localStorage)
     let user = null;
     try {
@@ -202,7 +282,12 @@ async function agregarProductoAlCarrito(productId) {
         return;
     }
 
-    const producto = productosOferta.find(p => p.id === productId);
+    let producto = null;
+    if (tipoProducto === 'oferta') {
+        producto = productosOferta.find(p => p.id === productId);
+    } else if (tipoProducto === 'general') {
+        producto = productosGenerales.find(p => p.id === productId);
+    }
 
     if (!producto) {
         mostrarNotificacion('Producto no encontrado', 'error');
@@ -233,12 +318,13 @@ async function agregarProductoAlCarrito(productId) {
             id: producto.id,
             nombre: producto.nombre,
             descripcion: producto.descripcion,
-            precio: producto["precio oferta"] || producto.Precio || producto.precio || 0,
-            precioAnterior: producto["precio original"],
+            precio: tipoProducto === 'oferta' ? (producto["precio oferta"] || producto.Precio || producto.precio || 0) : (producto.precio || producto.Precio || 0),
+            precioAnterior: producto["precio original"] || null,
             imagen: producto.imagen,
             categoria: producto.categoria,
             stock: producto.stock,
-            cantidad: 1
+            cantidad: 1,
+            tipo: tipoProducto
         });
     }
 
@@ -246,9 +332,9 @@ async function agregarProductoAlCarrito(productId) {
     renderizarCarrito();
     calcularTotal();
 
-    // Actualizar stock en Firebase
+    // Actualizar stock en Firebase según tipo de producto
     if (producto.stock !== undefined) {
-        await actualizarStockFirebase(productId, -1);
+        await actualizarStockFirebase(productId, -1, tipoProducto);
     }
 
     mostrarNotificacion(`"${producto.nombre}" agregado al carrito ✓`);
@@ -257,9 +343,10 @@ async function agregarProductoAlCarrito(productId) {
 /**
  * Actualizar stock en Firebase
  */
-async function actualizarStockFirebase(productId, cambio) {
+async function actualizarStockFirebase(productId, cambio, tipoProducto = 'oferta') {
     try {
-        const productoRef = db.collection("oferta").doc(productId);
+        const collectionName = tipoProducto === 'oferta' ? "oferta" : "producto";
+        const productoRef = db.collection(collectionName).doc(productId);
         const productoDoc = await productoRef.get();
 
         if (productoDoc.exists) {
@@ -270,10 +357,17 @@ async function actualizarStockFirebase(productId, cambio) {
                 stock: nuevoStock
             });
 
-            // Actualizar stock local
-            const producto = productosOferta.find(p => p.id === productId);
-            if (producto) {
-                producto.stock = nuevoStock;
+            // Actualizar stock local según tipo
+            if (tipoProducto === 'oferta') {
+                const producto = productosOferta.find(p => p.id === productId);
+                if (producto) {
+                    producto.stock = nuevoStock;
+                }
+            } else if (tipoProducto === 'general') {
+                const producto = productosGenerales.find(p => p.id === productId);
+                if (producto) {
+                    producto.stock = nuevoStock;
+                }
             }
 
             console.log(`Stock actualizado en Firebase: ${nuevoStock}`);
@@ -307,9 +401,9 @@ async function aumentarCantidad(index) {
     renderizarCarrito();
     calcularTotal();
 
-    // Si es un producto de oferta, actualizar stock en Firebase
-    if (producto.id && productosOferta.find(p => p.id === producto.id)) {
-        await actualizarStockFirebase(producto.id, -1);
+    // Actualizar stock en Firebase según tipo de producto guardado en carrito (oferta o general)
+    if (producto.id && producto.tipo) {
+        await actualizarStockFirebase(producto.id, -1, producto.tipo);
     }
 
     mostrarNotificacion('Cantidad actualizada', 'success');
