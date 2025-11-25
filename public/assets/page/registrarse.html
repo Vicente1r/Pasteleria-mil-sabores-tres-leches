@@ -177,15 +177,15 @@
           const comuna = comunaInput ? comunaInput.value : "";
           const fechaNacimiento = fechaInput && fechaInput.value ? new Date(fechaInput.value) : null;
 
-          // Para seguridad, NO guardar password en Firestore
-          // Construimos el objeto userData sin password y sin correo2 (confirmación correo)
+          // Construimos el objeto userData con los datos formateados según lo solicitado
           const userData = {
             run: run,
-            nombre: nombre,
+            nombre_completo: nombre,
             correo: correo,
+            contraseña: password,
             telefono: telefono,
+            fecha_nacimiento: fechaNacimiento ? fechaNacimiento.toISOString() : null,
             comuna: comuna,
-            fechaNacimiento: fechaNacimiento,
             createdAt: new Date().toISOString(),
           };
 
