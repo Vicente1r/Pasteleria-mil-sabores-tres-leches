@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log("Carrito cargado:", carrito);
     inicializarCarrito();
     cargarProductosOferta();
-    cargarProductosGenerales();
     configurarEventos();
 });
 
@@ -34,7 +33,6 @@ firebase.auth().onAuthStateChanged(function(user) {
     // Optionally reinitialize carrito UI or enable actions after login
     inicializarCarrito();
     cargarProductosOferta();
-    cargarProductosGenerales();
     configurarEventos();
 });
 
@@ -80,36 +78,7 @@ async function cargarProductosOferta() {
     }
 }
 
-/**
- * Carga productos generales desde Firebase (colección "producto")
- */
-async function cargarProductosGenerales() {
-    try {
-        const snapshot = await db.collection("producto").get();
-        productosGenerales = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
 
-        console.log("Productos generales cargados desde Firebase:", productosGenerales);
-
-        if (productosGenerales.length > 0) {
-            renderizarProductosGenerales(productosGenerales);
-        } else {
-            console.log("No hay productos generales en Firebase");
-            const contenedor = document.getElementById('productosGenerales');
-            if (contenedor) {
-                contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay productos disponibles en este momento.</p>';
-            }
-        }
-    } catch (error) {
-        console.error("Error cargando productos generales:", error);
-        const contenedor = document.getElementById('productosGenerales');
-        if (contenedor) {
-            contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay productos disponibles en este momento.</p>';
-        }
-    }
-}
 
 /**
  * Renderiza los productos en oferta
