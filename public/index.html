@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mil Sabores</title>
+  <title>Pastelería Mil Sabores - Inicio</title>
   
   <!-- Google Fonts: Lato (principal) + Pacifico (encabezados) -->
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Pacifico&display=swap" rel="stylesheet">
@@ -16,8 +16,6 @@
   
   <script src= "assets/js/filtro.js" defer></script>
   <script src="assets/js/inicio_sesion.js" defer></script>
-  <!-- <script src="assets/js/validaciones.js" defer></script>
-  <script src="../public/js/usuario.js" defer></script> -->
 
   <script src="assets/js/filtro.js" defer></script>
   <script type="module" src="assets/js/firebase-config.js"></script>
@@ -31,79 +29,59 @@
 
   <header class="topbar">
     <div class="logo">
-      <img src="assets/Logo.png" alt="">
+      <img src="assets/Logo.png" alt="Logo Pastelería Mil Sabores">
     </div>
 
-    <div>
-      <strong>Tienda online - Mil Sabores</strong>
+    <div class="header-title">
+      <strong>🍰 Pastelería Mil Sabores</strong>
     </div>
-
-
 
     <nav class="navegacion" aria-label="Navegación principal">
-  <a href="index.html">Home</a>
-  <a href="assets/page/catalogo.html">Catalogo</a>
-  <a href="assets/page/nosotros.html">Nosotros</a>
-  <a href="assets/page/blog.html">Blog</a>
-  <a href="assets/page/contacto.html">Contacto</a>
-  <a href="assets/page/ofertas.html">Ofertas</a>
+      <a href="index.html">Home</a>
+      <a href="assets/page/catalogo.html">Categoria</a>
+      <a href="assets/page/nosotros.html">Nosotros</a>
+      <a href="assets/page/blog.html">Blog</a>
+      <a href="assets/page/contacto.html">Contacto</a>
+      <a href="assets/page/ofertas.html">Ofertas</a>
     </nav>
 
-<div class="usuario">
-  <a id="inicio_sesion" href="assets/page/login.html">Iniciar sesión</a>
-  <span class="separar">|</span>
-  <a id="registrarse" href="assets/page/registrarse.html">Registrarse</a>
-  <span class="separar">|</span>
-  <a href="assets/page/carrito.html">Carrito (0) </a>
-</div>
+    <div class="usuario">
+      <a id="inicio_sesion" href="assets/page/login.html">Iniciar sesión</a>
+      <span class="separar">|</span>
+      <a id="registrarse" href="assets/page/registrarse.html">Registrarse</a>
+      <span class="separar">|</span>
+      <a href="assets/page/carrito.html">🛒 Carrito (0)</a>
+    </div>
   </header>
 
   <!-- ======================= HERO ======================= -->
   <section class="hero" aria-labelledby="titulo-hero">
-    <div class="hero-texto">
-      <h1 id="titulo-hero">Tienda online</h1>
-      <p>
-        Nuestra pastelería <strong>Mil Sabores</strong> tiene como objetivo
-        ofrecer delicias únicas. Descubre, saborea y crea momentos inolvidables
-        con nosotros.
-      </p>
-      <p>
-        En Mil Sabores creemos que cada ocasión merece un toque único y delicioso. Somos una pastelería dedicada a crear experiencias dulces con recetas artesanales, ingredientes de la más alta calidad y un toque de creatividad en cada preparación.
-
-Nuestro catálogo incluye tortas personalizadas, postres tradicionales y opciones saludables para todos los gustos, desde clásicos de siempre hasta innovaciones pensadas para sorprender. Ya sea un cumpleaños, una boda o un simple antojo, tenemos el postre perfecto para acompañar tus momentos inolvidables.
-
-Más que una pastelería, somos un espacio donde la dulzura se transforma en recuerdos. Porque en Mil Sabores, cada bocado cuenta una historia.
-      </p>
-      <a href="index.html#productos" class="btn">Ver productos</a>
+    <button class="hero-nav hero-prev" aria-label="Producto anterior">&lt;</button>
+    
+    <div class="hero-container">
+      <div class="hero-content">
+        <h1 id="titulo-hero">Nuevos Lanzamientos</h1>
+        <p>Descubre los últimos productos disponibles en nuestra tienda.</p>
+      </div>
+      <figure class="hero-image">
+        <img 
+          id="heroImage" 
+          src="assets/torta_cuadrada_chocolate.png" 
+          alt="Nuevos productos - Pastelería Mil Sabores"
+          width="400"
+        />
+      </figure>
     </div>
-    <figure class="hero-media">
-      <img src="assets/mision.png" width="250" alt="Logo de Mil Sabores" />
-    </figure>
+
+    <button class="hero-nav hero-next" aria-label="Próximo producto">&gt;</button>
   </section>
 
   <!-- ======================= MAIN ======================= -->
   <main class="main">
-    <!-- Filtros -->
-    <section class="filtros" aria-labelledby="categorias">
-      <h2 id="categorias">Categorías</h2>
-      <label for="filtro">Filtrar por categoría: </label>
-      <select id="filtro" name="filtro">
-        <option value="all">Todas</option>
-        <option value="tortas_cuadradas">Tortas Cuadradas</option>
-        <option value="tortas_circulares">Tortas Circulares</option>
-        <option value="postres_individuales">Postres Individuales</option>
-        <option value="productos_sin_azucar">Productos sin azúcar</option>
-        <option value="pasteleria_tradicional">Pastelería Tradicional</option>
-        <option value="productos_sin_gluten">Productos sin gluten</option>
-        <option value="vegano">Vegano</option>
-        <option value="especiales">Especiales</option>
-      </select>
-      <div id="mensaje" aria-live="polite" class="status"></div>
-    </section>
 
     <!-- Productos -->
     <section id="productos" class="productos" aria-labelledby="titulo-productos">
-      <h2 id="titulo-productos">Productos</h2>
+      <h2 id="titulo-productos">Categorias</h2>
 
       <div class="buscador">
         <article class="item" data-category="tortas_cuadradas">
@@ -366,16 +344,24 @@ Más que una pastelería, somos un espacio donde la dulzura se transforma en rec
    
   <!-- ======================= FOOTER ======================= -->
   <footer class="footer" id="contacto">
-    <nav aria-label="Redes">
-      <a href="#">X</a> ·
-      <a href="#" id="blog">Instagram</a> ·
+    <nav aria-label="Redes Sociales">
+      <a href="#">Facebook</a> ·
+      <a href="#">Instagram</a> ·
       <a href="#">WhatsApp</a>
     </nav>
 
     <form class="newsletter" action="#" method="post">
-      <label for="email">Enter Email</label>
-      <input id="email" name="email" type="email" placeholder="tucorreo@ejemplo.com" />
-      <button type="submit">Subscribirse</button>
+      <label for="email">Suscríbete a nuestro newsletter</label>
+      <div class="newsletter-input-group">
+        <input 
+          id="email" 
+          name="email" 
+          type="email" 
+          placeholder="tucorreo@ejemplo.com" 
+          required
+        />
+        <button type="submit">Suscribirse</button>
+      </div>
     </form>
   </footer>
 <!--
@@ -402,6 +388,73 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 -->
+
+<script>
+// Carrusel de productos en Hero
+document.addEventListener('DOMContentLoaded', () => {
+  const heroImage = document.getElementById('heroImage');
+  const heroPrev = document.querySelector('.hero-prev');
+  const heroNext = document.querySelector('.hero-next');
+  
+  // Lista de imágenes de productos para el carrusel
+  const productos = [
+    {
+      src: 'assets/torta_cuadrada_chocolate.png',
+      alt: 'Torta Cuadrada de Chocolate'
+    },
+    {
+      src: 'assets/torda_cuadrada_frutas.png',
+      alt: 'Torta Cuadrada de Frutas'
+    },
+    {
+      src: 'assets/torta_circular_vainilla.png',
+      alt: 'Torta Circular de Vainilla'
+    },
+    {
+      src: 'assets/torta_circular_manjar.png',
+      alt: 'Torta Circular de Manjar'
+    },
+    {
+      src: 'assets/individual_mousse_chocolate.png',
+      alt: 'Mousse de Chocolate'
+    },
+    {
+      src: 'assets/individual_tiramisu_clasico.png',
+      alt: 'Tiramisú Clásico'
+    }
+  ];
+  
+  let currentIndex = 0;
+  
+  const updateImage = (index) => {
+    if (heroImage && productos[index]) {
+      heroImage.src = productos[index].src;
+      heroImage.alt = productos[index].alt;
+      heroImage.style.animation = 'none';
+      setTimeout(() => {
+        heroImage.style.animation = 'fadeInImage 0.5s ease';
+      }, 10);
+    }
+  };
+  
+  heroPrev.addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + productos.length) % productos.length;
+    updateImage(currentIndex);
+  });
+  
+  heroNext.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % productos.length;
+    updateImage(currentIndex);
+  });
+  
+  // Auto-scroll cada 5 segundos
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % productos.length;
+    updateImage(currentIndex);
+  }, 5000);
+});
+</script>
+
 </body>
 </html>
 
