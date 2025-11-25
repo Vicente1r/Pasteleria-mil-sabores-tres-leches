@@ -9,7 +9,7 @@ function App() {
   return (
     <UserProvider>
       <Router>
-        <RouterConfg />
+        <RouterConfig />
       </Router>
     </UserProvider>
   );
