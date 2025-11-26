@@ -36,6 +36,18 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarProductos();
   cargarOfertasDestacadas();
 
+  // Mock products (local images) — used as fallback or for testing offline
+  const mockProducts = [
+    { id: 'm-choco-1', nombre: 'Torta Chocolate 1', categoria: 'tortas_chocolate', descripcion: 'Deliciosa torta de chocolate', precio: 15000, imagen: 'torta_cuadrada_chocolate.png' },
+    { id: 'm-choco-2', nombre: 'Torta Chocolate 2', categoria: 'tortas_chocolate', descripcion: 'Chocolate y cobertura', precio: 18000, imagen: 'vegana_torta_chocolate.png' },
+    { id: 'm-circ-1', nombre: 'Torta Circular Vainilla', categoria: 'tortas_circulares', descripcion: 'Vainilla clásica', precio: 14000, imagen: 'torta_circular_vainilla.png' },
+    { id: 'm-circ-2', nombre: 'Torta Circular Manjar', categoria: 'tortas_circulares', descripcion: 'Manjar y crema', precio: 16000, imagen: 'torta_circular_manjar.png' },
+    { id: 'm-cua-1', nombre: 'Torta Cuadrada Frutas', categoria: 'tortas_cuadradas', descripcion: 'Frutas frescas', precio: 17000, imagen: 'torta_cuadrada_frutas2.png' },
+    { id: 'm-cua-2', nombre: 'Torta Cuadrada Chocolate', categoria: 'tortas_cuadradas', descripcion: 'Chocolate especial', precio: 19000, imagen: 'cuadrada_chocolate2.png' },
+    { id: 'm-ind-1', nombre: 'Tiramisú Individual', categoria: 'postres_individuales', descripcion: 'Porción individual', precio: 4500, imagen: 'individual_tiramisu_clasico.png' },
+    { id: 'm-ind-2', nombre: 'Mousse Chocolate Individual', categoria: 'postres_individuales', descripcion: 'Mousse de chocolate', precio: 4200, imagen: 'individual_mousse_chocolate.png' }
+  ];
+
   // Función para cargar productos desde Firestore
   async function cargarProductos() {
     try {
@@ -54,14 +66,16 @@ document.addEventListener("DOMContentLoaded", () => {
       if (productosGlobal.length > 0) {
         inicializarInterfaz(productosGlobal);
       } else {
-        console.log("No hay productos en Firestore, usando productos del HTML");
-        cargarProductosDelHTML();
+        console.log("No hay productos en Firestore, usando mockProducts locales");
+        productosGlobal = mockProducts.slice();
+        inicializarInterfaz(productosGlobal);
       }
       
     } catch (error) {
       console.error("Error cargando productos:", error);
-      console.log("Usando productos del HTML como fallback");
-      cargarProductosDelHTML();
+      console.log("Usando mockProducts locales como fallback");
+      productosGlobal = mockProducts.slice();
+      inicializarInterfaz(productosGlobal);
     }
   }
 
@@ -225,9 +239,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("Productos cargados del HTML:", productosGlobal);
 
-    // Agregar eventos a los botones existentes en el HTML
+    // Si no se encontraron productos en el HTML, usar mockProducts
+    if (!productosGlobal || productosGlobal.length === 0) {
+      productosGlobal = mockProducts.slice();
+    }
     agregarEventosBotonesHTML();
-
     if (tituloProductos) {
       tituloProductos.textContent = `Todos los Productos (${productosGlobal.length})`;
     }
@@ -268,11 +284,96 @@ document.addEventListener("DOMContentLoaded", () => {
       mostrarCardsCategorias(categorias);
     }
     
-    if (productos.length > 0 && productos[0].id) {
-      mostrarTodosLosProductos();
+    // Mostrar todas las categorías apiladas con sus productos
+    if (productos.length > 0) {
+      mostrarCategoriasStacked();
     }
     
     configurarEventos();
+  }
+
+  // Mostrar las categorías en secciones apiladas (Category 1, 2, 3, 4)
+  function mostrarCategoriasStacked() {
+    if (!productosGrid) return;
+
+    const categoriasOrden = [
+      'tortas_chocolate',
+      'tortas_circulares',
+      'tortas_cuadradas',
+      'postres_individuales'
+    ];
+
+    const labelMap = {
+      'tortas_chocolate': 'Categoría 1',
+      'tortas_circulares': 'Categoría 2',
+      'tortas_cuadradas': 'Categoría 3',
+      'postres_individuales': 'Categoría 4'
+    };
+
+    productosGrid.innerHTML = categoriasOrden.map(cat => {
+      let productosCat = productosGlobal.filter(p => p.categoria === cat);
+      const header = `<h3 id="section-${cat}" class="category-section-title">${labelMap[cat] || cat}</h3>`;
+      // si no hay productos reales, crear mock visuales basados en la imagen por categoría
+      if (!productosCat || productosCat.length === 0) {
+        productosCat = Array.from({ length: 4 }).map((_, i) => ({
+          id: `mock-${cat}-${i+1}`,
+          nombre: `${labelMap[cat] || cat} - Producto ${i+1}`,
+          descripcion: '',
+          precio: 0,
+          categoria: cat,
+          imagen: imagenPorCategoria(cat),
+          stock: undefined
+        }));
+      }
+
+      const grid = `
+        <div class="category-grid" data-category="${cat}">
+          ${productosCat.map(producto => generarCardProductoHTML(producto)).join('')}
+        </div>
+      `;
+
+      // envolver en sección para forzar apilado vertical y permitir scroll/anchor
+      return `<section class="category-section" id="section-wrapper-${cat}">${header}${grid}</section>`;
+    }).join('');
+
+    // Añadir eventos a los botones dentro de las secciones
+    document.querySelectorAll('.btn-agregar, .btn-comprar').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productId = this.dataset.id;
+        agregarAlCarrito(productId);
+      });
+    });
+  }
+
+  // Generador de HTML para una tarjeta de producto (reutilizable)
+  function generarCardProductoHTML(producto) {
+    let imagenSrc = producto.imagen || '';
+    if (!imagenSrc) {
+      imagenSrc = imagenPorCategoria(producto.categoria);
+    } else if (!imagenSrc.startsWith('http') && !imagenSrc.startsWith('/')) {
+      imagenSrc = `/assets/${imagenSrc}`;
+    }
+
+    return `
+      <article class="item producto-card" data-category="${producto.categoria}" data-id="${producto.id}">
+        <a href="productos/${producto.id}.html">
+          <img src="${imagenSrc}" 
+               alt="${producto.nombre}" 
+               class="producto-imagen"
+               onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'">
+        </a>
+        <div class="item-content producto-info">
+          <h3 class="producto-nombre">${producto.nombre || 'Sin nombre'}</h3>
+          <p>${producto.descripcion || ''}</p>
+          <p class="producto-precio precio">$${(producto.precio || 0).toLocaleString('es-CL')} CLP</p>
+          ${producto.stock ? `<p class="stock-info" style="font-size: 12px; color: #666;">Stock: ${producto.stock}</p>` : ''}
+          <button class="btn-agregar btn-comprar" data-id="${producto.id}">
+            🛒 Agregar al carrito
+          </button>
+        </div>
+      </article>
+    `;
   }
 
   // Obtener categorías únicas de los productos
@@ -374,10 +475,20 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    productosGrid.innerHTML = productos.map(producto => `
+    productosGrid.innerHTML = productos.map(producto => {
+      // resolver imagen: si es URL absoluta usarla; si es un nombre de archivo local, prepender '../' (porque la página está en /assets/page/)
+      let imagenSrc = producto.imagen || '';
+      if (!imagenSrc) {
+        // asignar imagen según categoría si está faltando
+        imagenSrc = imagenPorCategoria(producto.categoria);
+      } else if (!imagenSrc.startsWith('http') && !imagenSrc.startsWith('/')) {
+        imagenSrc = `/assets/${imagenSrc}`;
+      }
+
+      return `
       <article class="item producto-card" data-category="${producto.categoria}" data-id="${producto.id}">
         <a href="productos/${producto.id}.html">
-          <img src="${producto.imagen}" 
+          <img src="${imagenSrc}" 
                alt="${producto.nombre}" 
                class="producto-imagen"
                onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'">
@@ -392,8 +503,20 @@ document.addEventListener("DOMContentLoaded", () => {
           </button>
         </div>
       </article>
-    `).join("");
+    `;
+    }).join("");
 
+
+  // Devuelve una ruta de imagen local por categoría (relativa desde /assets/page/)
+  function imagenPorCategoria(categoria) {
+    const mapa = {
+      'tortas_chocolate': '/assets/torta1.jpg',
+      'tortas_circulares': '/assets/torta_circular_vainilla.png',
+      'tortas_cuadradas': '/assets/torta_cuadrada_frutas2.png',
+      'postres_individuales': '/assets/individual_tiramisu_clasico.png'
+    };
+    return mapa[categoria] || '/assets/tarta1.jpg';
+  }
     // Agregar eventos a los botones
     document.querySelectorAll('.btn-agregar, .btn-comprar').forEach(btn => {
       btn.addEventListener('click', function(e) {
@@ -563,6 +686,18 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = 'carrito.html';
       });
     }
+
+    // Compatibilidad con la versión estática: responder a los botones .category-thumb
+    document.querySelectorAll('.category-thumb').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = btn.dataset.filter;
+        if (!val || val === 'all' || val === 'todos') {
+          mostrarTodosLosProductos();
+        } else {
+          filtrarPorCategoria(val);
+        }
+      });
+    });
   }
 
   // Buscar productos

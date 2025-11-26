@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo - Mil Sabores</title>
+
   <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/categories.css">
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -12,73 +8,104 @@
 </head>
 <body>
   <!-- HEADER -->
-  <header class="topbar" style="align-items:stretch;">
-    <div style="display:flex;align-items:center;gap:16px;">
-      <div class="logo">
-        <img src="../Logo.png" alt="Mil Sabores" style="height:60px;">
-      </div>
-      <div><strong>Tienda online - Mil Sabores</strong></div>
-    </div>
-
-    <nav class="navegacion" aria-label="Navegación principal" style="margin-left:auto;">
-      <a href="../../index.html">Home</a>
-      <a href="catalogo.html">Catálogo</a>
-      <a href="ofertas.html">Ofertas</a>
-      <a href="nosotros.html">Nosotros</a>
-      <a href="contacto.html">Contacto</a>
-      <a href="ofertas.html">Ofertas</a>
-      <span class="separar">|</span>
-      <a href="carrito.html" id="cart-link">Carrito (0)</a>
+  <header class="topbar">
+    <nav class="navegacion" aria-label="Navegación principal">
+      <a href="/index.html">Home</a>
+      <a href="/assets/page/catalogo.html">Categoria</a>
+      <a href="/assets/page/nosotros.html">Nosotros</a>
+      <a href="/assets/page/blog.html">Blog</a>
+      <a href="/assets/page/contacto.html">Contacto</a>
+      <a href="/assets/page/ofertas.html">Ofertas</a>
     </nav>
   </header>
 
   <main class="main">
     <section class="filtros" aria-labelledby="categorias">
       <h2 id="categorias">Categorías</h2>
-      <label for="filtro">Filtrar por categoría: </label>
-      <select id="filtro" name="filtro">
-        <option value="all">Todas</option>
-        <option value="tortas_cuadradas">Tortas Cuadradas</option>
-        <option value="tortas_circulares">Tortas Circulares</option>
-        <option value="postres_individuales">Postres Individuales</option>
-        <option value="productos_sin_azucar">Productos sin azúcar</option>
-        <option value="pasteleria_tradicional">Pastelería Tradicional</option>
-        <option value="productos_sin_gluten">Productos sin gluten</option>
-        <option value="vegano">Vegano</option>
-        <option value="especiales">Especiales</option>
-      </select>
+      <!-- filtro eliminado: se usa la fila de miniaturas para seleccionar categoría -->
       <div id="mensaje" aria-live="polite" class="status"></div>
     </section>
 
+    <!-- FILA DE THUMBS (mockup) -->
+    <div class="categories-row" aria-hidden="false">
+      <button class="category-thumb cat-btn active" data-filter="tortas_chocolate" aria-pressed="true">
+        <div class="thumb-img"><img src="../vegana_torta_chocolate.png" alt="Tortas Chocolate"></div>
+        <div class="thumb-label">Categoría 1</div>
+      </button>
+      <button class="category-thumb cat-btn" data-filter="tortas_circulares">
+        <div class="thumb-img"><img src="../torta_circular_vainilla.png" alt="Tortas Circulares"></div>
+        <div class="thumb-label">Categoría 2</div>
+      </button>
+      <button class="category-thumb cat-btn" data-filter="tortas_cuadradas">
+        <div class="thumb-img"><img src="../torta_cuadrada_frutas2.png" alt="Tortas Cuadradas"></div>
+        <div class="thumb-label">Categoría 3</div>
+      </button>
+      <button class="category-thumb cat-btn" data-filter="postres_individuales">
+        <div class="thumb-img"><img src="../individual_tiramisu_clasico.png" alt="Postres Individuales"></div>
+        <div class="thumb-label">Categoría 4</div>
+      </button>
+    </div>
+
+    <!-- título grande -->
+    <h2 id="titulo-productos" class="category-title">Categoría 1</h2>
+
     <!-- Sección de Ofertas Destacadas -->
-    <section class="ofertas-destacadas" aria-labelledby="titulo-ofertas">
-      <h2 id="titulo-ofertas">Ofertas Especiales</h2>
-      <div id="ofertasGrid" class="buscador">
-        <!-- Las ofertas se cargarán dinámicamente -->
-      </div>
-      <div style="text-align: center; margin-top: 20px;">
-        <a href="ofertas.html" class="btn-ver-todas">Ver Todas las Ofertas</a>
-      </div>
-    </section>
-
+    ...
     <section class="productos" aria-labelledby="titulo-productos">
-      <h2 id="titulo-productos">Todos los Productos</h2>
-
+      <h2 class="sr-only">Todos los Productos</h2>
       <div id="productosGrid" class="buscador">
-        <!-- Los productos se cargarán dinámicamente desde Firebase -->
+        <!-- Productos renderizados dinámicamente por catalogo.js -->
       </div>
     </section>
   </main>
+  ...
+  <script>
+    // mapa entre botónes visuales y select (mantener compatibilidad con catalogo.js)
+    (function(){
+      const thumbs = document.querySelectorAll('.category-thumb');
+      const filtro = document.getElementById('filtro');
+      const titulo = document.getElementById('titulo-productos');
 
-  <footer class="footer" id="contacto">
-    <nav aria-label="Redes">
-      <a href="#">X</a> ·
-      <a href="#" id="blog">Instagram</a> ·
-      <a href="#">WhatsApp</a>
-    </nav>
-  </footer>
+      const labelMap = {
+        tortas_chocolate: 'Categoría 1',
+        tortas_circulares: 'Categoría 2',
+        tortas_cuadradas: 'Categoría 3',
+        postres_individuales: 'Categoría 4'
+      };
 
-  <script src="../js/catalogo.js"></script>
+      function setActiveFilter(value){
+        // actualizar select (dispara handlers ya presentes en catalogo.js si existen)
+        if(filtro){
+          filtro.value = value;
+          filtro.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        // actualizar estado visual
+        thumbs.forEach(t => {
+          const active = t.dataset.filter === value;
+          t.classList.toggle('active', active);
+          t.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        if(titulo) titulo.textContent = labelMap[value] || 'Categorías';
+        // scroll suave hasta la sección correspondiente y resaltar
+        const section = document.getElementById('section-' + value);
+        // remover highlight de otras secciones
+        document.querySelectorAll('.category-section-title').forEach(h => h.classList.remove('active'));
+        if(section) {
+          const heading = document.getElementById('section-' + value);
+          if(heading) heading.classList.add('active');
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          // fallback: scroll al título grande
+          if(titulo) window.scrollTo({ top: titulo.getBoundingClientRect().top + window.scrollY - 20, behavior: 'smooth' });
+        }
+      }
+
+      thumbs.forEach(b => b.addEventListener('click', () => setActiveFilter(b.dataset.filter)));
+
+      // inicio con tortas de chocolate (igual que la captura)
+      setActiveFilter('tortas_chocolate');
+    })();
+  </script>
   <script src="../js/carrito.js"></script>
   <script type="module" src="../../js/auth.js"></script>
 </body>

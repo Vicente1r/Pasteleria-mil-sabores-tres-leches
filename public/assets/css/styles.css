@@ -29,16 +29,24 @@ h1, h2, h3, h4, h5, h6, .topbar strong {
 
 /* Topbar */
 .topbar {
-  display: flex; 
-  gap: 20px; 
-  align-items: center; 
-  justify-content: space-between;
-  padding: 16px 20px; 
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 20px;
+  align-items: center;
+  padding: 16px 20px;
   border-bottom: 3px solid #8B4513;
   background: linear-gradient(135deg, #FFC0CB 0%, #FFF5E1 100%);
   box-shadow: 0 4px 12px rgba(139, 69, 19, 0.1);
-  flex-wrap: wrap;
 }
+
+/* Position topbar items: logo left, title center, nav centered, user right */
+.topbar > .logo { justify-self: center; }
+.topbar > .header-title { justify-self: center; text-align: center; }
+.topbar > .navegacion { justify-self: center; }
+.topbar > .usuario { justify-self: end; }
+
+/* Ensure logo image is visually centered inside its grid cell */
+.topbar .logo img { display: block; margin: 0 auto; }
 
 .logo {
   display: flex;
@@ -66,9 +74,12 @@ h1, h2, h3, h4, h5, h6, .topbar strong {
 
 .navegacion {
   display: flex;
-  gap: 20px;
+  justify-content: center;
+  gap: 12px;
   align-items: center;
   flex-wrap: wrap;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .navegacion a { 
@@ -165,9 +176,11 @@ h1, h2, h3, h4, h5, h6, .topbar strong {
 
 @media (max-width: 768px) {
   .topbar {
+    display: flex;
     gap: 10px;
     padding: 12px;
     justify-content: center;
+    flex-wrap: wrap;
   }
   
   .logo img {

@@ -1,0 +1,198 @@
+/* Styles for catalog page: categories row, large title, products grid */
+
+/* Contenedor principal y espaciado (se asume .main existe en page styles) */
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+/* FILA DE MINIATURAS */
+.categories-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 18px 0 36px;
+  flex-wrap: wrap;
+}
+
+.category-thumb {
+  width: 160px;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform .16s ease, box-shadow .16s ease;
+  text-align: center;
+}
+
+.category-thumb:hover { transform: translateY(-4px); }
+.category-thumb.active {
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+  border-color: rgba(0,0,0,0.12);
+}
+
+/* Thumb image */
+.thumb-img {
+  width: 100px;
+  height: 100px;
+  background: #e6e6e6;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9b9b9b;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.thumb-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 4px;
+}
+
+.thumb-label {
+  font-weight: 700;
+  color: #333;
+}
+
+/* TÍTULO GRANDE */
+.category-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #222;
+  margin: 36px 0 18px;
+  padding-left: 4px;
+}
+
+/* Contenedor principal de productos: apilar secciones verticalmente */
+.productos #productosGrid {
+  display: block;
+  width: 100%;
+  margin-bottom: 60px;
+  padding: 0 4px;
+}
+
+/* Cada sección de categoría ocupa todo el ancho y se apila */
+.category-section {
+  display: block;
+  width: 100%;
+  margin-bottom: 36px;
+}
+
+/* Tarjeta de producto (mockup) */
+.product-card {
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card .media {
+  height: 300px;
+  background: #dcdcdc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8d8d8d;
+  font-size: 24px;
+}
+
+.product-card .meta {
+  padding: 12px 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.producto-imagen {
+  width: 100%;
+  height: 220px; /* altura fija para mostrar imagen horizontal */
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Resalte para la sección activa */
+.category-section-title.active {
+  color: #b85c3a;
+}
+
+.category-grid .item,
+.category-grid .producto-card {
+  width: 100%;
+  min-width: 0; /* evita que el contenido forze columnas estrechas */
+  display: flex;
+  flex-direction: column;
+}
+
+.category-grid {
+  align-items: stretch;
+}
+
+/* Grid por sección de categoría (apiladas) */
+.category-section-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 28px 0 12px;
+  padding-left: 6px;
+}
+
+/* Mostrar cada categoría como una fila horizontal desplazable */
+.category-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 22px;
+  margin-bottom: 44px;
+  overflow-x: auto;
+  padding: 12px 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ajustes de tamaño de las tarjetas dentro de la fila horizontal */
+.category-grid .item,
+.category-grid .producto-card {
+  flex: 0 0 320px; /* ancho fijo por tarjeta fuera del flujo para que se muestren horizontales */
+}
+
+@media (max-width: 1100px) {
+  .category-grid .item,
+  .category-grid .producto-card { flex: 0 0 280px; }
+}
+
+@media (max-width: 760px) {
+  .category-grid .item,
+  .category-grid .producto-card { flex: 0 0 220px; }
+}
+
+@media (max-width: 420px) {
+  .category-grid .item,
+  .category-grid .producto-card { flex: 0 0 160px; }
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .productos #productosGrid { grid-template-columns: repeat(3, 1fr); }
+  .category-thumb { width: 150px; }
+}
+
+@media (max-width: 760px) {
+  .productos #productosGrid { grid-template-columns: repeat(2, 1fr); }
+  .categories-row { justify-content: flex-start; padding-left: 12px; gap: 12px; }
+  .category-title { padding-left: 12px; }
+}
+
+@media (max-width: 420px) {
+  .productos #productosGrid { grid-template-columns: 1fr; }
+  .category-thumb { width: 130px; }
+}
