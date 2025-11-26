@@ -1,38 +1,14 @@
- // Configuración de Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
-    authDomain: "pasteleriamilsaborestresleches.web.app",
-    projectId: "pasteleriamilsaborestresleches",
-};
-
-// Inicializar Firebase solo si no está inicializado
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.firestore();
-
 // Variables globales
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-let productosOferta = [];
-let productosGenerales = [];
 
-let currentUser = null;  // Global variable to hold auth state
+let initialized = false;  // Flag to prevent multiple initializations
+let rendering = false;  // Flag to prevent multiple renders
 
 document.addEventListener('DOMContentLoaded', function() {
+    if (initialized) return;  // Prevent multiple initializations
+    initialized = true;
     console.log("Carrito cargado:", carrito);
     inicializarCarrito();
-    cargarProductosOferta();
-    configurarEventos();
-});
-
-// Listen for Firebase auth state changes
-firebase.auth().onAuthStateChanged(function(user) {
-    currentUser = user;
-    console.log("Auth state changed. Current user:", currentUser);
-
-    // Optionally reinitialize carrito UI or enable actions after login
-    inicializarCarrito();
-    cargarProductosOferta();
     configurarEventos();
 });
 
@@ -45,136 +21,20 @@ function inicializarCarrito() {
     calcularTotal();
 }
 
-
-/**
- * Carga productos en oferta desde Firebase
- */
-async function cargarProductosOferta() {
-    try {
-        const snapshot = await db.collection("oferta").get();
-        productosOferta = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-
-        console.log("Productos en oferta cargados desde Firebase:", productosOferta);
-
-        if (productosOferta.length > 0) {
-            renderizarProductosOferta(productosOferta);
-        } else {
-            console.log("No hay ofertas en Firebase");
-            const contenedor = document.getElementById('productosOferta');
-            if (contenedor) {
-                contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay productos en oferta en este momento.</p>';
-            }
-        }
-    } catch (error) {
-        console.error("Error cargando productos en oferta:", error);
-        // En caso de error, mostrar mensaje
-        const contenedor = document.getElementById('productosOferta');
-        if (contenedor) {
-            contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay productos en oferta en este momento.</p>';
-        }
-    }
-}
-
-
-
-/**
- * Renderiza los productos en oferta
- */
-function renderizarProductosOferta(productos) {
-    const contenedor = document.getElementById('productosOferta');
-    
-    if (!contenedor) return;
-    
-    if (productos.length === 0) {
-        contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay productos en oferta en este momento.</p>';
-        return;
-    }
-
-    contenedor.innerHTML = productos.map(producto => `
-        <div class="producto-card">
-            <img src="${producto.imagen}" 
-                 alt="${producto.nombre}" 
-                 class="producto-imagen"
-                 onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Pastel+No+Disponible'">
-            <div class="producto-info">
-                <h3 class="producto-nombre">${producto.nombre}</h3>
-                <p style="color: #666; font-size: 0.9rem; margin-bottom: 10px;">${producto.descripcion}</p>
-                <div class="precios-oferta" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <span class="precio-anterior" style="text-decoration: line-through; color: #999; font-size: 0.9rem;">$${producto["precio original"]?.toLocaleString('es-CL')}</span>
-                    <span class="precio-actual" style="color: #e36b86; font-weight: bold; font-size: 1.1rem;">$${(producto["precio oferta"] || producto.Precio || producto.precio)?.toLocaleString('es-CL')}</span>
-                </div>
-                <p class="stock-disponible" style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">Stock: ${producto.stock || 10}</p>
-                <button class="btn-agregar-oferta" data-id="${producto.id}" 
-                        style="background: linear-gradient(90deg, #ff9fb3, #e36b86); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;">
-                    🛒 Añadir al carrito
-                </button>
-            </div>
-        </div>
-    `).join('');
-
-    // Agregar eventos a los botones de añadir
-    document.querySelectorAll('.btn-agregar-oferta').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const productId = this.getAttribute('data-id');
-            agregarProductoAlCarrito(productId, 'oferta');
-        });
-    });
-}
-
-/**
- * Renderiza los productos generales
- */
-function renderizarProductosGenerales(productos) {
-    const contenedor = document.getElementById('productosGenerales');
-    
-    if (!contenedor) return;
-    
-    if (productos.length === 0) {
-        contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay productos disponibles en este momento.</p>';
-        return;
-    }
-
-    contenedor.innerHTML = productos.map(producto => `
-        <div class="producto-card">
-            <img src="${producto.imagen}" 
-                 alt="${producto.nombre}" 
-                 class="producto-imagen"
-                 onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Pastel+No+Disponible'">
-            <div class="producto-info">
-                <h3 class="producto-nombre">${producto.nombre}</h3>
-                <p style="color: #666; font-size: 0.9rem; margin-bottom: 10px;">${producto.descripcion}</p>
-                <div class="precios-generales" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <span class="precio" style="color: #007bff; font-weight: bold; font-size: 1.1rem;">$${(producto.precio || producto.Precio)?.toLocaleString('es-CL')}</span>
-                </div>
-                <p class="stock-disponible" style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">Stock: ${producto.stock || 10}</p>
-                <button class="btn-agregar-general" data-id="${producto.id}" 
-                        style="background: linear-gradient(90deg, #007bff, #0062cc); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;">
-                    🛒 Añadir al carrito
-                </button>
-            </div>
-        </div>
-    `).join('');
-
-    // Agregar eventos a los botones de añadir productos generales
-    document.querySelectorAll('.btn-agregar-general').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const productId = this.getAttribute('data-id');
-            agregarProductoAlCarrito(productId, 'general');
-        });
-    });
-}
-
 /**
  * Renderiza los productos en el carrito
  */
 function renderizarCarrito() {
+    if (rendering) return;  // Prevent multiple renders
+    rendering = true;
+
     const tbody = document.getElementById('tablaCarritoBody');
-    
-    if (!tbody) return;
-    
+
+    if (!tbody) {
+        rendering = false;
+        return;
+    }
+
     // Recargar carrito del localStorage para asegurar sincronización
     carrito = JSON.parse(localStorage.getItem('carrito')) || [];
     
@@ -196,12 +56,12 @@ function renderizarCarrito() {
         const precio = producto.precio || 0;
         const cantidad = producto.cantidad || 1;
         const subtotal = precio * cantidad;
-        
+
         return `
         <tr>
             <td>
-                <img src="${producto.imagen}" 
-                     alt="${producto.nombre}" 
+                <img src="${producto.imagen}"
+                     alt="${producto.nombre}"
                      class="imagen-tabla"
                      style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;"
                      onerror="this.src='https://via.placeholder.com/100x100/cccccc/969696?text=Pastel'">
@@ -220,7 +80,7 @@ function renderizarCarrito() {
             </td>
             <td><strong>$${subtotal.toLocaleString('es-CL')}</strong></td>
             <td>
-                <button class="btn-eliminar" onclick="eliminarDelCarrito(${index})" 
+                <button class="btn-eliminar" onclick="eliminarDelCarrito(${index})"
                     style="background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: 600;">
                     🗑️ Eliminar
                 </button>
@@ -228,130 +88,18 @@ function renderizarCarrito() {
         </tr>
         `;
     }).join('');
+
+    rendering = false;  // Reset flag after rendering
 }
 
-/**
- * Agrega un producto al carrito desde la sección de ofertas
- */
 
-async function agregarProductoAlCarrito(productId, tipoProducto = 'oferta') {
-    // Verificar si el usuario está autenticado mediante Firebase Auth (no se permiten sesiones por localStorage)
-    let user = null;
-    try {
-        if (typeof firebase !== 'undefined' && firebase.auth) {
-            user = firebase.auth().currentUser;
-        }
-    } catch (e) {
-        user = null;
-    }
-
-    if (!user) {
-        alert('Debes iniciar sesión para poder agregar productos al carrito.');
-        mostrarNotificacion('Debes iniciar sesión para poder agregar productos al carrito.', 'error');
-        return;
-    }
-
-    let producto = null;
-    if (tipoProducto === 'oferta') {
-        producto = productosOferta.find(p => p.id === productId);
-    } else if (tipoProducto === 'general') {
-        producto = productosGenerales.find(p => p.id === productId);
-    }
-
-    if (!producto) {
-        mostrarNotificacion('Producto no encontrado', 'error');
-        return;
-    }
-
-    // Verificar stock antes de agregar
-    if (producto.stock !== undefined && producto.stock <= 0) {
-        mostrarNotificacion('Producto sin stock disponible', 'error');
-        return;
-    }
-
-    // Recargar carrito del localStorage
-    carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-
-    // Verificar si el producto ya está en el carrito
-    const productoExistente = carrito.find(item => item.id === productId);
-
-    if (productoExistente) {
-        // Verificar stock antes de incrementar
-        if (producto.stock !== undefined && productoExistente.cantidad >= producto.stock) {
-            mostrarNotificacion('No hay suficiente stock disponible', 'error');
-            return;
-        }
-        productoExistente.cantidad = (productoExistente.cantidad || 1) + 1;
-    } else {
-        carrito.push({
-            id: producto.id,
-            nombre: producto.nombre,
-            descripcion: producto.descripcion,
-            precio: tipoProducto === 'oferta' ? (producto["precio oferta"] || producto.Precio || producto.precio || 0) : (producto.precio || producto.Precio || 0),
-            precioAnterior: producto["precio original"] || null,
-            imagen: producto.imagen,
-            categoria: producto.categoria,
-            stock: producto.stock,
-            cantidad: 1,
-            tipo: tipoProducto
-        });
-    }
-
-    guardarCarrito();
-    renderizarCarrito();
-    calcularTotal();
-
-    // Actualizar stock en Firebase según tipo de producto
-    if (producto.stock !== undefined) {
-        await actualizarStockFirebase(productId, -1, tipoProducto);
-    }
-
-    mostrarNotificacion(`"${producto.nombre}" agregado al carrito ✓`);
-}
-
-/**
- * Actualizar stock en Firebase
- */
-async function actualizarStockFirebase(productId, cambio, tipoProducto = 'oferta') {
-    try {
-        const collectionName = tipoProducto === 'oferta' ? "oferta" : "producto";
-        const productoRef = db.collection(collectionName).doc(productId);
-        const productoDoc = await productoRef.get();
-
-        if (productoDoc.exists) {
-            const stockActual = productoDoc.data().stock;
-            const nuevoStock = Math.max(0, stockActual + cambio);
-
-            await productoRef.update({
-                stock: nuevoStock
-            });
-
-            // Actualizar stock local según tipo
-            if (tipoProducto === 'oferta') {
-                const producto = productosOferta.find(p => p.id === productId);
-                if (producto) {
-                    producto.stock = nuevoStock;
-                }
-            } else if (tipoProducto === 'general') {
-                const producto = productosGenerales.find(p => p.id === productId);
-                if (producto) {
-                    producto.stock = nuevoStock;
-                }
-            }
-
-            console.log(`Stock actualizado en Firebase: ${nuevoStock}`);
-        }
-    } catch (error) {
-        console.error("Error actualizando stock:", error);
-    }
-}
 
 // EL RESTO DEL CÓDIGO PERMANECE IGUAL (las funciones de aumentar/disminuir cantidad, eliminar, calcular total, etc.)
 
 /**
  * Aumenta la cantidad de un producto en el carrito
  */
-async function aumentarCantidad(index) {
+function aumentarCantidad(index) {
     // Recargar carrito del localStorage
     carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
@@ -370,31 +118,26 @@ async function aumentarCantidad(index) {
     renderizarCarrito();
     calcularTotal();
 
-    // Actualizar stock en Firebase según tipo de producto guardado en carrito (oferta o general)
-    if (producto.id && producto.tipo) {
-        await actualizarStockFirebase(producto.id, -1, producto.tipo);
-    }
-
     mostrarNotificacion('Cantidad actualizada', 'success');
 }
 
 /**
  * Disminuye la cantidad de un producto en el carrito
  */
-async function disminuirCantidad(index) {
+function disminuirCantidad(index) {
     // Recargar carrito del localStorage
     carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    
+
     const producto = carrito[index];
-    
+
     if (!producto) return;
-    
+
     if (carrito[index].cantidad > 1) {
         carrito[index].cantidad--;
         guardarCarrito();
         renderizarCarrito();
         calcularTotal();
-        
+
         mostrarNotificacion('Cantidad actualizada', 'success');
     } else {
         mostrarNotificacion('La cantidad mínima es 1. Usa el botón eliminar si deseas quitar el producto.', 'info');
@@ -404,17 +147,17 @@ async function disminuirCantidad(index) {
 /**
  * Elimina un producto del carrito
  */
-async function eliminarDelCarrito(index) {
+function eliminarDelCarrito(index) {
     // Recargar carrito del localStorage
     carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    
+
     const producto = carrito[index];
-    
+
     if (!producto) return;
-    
+
     if (confirm(`¿Estás seguro de eliminar "${producto.nombre}" del carrito?`)) {
         const cantidadEliminada = producto.cantidad || 1;
-        
+
         carrito.splice(index, 1);
         guardarCarrito();
         renderizarCarrito();
@@ -504,36 +247,22 @@ function limpiarCarrito() {
 function irAlCheckout() {
     // Recargar carrito del localStorage
     carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    
+
     if (carrito.length === 0) {
         mostrarNotificacion('Agrega productos al carrito antes de continuar', 'error');
         return;
     }
-    // Use global currentUser set by auth state listener
-    if (currentUser) {
-        console.log("Usuario autenticado (Firebase), yendo a checkout");
-        window.location.href = 'checkout.html';
-        return;
-    }
 
-    // Si no está autenticado via Firebase, bloquear y forzar login
-    console.log("Usuario no autenticado (Firebase), bloqueando acceso al checkout");
-    // Establecer redirección posterior a carrito.html para reanudar compra
-    localStorage.setItem('redirigirDespuesLogin', 'carrito.html');
-    alert('No has iniciado sesión. Por favor inicia sesión para continuar con la compra.');
-    mostrarNotificacion('Debes iniciar sesión para poder comprar', 'error');
-    setTimeout(() => { window.location.href = 'login.html'; }, 800);
-    return;
     const total = carrito.reduce((sum, p) => sum + ((p.precio || 0) * (p.cantidad || 1)), 0);
     const totalProductos = carrito.reduce((sum, p) => sum + (p.cantidad || 1), 0);
-    
+
     // Mostrar confirmación antes de generar la boleta
     if (confirm(`¿Confirmar compra?\n\nTotal: $${total.toLocaleString('es-CL')} CLP\nProductos: ${totalProductos}\n\nSe generará una boleta electrónica.`)) {
         // Generar número de boleta único
         const numeroBoleta = 'B' + Date.now().toString().slice(-8);
         const fecha = new Date().toLocaleDateString('es-CL');
         const hora = new Date().toLocaleTimeString('es-CL');
-        
+
         // Crear contenido de la boleta
         const boletaHTML = `
             <!DOCTYPE html>
@@ -652,7 +381,7 @@ function irAlCheckout() {
                         <h1>BOLETA ELECTRÓNICA</h1>
                         <p>Pastelería Artesanal</p>
                     </div>
-                    
+
                     <div class="info-boleta">
                         <div>
                             <strong>N° Boleta:</strong> ${numeroBoleta}<br>
@@ -664,7 +393,7 @@ function irAlCheckout() {
                             <strong>Productos:</strong> ${totalProductos}
                         </div>
                     </div>
-                    
+
                     <table class="tabla-productos">
                         <thead>
                             <tr>
@@ -688,7 +417,7 @@ function irAlCheckout() {
                             }).join('')}
                         </tbody>
                     </table>
-                    
+
                     <div class="total-section">
                         <div style="font-size: 18px; font-weight: 600;">TOTAL A PAGAR</div>
                         <div class="total-grande">$${total.toLocaleString('es-CL')} CLP</div>
@@ -696,14 +425,14 @@ function irAlCheckout() {
                             IVA INCLUIDO • Método de pago: Transferencia
                         </div>
                     </div>
-                    
+
                     <div class="footer">
                         <p><strong>¡Gracias por su compra!</strong></p>
                         <p>Mil Sabores - Pastelería Artesanal<br>
                         Contacto: +56 9 8812 7156 • milsabores@tienda.com</p>
                         <p>Boleta electrónica generada automáticamente</p>
                     </div>
-                    
+
                     <div class="botones-boleta">
                         <button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir Boleta</button>
                         <a href="carrito.html" class="btn-volver">← Volver al Carrito</a>
@@ -712,18 +441,18 @@ function irAlCheckout() {
             </body>
             </html>
         `;
-        
+
         // Abrir la boleta en una nueva ventana
         const ventanaBoleta = window.open('', '_blank', 'width=800,height=900,scrollbars=yes');
         ventanaBoleta.document.write(boletaHTML);
         ventanaBoleta.document.close();
-        
+
         // Vaciar carrito después de generar boleta
         carrito = [];
         guardarCarrito();
         renderizarCarrito();
         calcularTotal();
-        
+
         mostrarNotificacion('¡Compra realizada! Boleta generada correctamente ✓');
     }
 }
@@ -777,15 +506,7 @@ function configurarEventos() {
     }
 }
 
-// Escuchar cambios en localStorage (sincronización entre pestañas)
-window.addEventListener('storage', (e) => {
-    if (e.key === 'carrito') {
-        console.log("Carrito actualizado desde otra pestaña");
-        carrito = JSON.parse(e.newValue) || [];
-        renderizarCarrito();
-        calcularTotal();
-    }
-});
+// Removed storage event listener to prevent flickering caused by constant re-rendering
 
 // Hacer funciones disponibles globalmente
 window.aumentarCantidad = aumentarCantidad;

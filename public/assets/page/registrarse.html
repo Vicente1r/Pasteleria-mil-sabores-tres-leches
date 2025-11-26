@@ -1,12 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registro de Usuario</title>
-  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="../css/registrarse.css" />
 </head>
 <body>
-  <div class="main">
+  <nav class="login-nav">
+    <a href="../../index.html" class="nav-button">Home</a>
+    <a href="catalogo.html" class="nav-button">Productos</a>
+    <a href="nosotros.html" class="nav-button">Nosotros</a>
+    <a href="blog.html" class="nav-button">Blog</a>
+    <a href="contacto.html" class="nav-button">Contacto</a>
+    <a href="ofertas.html" class="nav-button">Ofertas</a>
+  </nav>
+
+  <main>
     <h2>Registro de usuario</h2>
   <form id="form-register" autocomplete="off">
     <div class="form-group">
@@ -111,7 +121,7 @@
 
       <button type="submit" class="btn" id="btn-register">REGISTRAR</button>
     </form>
-  </div>
+  </main>
   <!-- Firebase y registro desde CDN -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";

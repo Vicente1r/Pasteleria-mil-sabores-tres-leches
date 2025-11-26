@@ -70,9 +70,9 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem('token', token);
             mensaje.style.color = 'green';
             mensaje.innerText = 'Bienvenido Cliente (modo prueba), redirigiendo...';
-            setTimeout(() => {
-                window.location.href = "/perfil-cliente";
-            }, 1000);
+                    setTimeout(() => {
+                        window.location.href = "perfilCliente.html";
+                    }, 1000);
             return;
         }
 
@@ -126,14 +126,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Check password manually (case sensitive)
                 console.log("Comparing passwords:", {
                     inputClave: `"${clave}" (length: ${clave.length})`,
-                    storedClave: `"${userData.clave}" (length: ${userData.clave ? userData.clave.length : 0})`
+                    storedContraseña: `"${userData.contraseña}" (length: ${userData.contraseña ? userData.contraseña.length : 0})`
                 });
 
                 const trimmedInputClave = clave.trim();
-                const trimmedStoredClave = (userData.clave || '').trim();
+                const trimmedStoredClave = (userData.contraseña || '').trim();
 
                 if (trimmedStoredClave === trimmedInputClave) {
-                    const nombre = userData.nombre || correo;
+                    const nombre = userData.nombre_completo || correo;
 
                     // Guardar usuario en localStorage con rol real
                     const usuario = { nombre, correo, rol: "cliente" };
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             localStorage.removeItem('redirigirDespuesLogin');
                             window.location.href = redirect;
                         } else {
-                            window.location.href = "/perfil-cliente";
+                            window.location.href = "perfilCliente.html";
                         }
                     }, 1000);
                 } else {
