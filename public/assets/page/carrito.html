@@ -3,33 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carrito de Compras - Mi Tienda</title>
+  <title>Carrito de Compras - Pastelería Mil Sabores Tres Leches</title>
   <link rel="stylesheet" href="../css/styles.css">
-  <link rel="stylesheet" href="../css/catalogo.css">
   <link rel="stylesheet" href="../css/carrito.css">
-
-
-
-  <script src="../js/carrito.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
   <!-- HEADER -->
   <header class="topbar">
     <div class="logo">
-      <img src="../assets/Logo.png" alt="">
+      <img src="../Logo.png" alt="Logo Pastelería Mil Sabores">
     </div>
 
-    <div>
-      <strong>Tienda online - Mil Sabores</strong>
+    <div class="header-title">
+      <strong>🍰 Pastelería Mil Sabores</strong>
     </div>
 
     <nav class="navegacion" aria-label="Navegación principal">
-      <a href="../../index.html">Home</a>
-      <a href="catalogo.html">Productos</a>
-      <a href="nosotros.html">Nosotros</a>
-      <a href="blog.html">Blog</a>
-      <a href="contacto.html">Contacto</a>
-      <a href="ofertas.html">Ofertas</a>
+      <a href="/index.html">Home</a>
+      <a href="/assets/page/catalogo.html">Catálogo</a>
+      <a href="/assets/page/nosotros.html">Nosotros</a>
+      <a href="/assets/page/blog.html">Blog</a>
+      <a href="/assets/page/contacto.html">Contacto</a>
+      <a href="/assets/page/ofertas.html">Ofertas</a>
     </nav>
 
     <div class="usuario">
@@ -37,51 +35,51 @@
       <span class="separar">|</span>
       <a id="registrarse" href="registrarse.html">Registrarse</a>
       <span class="separar">|</span>
-      <a href="carrito.html" id="carrito-link">Carrito (0)</a>
+      <a href="carrito.html">🛒 Carrito (0)</a>
     </div>
   </header>
 
-  <!-- MAIN CONTENT -->
   <main class="main">
-    <div class="carrito-container">
-      <!-- Resumen del Carrito -->
-      <section class="resumen-carrito">
-        <h2 class="section-title">Resumen del Carrito</h2>
-        
-        <!-- Tabla de productos en carrito -->
-        <div class="tabla-carrito-container">
-          <table class="tabla-carrito">
-            <thead>
-              <tr>
-                <th>Imagen</th>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Subtotal</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tablaCarritoBody">
-              <!-- Los productos del carrito se insertarán aquí -->
-            </tbody>
-          </table>
-        </div>
+    <section class="carrito-container" aria-labelledby="titulo-carrito">
+      <h1 id="titulo-carrito" class="carrito-titulo">Tu Carrito de Compras</h1>
 
-        <!-- Total y Botones -->
-        <div class="carrito-footer">
-          <div class="total-container">
-            <span class="total-text">Total: $</span>
-            <span id="totalCarrito" class="total-precio">0</span>
+      <!-- Carrito vacío -->
+      <div id="carrito-vacio" class="carrito-vacio" style="display: none;">
+        <div class="carrito-vacio-icon">🛒</div>
+        <h2>Tu carrito está vacío</h2>
+        <p>¡Agrega algunos productos deliciosos de nuestra pastelería!</p>
+        <a href="catalogo.html" class="btn-ir-catalogo">Ver Catálogo</a>
+      </div>
+
+      <!-- Lista de productos en el carrito -->
+      <div id="carrito-items" class="carrito-items">
+        <!-- Los items del carrito se cargarán dinámicamente aquí -->
+      </div>
+
+      <!-- Resumen del carrito -->
+      <div id="carrito-resumen" class="carrito-resumen" style="display: none;">
+        <div class="resumen-total">
+          <div class="total-line">
+            <span class="total-label">Subtotal:</span>
+            <span id="subtotal" class="total-amount">$0 CLP</span>
           </div>
-          <div class="botones-carrito">
-            <button id="btnLimpiarCarrito" class="btn-limpiar">Limpiar Carrito</button>
-            <button id="btnComprarAhora" class="btn-comprar-ahora">Comprar Ahora</button>
+          <div class="total-line total-final">
+            <span class="total-label">Total:</span>
+            <span id="total" class="total-amount">$0 CLP</span>
           </div>
         </div>
-      </section>
-    </div>
+        <div class="resumen-acciones">
+          <button id="btn-seguir-comprando" class="btn-seguir-comprando">Seguir Comprando</button>
+          <button id="btn-proceder-pago" class="btn-proceder-pago">Proceder al Pago</button>
+        </div>
+      </div>
+    </section>
   </main>
 
+  <!-- Notificaciones -->
+  <div id="notificaciones" class="notificaciones"></div>
 
+  <script src="../js/carrito.js"></script>
+  <script type="module" src="../../js/auth.js"></script>
 </body>
 </html>

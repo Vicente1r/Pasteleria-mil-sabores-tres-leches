@@ -50,7 +50,7 @@
       <div class="content-view" id="dashboard-view">
         <div class="welcome-message">
           <p>Bienvenido al panel de administración</p>
-          <a href="/assets/page/carrito.html">Carrito (0)</a>
+          <a href="carrito.html" id="carrito-link">Carrito (0)</a>
         </div>
       </div>
 
@@ -327,6 +327,29 @@
 
       // Initial load user data
       loadUserData();
+
+      // Actualizar contador del carrito
+      function actualizarContadorCarrito() {
+        try {
+          const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+          const totalItems = carrito.reduce((sum, item) => sum + (item.cantidad || 1), 0);
+          const carritoLink = document.getElementById('carrito-link');
+
+          if (carritoLink) {
+            carritoLink.textContent = `Carrito (${totalItems})`;
+          }
+        } catch (error) {
+          console.error('Error actualizando contador del carrito:', error);
+        }
+      }
+
+      // Actualizar contador inicialmente y escuchar cambios en localStorage
+      actualizarContadorCarrito();
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'carrito') {
+          actualizarContadorCarrito();
+        }
+      });
     });
   </script>
 </body>

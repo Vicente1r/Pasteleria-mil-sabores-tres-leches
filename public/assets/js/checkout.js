@@ -34,24 +34,6 @@ const regionesComunas = {
 
 // Inicializar checkout cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
-
-    // Comprobar si hay sesión activa únicamente mediante Firebase Auth
-    let user = null;
-    try {
-        if (typeof firebase !== 'undefined' && firebase.auth) {
-            user = firebase.auth().currentUser;
-        }
-    } catch (e) {
-        user = null;
-    }
-
-    if (!user) {
-        alert('Debes iniciar sesión para poder comprar.');
-        localStorage.setItem('redirigirDespuesLogin', 'checkout.html');
-        window.location.href = 'login.html';
-        return;
-    }
-
     inicializarCheckout();
     configurarEventosCheckout();
     cargarRegiones(); // Cargar las regiones al iniciar
@@ -180,23 +162,6 @@ async function procesarPago() {
     }
 
     try {
-        // Verificar sesión obligatoria: sólo Firebase Auth (no se permiten sesiones por localStorage)
-        let authUserCheck = null;
-        try {
-            if (typeof firebase !== 'undefined' && firebase.auth) {
-                authUserCheck = firebase.auth().currentUser;
-            }
-        } catch (e) {
-            authUserCheck = null;
-        }
-
-        if (!authUserCheck) {
-            alert('Debes iniciar sesión para completar la compra.');
-            localStorage.setItem('redirigirDespuesLogin', 'checkout.html');
-            setTimeout(() => { window.location.href = 'login.html'; }, 600);
-            return;
-        }
-
         // Obtener datos del formulario
         const datosCliente = obtenerDatosCliente();
         const datosDireccion = obtenerDatosDireccion();

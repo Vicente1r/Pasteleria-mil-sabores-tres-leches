@@ -1,545 +1,350 @@
-// Variables globales
-let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+document.addEventListener("DOMContentLoaded", () => {
+  // Elementos del DOM
+  const carritoVacio = document.getElementById('carrito-vacio');
+  const carritoItems = document.getElementById('carrito-items');
+  const carritoResumen = document.getElementById('carrito-resumen');
+  const subtotalElement = document.getElementById('subtotal');
+  const totalElement = document.getElementById('total');
+  const btnSeguirComprando = document.getElementById('btn-seguir-comprando');
+  const btnProcederPago = document.getElementById('btn-proceder-pago');
+  const notificaciones = document.getElementById('notificaciones');
 
-let initialized = false;  // Flag to prevent multiple initializations
-let rendering = false;  // Flag to prevent multiple renders
+  let carrito = [];
 
-document.addEventListener('DOMContentLoaded', function() {
-    if (initialized) return;  // Prevent multiple initializations
-    initialized = true;
-    console.log("Carrito cargado:", carrito);
-    inicializarCarrito();
-    configurarEventos();
-});
+  // Configuración de Firebase (igual que en catalogo.js)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
+    authDomain: "pasteleriamilsaborestresleches.web.app",
+    projectId: "pasteleriamilsaborestresleches",
+  };
 
-/**
- * Inicializa la interfaz del carrito
- */
-function inicializarCarrito() {
-    actualizarCarritoHeader();
-    renderizarCarrito();
-    calcularTotal();
-}
+  // Inicializar Firebase solo si no está inicializado
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const db = firebase.firestore();
 
-/**
- * Renderiza los productos en el carrito
- */
-function renderizarCarrito() {
-    if (rendering) return;  // Prevent multiple renders
-    rendering = true;
+  // Inicializar el carrito
+  cargarCarrito();
+  configurarEventos();
+  actualizarContadorCarritoHeader();
 
-    const tbody = document.getElementById('tablaCarritoBody');
-
-    if (!tbody) {
-        rendering = false;
-        return;
-    }
-
-    // Recargar carrito del localStorage para asegurar sincronización
+  // Cargar carrito desde localStorage
+  function cargarCarrito() {
     carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    
+
     if (carrito.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6" class="carrito-vacio" style="text-align: center; padding: 40px;">
-                    <div style="font-size: 48px; margin-bottom: 20px;">🛒</div>
-                    <h3 style="margin-bottom: 10px;">Tu carrito está vacío</h3>
-                    <p style="color: #666; margin-bottom: 20px;">Agrega algunos productos para continuar</p>
-                    <a href="catalogo.html" class="btn-signup" style="display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">Ir al Catálogo</a>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    tbody.innerHTML = carrito.map((producto, index) => {
-        const precio = producto.precio || 0;
-        const cantidad = producto.cantidad || 1;
-        const subtotal = precio * cantidad;
-
-        return `
-        <tr>
-            <td>
-                <img src="${producto.imagen}"
-                     alt="${producto.nombre}"
-                     class="imagen-tabla"
-                     style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;"
-                     onerror="this.src='https://via.placeholder.com/100x100/cccccc/969696?text=Pastel'">
-            </td>
-            <td>
-                <strong>${producto.nombre}</strong>
-                ${producto.descripcion ? `<br><small style="color: #666;">${producto.descripcion}</small>` : ''}
-            </td>
-            <td>$${precio.toLocaleString('es-CL')}</td>
-            <td>
-                <div class="controles-cantidad" style="display: flex; align-items: center; gap: 10px; justify-content: center;">
-                    <button class="btn-cantidad" onclick="disminuirCantidad(${index})" style="background: #dc3545; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold;">-</button>
-                    <span class="cantidad-actual" style="min-width: 30px; text-align: center; font-weight: 600;">${cantidad}</span>
-                    <button class="btn-cantidad" onclick="aumentarCantidad(${index})" style="background: #28a745; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold;">+</button>
-                </div>
-            </td>
-            <td><strong>$${subtotal.toLocaleString('es-CL')}</strong></td>
-            <td>
-                <button class="btn-eliminar" onclick="eliminarDelCarrito(${index})"
-                    style="background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: 600;">
-                    🗑️ Eliminar
-                </button>
-            </td>
-        </tr>
-        `;
-    }).join('');
-
-    rendering = false;  // Reset flag after rendering
-}
-
-
-
-// EL RESTO DEL CÓDIGO PERMANECE IGUAL (las funciones de aumentar/disminuir cantidad, eliminar, calcular total, etc.)
-
-/**
- * Aumenta la cantidad de un producto en el carrito
- */
-function aumentarCantidad(index) {
-    // Recargar carrito del localStorage
-    carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-
-    const producto = carrito[index];
-
-    if (!producto) return;
-
-    // Verificar stock antes de aumentar
-    if (producto.stock !== undefined && producto.cantidad >= producto.stock) {
-        mostrarNotificacion('No hay suficiente stock disponible', 'error');
-        return;
-    }
-
-    carrito[index].cantidad = (carrito[index].cantidad || 1) + 1;
-    guardarCarrito();
-    renderizarCarrito();
-    calcularTotal();
-
-    mostrarNotificacion('Cantidad actualizada', 'success');
-}
-
-/**
- * Disminuye la cantidad de un producto en el carrito
- */
-function disminuirCantidad(index) {
-    // Recargar carrito del localStorage
-    carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-
-    const producto = carrito[index];
-
-    if (!producto) return;
-
-    if (carrito[index].cantidad > 1) {
-        carrito[index].cantidad--;
-        guardarCarrito();
-        renderizarCarrito();
-        calcularTotal();
-
-        mostrarNotificacion('Cantidad actualizada', 'success');
+      mostrarCarritoVacio();
     } else {
-        mostrarNotificacion('La cantidad mínima es 1. Usa el botón eliminar si deseas quitar el producto.', 'info');
+      mostrarCarritoItems();
+      actualizarResumen();
     }
-}
+  }
 
-/**
- * Elimina un producto del carrito
- */
-function eliminarDelCarrito(index) {
-    // Recargar carrito del localStorage
-    carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+  // Mostrar mensaje de carrito vacío
+  function mostrarCarritoVacio() {
+    carritoVacio.style.display = 'block';
+    carritoItems.style.display = 'none';
+    carritoResumen.style.display = 'none';
+  }
 
-    const producto = carrito[index];
+  // Mostrar items del carrito
+  function mostrarCarritoItems() {
+    carritoVacio.style.display = 'none';
+    carritoItems.style.display = 'block';
+    carritoResumen.style.display = 'block';
 
-    if (!producto) return;
+    carritoItems.innerHTML = carrito.map(item => generarHTMLItem(item)).join('');
 
-    if (confirm(`¿Estás seguro de eliminar "${producto.nombre}" del carrito?`)) {
-        const cantidadEliminada = producto.cantidad || 1;
+    // Agregar eventos a los controles de cantidad y botones de eliminar
+    document.querySelectorAll('.btn-menos').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const itemId = e.target.dataset.id;
+        cambiarCantidad(itemId, -1);
+      });
+    });
 
-        carrito.splice(index, 1);
-        guardarCarrito();
-        renderizarCarrito();
-        calcularTotal();
-        mostrarNotificacion(`"${producto.nombre}" eliminado del carrito`);
-    }
-}
+    document.querySelectorAll('.btn-mas').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const itemId = e.target.dataset.id;
+        cambiarCantidad(itemId, 1);
+      });
+    });
 
-/**
- * Calcula el total del carrito
- */
-function calcularTotal() {
-    // Recargar carrito del localStorage
-    carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    
-    const total = carrito.reduce((sum, producto) => {
-        return sum + ((producto.precio || 0) * (producto.cantidad || 1));
-    }, 0);
-    
-    const totalElement = document.getElementById('totalCarrito');
-    if (totalElement) {
-        totalElement.textContent = total.toLocaleString('es-CL');
-    }
-    
-    actualizarCarritoHeader();
-}
+    document.querySelectorAll('.btn-eliminar').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const itemId = e.target.dataset.id;
+        eliminarItem(itemId);
+      });
+    });
 
-/**
- * Actualiza el header del carrito
- */
-function actualizarCarritoHeader() {
-    // Recargar carrito del localStorage
-    carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    document.querySelectorAll('.cantidad-input').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const itemId = e.target.dataset.id;
+        const nuevaCantidad = parseInt(e.target.value);
+        if (nuevaCantidad > 0) {
+          actualizarCantidad(itemId, nuevaCantidad);
+        } else {
+          e.target.value = 1;
+        }
+      });
+    });
+  }
 
-    const totalProductos = carrito.reduce((sum, producto) => {
-        return sum + (producto.cantidad || 1);
-    }, 0);
+  // Generar HTML para un item del carrito
+  function generarHTMLItem(item) {
+    const imagenSrc = item.imagen && item.imagen.startsWith('http')
+      ? item.imagen
+      : item.imagen
+        ? `/assets/${item.imagen}`
+        : 'https://via.placeholder.com/80x80/cccccc/969696?text=Sin+Imagen';
 
-    const total = carrito.reduce((sum, producto) => {
-        return sum + ((producto.precio || 0) * (producto.cantidad || 1));
-    }, 0);
+    const precio = item.precio || 0;
+    const cantidad = item.cantidad || 1;
+    const subtotal = precio * cantidad;
 
-    const carritoTotalElement = document.querySelector('.carrito-total');
-    if (carritoTotalElement) {
-        carritoTotalElement.textContent = total.toLocaleString('es-CL');
-    }
+    return `
+      <div class="carrito-item" data-id="${item.id}">
+        <img src="${imagenSrc}"
+             alt="${item.nombre}"
+             class="item-imagen"
+             onerror="this.src='https://via.placeholder.com/80x80/cccccc/969696?text=Sin+Imagen'">
 
-    // Actualizar el enlace del carrito con la cantidad de productos
-    const carritoLinkElement = document.getElementById('carrito-link');
-    if (carritoLinkElement) {
-        carritoLinkElement.textContent = `Carrito (${totalProductos})`;
-    }
-}
+        <div class="item-info">
+          <h3 class="item-nombre">${item.nombre || 'Producto sin nombre'}</h3>
+          <p class="item-descripcion">${item.descripcion || ''}</p>
+          <p class="item-precio">$${(item.precio || 0).toLocaleString('es-CL')} CLP</p>
+        </div>
 
-/**
- * Guarda el carrito en localStorage
- */
-function guardarCarrito() {
-    localStorage.setItem('carrito', JSON.stringify(carrito));
-    console.log("Carrito guardado:", carrito);
-}
+        <div class="item-cantidad">
+          <button class="btn-cantidad btn-menos" data-id="${item.id}" ${cantidad <= 1 ? 'disabled' : ''}>-</button>
+          <input type="number" class="cantidad-input" data-id="${item.id}" value="${cantidad}" min="1" max="${item.stock || 999}">
+          <button class="btn-cantidad btn-mas" data-id="${item.id}" ${item.stock && cantidad >= item.stock ? 'disabled' : ''}>+</button>
+        </div>
 
-/**
- * Limpia todo el carrito
- */
-function limpiarCarrito() {
-    // Recargar carrito del localStorage
-    carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    
-    if (carrito.length === 0) {
-        mostrarNotificacion('El carrito ya está vacío', 'info');
-        return;
-    }
-    
-    if (confirm('¿Estás seguro de que quieres vaciar todo el carrito?')) {
-        carrito = [];
-        guardarCarrito();
-        renderizarCarrito();
-        calcularTotal();
-        mostrarNotificacion('Carrito vaciado correctamente');
-    }
-}
+        <div class="item-subtotal">$${subtotal.toLocaleString('es-CL')} CLP</div>
 
-/**
- * Procesa la compra y genera boleta
- */
-function irAlCheckout() {
-    // Recargar carrito del localStorage
-    carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-
-    if (carrito.length === 0) {
-        mostrarNotificacion('Agrega productos al carrito antes de continuar', 'error');
-        return;
-    }
-
-    const total = carrito.reduce((sum, p) => sum + ((p.precio || 0) * (p.cantidad || 1)), 0);
-    const totalProductos = carrito.reduce((sum, p) => sum + (p.cantidad || 1), 0);
-
-    // Mostrar confirmación antes de generar la boleta
-    if (confirm(`¿Confirmar compra?\n\nTotal: $${total.toLocaleString('es-CL')} CLP\nProductos: ${totalProductos}\n\nSe generará una boleta electrónica.`)) {
-        // Generar número de boleta único
-        const numeroBoleta = 'B' + Date.now().toString().slice(-8);
-        const fecha = new Date().toLocaleDateString('es-CL');
-        const hora = new Date().toLocaleTimeString('es-CL');
-
-        // Crear contenido de la boleta
-        const boletaHTML = `
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Boleta - Mil Sabores</title>
-                <style>
-                    body {
-                        font-family: 'Arial', sans-serif;
-                        margin: 0;
-                        padding: 20px;
-                        background: #f5f5f5;
-                    }
-                    .boleta-container {
-                        max-width: 600px;
-                        margin: 0 auto;
-                        background: white;
-                        padding: 30px;
-                        border-radius: 10px;
-                        box-shadow: 0 0 20px rgba(0,0,0,0.1);
-                    }
-                    .header {
-                        text-align: center;
-                        border-bottom: 2px solid #e36b86;
-                        padding-bottom: 20px;
-                        margin-bottom: 20px;
-                    }
-                    .logo {
-                        font-size: 24px;
-                        font-weight: bold;
-                        color: #e36b86;
-                        margin-bottom: 10px;
-                    }
-                    .info-boleta {
-                        display: flex;
-                        justify-content: space-between;
-                        margin-bottom: 20px;
-                        font-size: 14px;
-                        color: #666;
-                    }
-                    .tabla-productos {
-                        width: 100%;
-                        border-collapse: collapse;
-                        margin-bottom: 20px;
-                    }
-                    .tabla-productos th {
-                        background: #f8f9fa;
-                        padding: 12px;
-                        text-align: left;
-                        border-bottom: 2px solid #dee2e6;
-                        font-weight: 600;
-                    }
-                    .tabla-productos td {
-                        padding: 12px;
-                        border-bottom: 1px solid #e9ecef;
-                    }
-                    .total-section {
-                        background: #f8f9fa;
-                        padding: 20px;
-                        border-radius: 8px;
-                        text-align: center;
-                        margin-top: 20px;
-                    }
-                    .total-grande {
-                        font-size: 24px;
-                        font-weight: bold;
-                        color: #28a745;
-                        margin: 10px 0;
-                    }
-                    .footer {
-                        text-align: center;
-                        margin-top: 30px;
-                        padding-top: 20px;
-                        border-top: 1px solid #dee2e6;
-                        color: #666;
-                        font-size: 12px;
-                    }
-                    .botones-boleta {
-                        display: flex;
-                        gap: 10px;
-                        justify-content: center;
-                        margin-top: 20px;
-                    }
-                    .btn-imprimir {
-                        background: #007bff;
-                        color: white;
-                        border: none;
-                        padding: 10px 20px;
-                        border-radius: 5px;
-                        cursor: pointer;
-                        font-weight: 600;
-                    }
-                    .btn-volver {
-                        background: #6c757d;
-                        color: white;
-                        border: none;
-                        padding: 10px 20px;
-                        border-radius: 5px;
-                        cursor: pointer;
-                        font-weight: 600;
-                        text-decoration: none;
-                    }
-                    @media print {
-                        body { background: white; }
-                        .boleta-container { box-shadow: none; }
-                        .botones-boleta { display: none; }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="boleta-container">
-                    <div class="header">
-                        <div class="logo">🍰 Mil Sabores</div>
-                        <h1>BOLETA ELECTRÓNICA</h1>
-                        <p>Pastelería Artesanal</p>
-                    </div>
-
-                    <div class="info-boleta">
-                        <div>
-                            <strong>N° Boleta:</strong> ${numeroBoleta}<br>
-                            <strong>Fecha:</strong> ${fecha}<br>
-                            <strong>Hora:</strong> ${hora}
-                        </div>
-                        <div style="text-align: right;">
-                            <strong>Estado:</strong> <span style="color: #28a745;">PAGADO</span><br>
-                            <strong>Productos:</strong> ${totalProductos}
-                        </div>
-                    </div>
-
-                    <table class="tabla-productos">
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Cant.</th>
-                                <th>P. Unitario</th>
-                                <th>Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${carrito.map((p, i) => {
-                                const subtotal = (p.precio || 0) * (p.cantidad || 1);
-                                return `
-                                    <tr>
-                                        <td>${p.nombre}</td>
-                                        <td>${p.cantidad}</td>
-                                        <td>$${(p.precio || 0).toLocaleString('es-CL')}</td>
-                                        <td>$${subtotal.toLocaleString('es-CL')}</td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
-
-                    <div class="total-section">
-                        <div style="font-size: 18px; font-weight: 600;">TOTAL A PAGAR</div>
-                        <div class="total-grande">$${total.toLocaleString('es-CL')} CLP</div>
-                        <div style="color: #666; font-size: 14px;">
-                            IVA INCLUIDO • Método de pago: Transferencia
-                        </div>
-                    </div>
-
-                    <div class="footer">
-                        <p><strong>¡Gracias por su compra!</strong></p>
-                        <p>Mil Sabores - Pastelería Artesanal<br>
-                        Contacto: +56 9 8812 7156 • milsabores@tienda.com</p>
-                        <p>Boleta electrónica generada automáticamente</p>
-                    </div>
-
-                    <div class="botones-boleta">
-                        <button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir Boleta</button>
-                        <a href="carrito.html" class="btn-volver">← Volver al Carrito</a>
-                    </div>
-                </div>
-            </body>
-            </html>
-        `;
-
-        // Abrir la boleta en una nueva ventana
-        const ventanaBoleta = window.open('', '_blank', 'width=800,height=900,scrollbars=yes');
-        ventanaBoleta.document.write(boletaHTML);
-        ventanaBoleta.document.close();
-
-        // Vaciar carrito después de generar boleta
-        carrito = [];
-        guardarCarrito();
-        renderizarCarrito();
-        calcularTotal();
-
-        mostrarNotificacion('¡Compra realizada! Boleta generada correctamente ✓');
-    }
-}
-
-/**
- * Muestra una notificación temporal
- */
-function mostrarNotificacion(mensaje, tipo = 'success') {
-    const colores = {
-        success: '#28a745',
-        error: '#dc3545',
-        info: '#17a2b8'
-    };
-    
-    const notificacion = document.createElement('div');
-    notificacion.style.cssText = `
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        background: ${colores[tipo] || colores.success};
-        color: white;
-        padding: 15px 20px;
-        border-radius: 8px;
-        z-index: 10000;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        font-weight: 600;
-        animation: slideIn 0.3s ease-out;
+        <button class="btn-eliminar" data-id="${item.id}">Eliminar</button>
+      </div>
     `;
+  }
+
+  // Cambiar cantidad de un item
+  function cambiarCantidad(itemId, cambio) {
+    const itemIndex = carrito.findIndex(item => item.id === itemId);
+    if (itemIndex === -1) return;
+
+    const item = carrito[itemIndex];
+    const nuevaCantidad = (item.cantidad || 1) + cambio;
+
+    // Validar límites
+    if (nuevaCantidad < 1) return;
+    if (item.stock && nuevaCantidad > item.stock) {
+      mostrarNotificacion('No hay suficiente stock disponible', 'error');
+      return;
+    }
+
+    actualizarCantidad(itemId, nuevaCantidad);
+  }
+
+  // Actualizar cantidad específica
+  function actualizarCantidad(itemId, nuevaCantidad) {
+    const itemIndex = carrito.findIndex(item => item.id === itemId);
+    if (itemIndex === -1) return;
+
+    const item = carrito[itemIndex];
+    const cantidadAnterior = item.cantidad || 1;
+
+    item.cantidad = nuevaCantidad;
+
+    // Actualizar stock en Firebase si cambió la cantidad
+    if (nuevaCantidad > cantidadAnterior) {
+      // Se agregó más cantidad
+      actualizarStockFirebase(itemId, -(nuevaCantidad - cantidadAnterior));
+    } else if (nuevaCantidad < cantidadAnterior) {
+      // Se redujo la cantidad
+      actualizarStockFirebase(itemId, cantidadAnterior - nuevaCantidad);
+    }
+
+    guardarCarrito();
+    mostrarCarritoItems();
+    actualizarResumen();
+    actualizarContadorCarritoHeader();
+
+    mostrarNotificacion(`Cantidad actualizada: ${item.nombre}`);
+  }
+
+  // Eliminar item del carrito
+  function eliminarItem(itemId) {
+    const itemIndex = carrito.findIndex(item => item.id === itemId);
+    if (itemIndex === -1) return;
+
+    const item = carrito[itemIndex];
+    const cantidadEliminada = item.cantidad || 1;
+
+    // Devolver stock a Firebase
+    actualizarStockFirebase(itemId, cantidadEliminada);
+
+    carrito.splice(itemIndex, 1);
+    guardarCarrito();
+
+    if (carrito.length === 0) {
+      mostrarCarritoVacio();
+    } else {
+      mostrarCarritoItems();
+      actualizarResumen();
+    }
+
+    mostrarNotificacion(`"${item.nombre}" eliminado del carrito`);
+  }
+
+  // Actualizar stock en Firebase
+  async function actualizarStockFirebase(productId, cambio) {
+    try {
+      const productoRef = db.collection("producto").doc(productId);
+      const productoDoc = await productoRef.get();
+
+      if (productoDoc.exists) {
+        const stockActual = productoDoc.data().stock;
+        const nuevoStock = Math.max(0, stockActual + cambio);
+
+        await productoRef.update({
+          stock: nuevoStock
+        });
+
+        console.log(`Stock actualizado en Firebase: ${nuevoStock}`);
+      }
+    } catch (error) {
+      console.error("Error actualizando stock:", error);
+    }
+  }
+
+  // Actualizar resumen del carrito
+  function actualizarResumen() {
+    const subtotal = carrito.reduce((sum, item) => {
+      const precio = item.precio || 0;
+      const cantidad = item.cantidad || 1;
+      return sum + (precio * cantidad);
+    }, 0);
+
+    const total = subtotal; // Por ahora no hay envío ni impuestos
+
+    if (subtotalElement) {
+      subtotalElement.textContent = `$${subtotal.toLocaleString('es-CL')} CLP`;
+    }
+
+    if (totalElement) {
+      totalElement.textContent = `$${total.toLocaleString('es-CL')} CLP`;
+    }
+  }
+
+  // Guardar carrito en localStorage
+  function guardarCarrito() {
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+  }
+
+  // Verificar si el usuario está logueado
+  async function usuarioLogueado() {
+    try {
+      // Primero verificar localStorage para acceso rápido
+      const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
+      console.log("Usuario en localStorage:", usuarioActual);
+
+      if (usuarioActual && usuarioActual.correo && usuarioActual.nombre) {
+        console.log("Usuario encontrado en localStorage, verificando Firestore...");
+
+        // Verificar que la sesión esté activa en Firestore
+        try {
+          const sesionDoc = await db.collection("sesiones").doc(usuarioActual.correo).get();
+          console.log("Documento de sesión existe:", sesionDoc.exists);
+
+          if (sesionDoc.exists) {
+            const sesionData = sesionDoc.data();
+            console.log("Datos de sesión:", sesionData);
+            return sesionData.activo === true;
+          } else {
+            console.log("No se encontró documento de sesión en Firestore");
+            // Si no hay sesión en Firestore pero sí en localStorage, considerarlo válido
+            return true;
+          }
+        } catch (firestoreError) {
+          console.error("Error consultando Firestore:", firestoreError);
+          // Si hay error con Firestore pero el usuario está en localStorage, permitir acceso
+          return true;
+        }
+      }
+
+      console.log("No se encontró usuario en localStorage");
+      return false;
+    } catch (error) {
+      console.error("Error verificando autenticación:", error);
+      // En caso de error, verificar si al menos hay usuario en localStorage
+      try {
+        const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
+        return usuarioActual && usuarioActual.correo && usuarioActual.nombre;
+      } catch {
+        return false;
+      }
+    }
+  }
+
+  // Configurar eventos
+  function configurarEventos() {
+    if (btnSeguirComprando) {
+      btnSeguirComprando.addEventListener('click', () => {
+        window.location.href = 'catalogo.html';
+      });
+    }
+
+    if (btnProcederPago) {
+      btnProcederPago.addEventListener('click', () => {
+        if (carrito.length === 0) {
+          mostrarNotificacion('Tu carrito está vacío', 'error');
+          return;
+        }
+
+        // Redirección directa sin mensajes de autenticación
+        window.location.href = 'perfilCliente.html';
+      });
+    }
+
+    // Escuchar cambios en localStorage (sincronización entre pestañas)
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'carrito') {
+        cargarCarrito();
+      }
+    });
+  }
+
+  // Mostrar notificación
+  function mostrarNotificacion(mensaje, tipo = 'success') {
+    const notificacion = document.createElement('div');
+    notificacion.className = `notificacion ${tipo === 'error' ? 'error' : ''}`;
     notificacion.textContent = mensaje;
-    document.body.appendChild(notificacion);
-    
+
+    notificaciones.appendChild(notificacion);
+
+    // Auto-remover después de 3 segundos
     setTimeout(() => {
-        notificacion.style.animation = 'slideOut 0.3s ease-out';
-        setTimeout(() => notificacion.remove(), 300);
+      notificacion.classList.add('fade-out');
+      setTimeout(() => {
+        if (notificacion.parentNode) {
+          notificacion.parentNode.removeChild(notificacion);
+        }
+      }, 300);
     }, 3000);
-}
+  }
 
-/**
- * Configura los eventos de la página
- */
-function configurarEventos() {
-    const btnLimpiar = document.getElementById('btnLimpiarCarrito');
-    const btnComprar = document.getElementById('btnComprarAhora');
-    
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener('click', limpiarCarrito);
-    }
-    
-    if (btnComprar) {
-        btnComprar.addEventListener('click', irAlCheckout);
-    }
-}
+  // Actualizar contador del carrito en el header
+  function actualizarContadorCarritoHeader() {
+    const totalItems = carrito.reduce((sum, item) => sum + (item.cantidad || 1), 0);
+    const carritoLink = document.querySelector('.usuario a[href*="carrito"]');
 
-// Removed storage event listener to prevent flickering caused by constant re-rendering
-
-// Hacer funciones disponibles globalmente
-window.aumentarCantidad = aumentarCantidad;
-window.disminuirCantidad = disminuirCantidad;
-window.eliminarDelCarrito = eliminarDelCarrito;
-
-// Agregar estilos CSS para animaciones
-const styles = `
-  @keyframes slideIn {
-    from {
-      transform: translateX(400px);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
+    if (carritoLink) {
+      const textoBase = '🛒 Carrito';
+      carritoLink.innerHTML = `${textoBase} (${totalItems})`;
     }
   }
-  
-  @keyframes slideOut {
-    from {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(400px);
-      opacity: 0;
-    }
-  }
-`;
 
-const styleSheet = document.createElement("style");
-styleSheet.textContent = styles;
-document.head.appendChild(styleSheet);
-
-console.log("Sistema de carrito inicializado correctamente");
+  console.log("Carrito inicializado correctamente");
+});

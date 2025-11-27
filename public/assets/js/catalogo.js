@@ -1,3 +1,5 @@
+import { db } from './firebase-config.js';
+
 document.addEventListener("DOMContentLoaded", () => {
   // Elementos del DOM
   const dropdownCategorias = document.getElementById("dropdownCategorias");
@@ -16,19 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let ofertasGlobal = [];
   let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
   let categoriaActiva = 'todos';
-
-  // Configuración de Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
-    authDomain: "pasteleriamilsaborestresleches.web.app",
-    projectId: "pasteleriamilsaborestresleches",
-  };
-
-  // Inicializar Firebase solo si no está inicializado
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-  const db = firebase.firestore();
 
   // Inicializar la aplicación
   actualizarCarritoTotal();
@@ -54,15 +43,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (tituloProductos) {
         tituloProductos.textContent = "Cargando productos...";
       }
-      
-      const snapshot = await db.collection("producto").get();
+
+      const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const productosRef = collection(db, "producto");
+      const snapshot = await getDocs(productosRef);
       productosGlobal = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      
+
       console.log("Productos cargados desde Firestore:", productosGlobal);
-      
+
       if (productosGlobal.length > 0) {
         inicializarInterfaz(productosGlobal);
       } else {
@@ -70,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
         productosGlobal = mockProducts.slice();
         inicializarInterfaz(productosGlobal);
       }
-      
+
     } catch (error) {
       console.error("Error cargando productos:", error);
       console.log("Usando mockProducts locales como fallback");
@@ -86,7 +77,9 @@ document.addEventListener("DOMContentLoaded", () => {
         tituloOfertas.textContent = "Cargando ofertas...";
       }
 
-      const snapshot = await db.collection("oferta").get();
+      const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const ofertasRef = collection(db, "oferta");
+      const snapshot = await getDocs(ofertasRef);
       ofertasGlobal = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -589,23 +582,24 @@ document.addEventListener("DOMContentLoaded", () => {
   // Actualizar stock en Firebase
   async function actualizarStockFirebase(productId, cambio) {
     try {
-      const productoRef = db.collection("producto").doc(productId);
-      const productoDoc = await productoRef.get();
-      
-      if (productoDoc.exists) {
+      const { doc, getDoc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const productoRef = doc(db, "producto", productId);
+      const productoDoc = await getDoc(productoRef);
+
+      if (productoDoc.exists()) {
         const stockActual = productoDoc.data().stock;
         const nuevoStock = Math.max(0, stockActual + cambio);
-        
-        await productoRef.update({
+
+        await updateDoc(productoRef, {
           stock: nuevoStock
         });
-        
+
         // Actualizar stock local
         const producto = productosGlobal.find(p => p.id === productId);
         if (producto) {
           producto.stock = nuevoStock;
         }
-        
+
         console.log(`Stock actualizado en Firebase: ${nuevoStock}`);
       }
     } catch (error) {
