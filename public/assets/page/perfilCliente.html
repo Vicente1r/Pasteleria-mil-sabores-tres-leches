@@ -154,6 +154,17 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Check for server message in URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const mensaje = urlParams.get('mensaje');
+      if (mensaje) {
+        // Display the server message
+        const welcomeMessage = document.querySelector('.welcome-message p');
+        if (welcomeMessage) {
+          welcomeMessage.textContent = decodeURIComponent(mensaje);
+        }
+      }
+
       const navItems = document.querySelectorAll('.nav-item[data-view]');
       const contentViews = document.querySelectorAll('.content-view');
       const pageTitle = document.getElementById('page-title');

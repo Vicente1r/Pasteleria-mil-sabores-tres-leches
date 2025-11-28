@@ -144,13 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     mensaje.style.color = "green";
                     mensaje.innerText = "Bienvenido cliente, redirigiendo...";
                     setTimeout(() => {
-                        const redirect = localStorage.getItem('redirigirDespuesLogin');
-                        if (redirect) {
-                            localStorage.removeItem('redirigirDespuesLogin');
-                            window.location.href = redirect;
-                        } else {
-                            window.location.href = "perfilCliente.html";
-                        }
+                        window.location.href = "perfilCliente.html";
                     }, 1000);
                 } else {
                     mensaje.style.color = "red";

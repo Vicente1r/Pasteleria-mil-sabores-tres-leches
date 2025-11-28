@@ -175,7 +175,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Eliminar item del carrito
-  function eliminarItem(itemId) {
+  async function eliminarItem(itemId) {
+    // Verificar si el usuario está logueado
+    const logueado = await usuarioLogueado();
+    if (!logueado) {
+      mostrarNotificacion('Debes iniciar sesión para eliminar items del carrito', 'error');
+      return;
+    }
+
     const itemIndex = carrito.findIndex(item => item.id === itemId);
     if (itemIndex === -1) return;
 
@@ -247,15 +254,17 @@ document.addEventListener("DOMContentLoaded", () => {
   async function usuarioLogueado() {
     try {
       // Primero verificar localStorage para acceso rápido
-      const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
-      console.log("Usuario en localStorage:", usuarioActual);
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      const token = localStorage.getItem('token');
+      console.log("Usuario en localStorage:", usuario);
+      console.log("Token en localStorage:", token);
 
-      if (usuarioActual && usuarioActual.correo && usuarioActual.nombre) {
-        console.log("Usuario encontrado en localStorage, verificando Firestore...");
+      if (usuario && usuario.correo && usuario.nombre && token) {
+        console.log("Usuario y token encontrados en localStorage, verificando Firestore...");
 
         // Verificar que la sesión esté activa en Firestore
         try {
-          const sesionDoc = await db.collection("sesiones").doc(usuarioActual.correo).get();
+          const sesionDoc = await db.collection("sesiones").doc(usuario.correo).get();
           console.log("Documento de sesión existe:", sesionDoc.exists);
 
           if (sesionDoc.exists) {
@@ -274,14 +283,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      console.log("No se encontró usuario en localStorage");
+      console.log("No se encontró usuario o token en localStorage");
       return false;
     } catch (error) {
       console.error("Error verificando autenticación:", error);
-      // En caso de error, verificar si al menos hay usuario en localStorage
+      // En caso de error, verificar si al menos hay usuario y token en localStorage
       try {
-        const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
-        return usuarioActual && usuarioActual.correo && usuarioActual.nombre;
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        const token = localStorage.getItem('token');
+        return usuario && usuario.correo && usuario.nombre && token;
       } catch {
         return false;
       }
@@ -297,14 +307,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (btnProcederPago) {
-      btnProcederPago.addEventListener('click', () => {
+      btnProcederPago.addEventListener('click', async () => {
         if (carrito.length === 0) {
           mostrarNotificacion('Tu carrito está vacío', 'error');
           return;
         }
 
-        // Redirección directa sin mensajes de autenticación
-        window.location.href = 'perfilCliente.html';
+        // Verificar si el usuario está logueado
+        const logueado = await usuarioLogueado();
+        if (!logueado) {
+          // Redirigir a perfilCliente.html con mensaje del servidor
+          window.location.href = 'perfilCliente.html?mensaje=Debes+iniciar+sesión+para+proceder+al+pago';
+          return;
+        }
+
+        // Usuario logueado, completar la compra limpiando el carrito
+        carrito = [];
+        guardarCarrito();
+        mostrarCarritoVacio();
+        actualizarContadorCarritoHeader();
+        mostrarNotificacion('Compra completada exitosamente. Tu carrito ha sido limpiado.');
       });
     }
 
