@@ -316,8 +316,12 @@ document.addEventListener("DOMContentLoaded", () => {
         // Verificar si el usuario está logueado
         const logueado = await usuarioLogueado();
         if (!logueado) {
-          // Redirigir a perfilCliente.html con mensaje del servidor
-          window.location.href = 'perfilCliente.html?mensaje=Debes+iniciar+sesión+para+proceder+al+pago';
+          // Mostrar notificación antes de redirigir
+          mostrarNotificacion('No puedes comprar porque no hay sesión iniciada', 'error');
+          // Redirigir a login.html después de 5 segundos para que se vea la notificación
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 5000);
           return;
         }
 
