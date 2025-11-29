@@ -325,12 +325,70 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // Usuario logueado, completar la compra limpiando el carrito
-        carrito = [];
-        guardarCarrito();
-        mostrarCarritoVacio();
-        actualizarContadorCarritoHeader();
-        mostrarNotificacion('Compra completada exitosamente. Tu carrito ha sido limpiado.');
+        // Usuario logueado, obtener datos del usuario y guardar compra
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        if (!usuario || !usuario.correo) {
+          mostrarNotificacion('Error: No se encontraron datos del usuario', 'error');
+          return;
+        }
+
+        try {
+          // Obtener datos completos del usuario desde Firestore
+          const usuarioDoc = await db.collection('usuario').where('correo', '==', usuario.correo).get();
+          if (usuarioDoc.empty) {
+            mostrarNotificacion('Error: Usuario no encontrado en la base de datos', 'error');
+            return;
+          }
+
+          const usuarioData = usuarioDoc.docs[0].data();
+
+          // Generar ID de compra único
+          const idCompra = `COMP-${Date.now()}`;
+
+          // Crear objeto de compra
+          const compra = {
+            idCompra: idCompra,
+            usuarioId: usuario.correo,
+            fechaCompra: new Date().toISOString(),
+            items: carrito.map(item => ({
+              productoId: item.id,
+              nombre: item.nombre,
+              precio: item.precio,
+              cantidad: item.cantidad,
+              subtotal: item.precio * item.cantidad
+            })),
+            total: carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0),
+            estado: 'completada',
+            metodoPago: 'tarjeta_credito', // Por ahora fijo, se puede mejorar
+            direccionEnvio: {
+              nombre: usuarioData.nombre || '',
+              calle: usuarioData.calle || '',
+              ciudad: usuarioData.ciudad || '',
+              region: usuarioData.region || '',
+              codigoPostal: usuarioData.codigoPostal || '',
+              telefono: usuarioData.telefono || ''
+            },
+            notas: '',
+            fechaEntrega: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 días después
+            actualizadoEn: new Date().toISOString()
+          };
+
+          // Guardar compra en Firestore
+          await db.collection('compras').doc(idCompra).set(compra);
+
+          // Limpiar carrito
+          carrito = [];
+          guardarCarrito();
+          mostrarCarritoVacio();
+          actualizarContadorCarritoHeader();
+
+          // Redirigir a página de éxito con ID de compra
+          window.location.href = `compraExitosa.html?compraId=${idCompra}`;
+
+        } catch (error) {
+          console.error('Error al procesar la compra:', error);
+          mostrarNotificacion('Error al procesar la compra. Inténtalo de nuevo.', 'error');
+        }
       });
     }
 

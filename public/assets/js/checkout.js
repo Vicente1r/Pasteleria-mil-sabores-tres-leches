@@ -166,62 +166,62 @@ async function procesarPago() {
         const datosCliente = obtenerDatosCliente();
         const datosDireccion = obtenerDatosDireccion();
         const total = carrito.reduce((sum, producto) => sum + ((producto.precio || 0) * (producto.cantidad || 1)), 0);
-        // Determinar usuario autenticado (se asume sesión iniciada)
-        let authUser = null;
-        try {
-            if (typeof firebase !== 'undefined' && firebase.auth) {
-                authUser = firebase.auth().currentUser;
-            }
-        } catch (e) {
-            authUser = null;
+
+        // Obtener usuario desde localStorage (usuarioActual)
+        const usuarioActualRaw = localStorage.getItem('usuarioActual');
+        const usuarioActual = usuarioActualRaw ? JSON.parse(usuarioActualRaw) : null;
+
+        if (!usuarioActual || !usuarioActual.correo) {
+            alert('Debes iniciar sesión para realizar una compra');
+            return;
         }
 
-        const usuarioStorageRaw = localStorage.getItem('usuario');
-        const usuarioStorageParsed = usuarioStorageRaw ? JSON.parse(usuarioStorageRaw) : null;
-
-        // Crear objeto de compra (no se permite guest)
+        // Crear objeto de compra con nueva estructura
         const compra = {
-            fecha: new Date(),
-            cliente: datosCliente,
-            direccion: datosDireccion,
-            productos: [...carrito], // Copia del carrito
+            id_usuario: usuarioActual.correo, // Usar correo como ID único del usuario
+            correo: usuarioActual.correo,
+            nombre: datosCliente.nombre,
+            telefono: datosCliente.telefono,
+            direccion: `${datosDireccion.calle}${datosDireccion.departamento ? ', ' + datosDireccion.departamento : ''}`,
+            comuna: datosDireccion.comuna,
+            productos: [...carrito], // Array con detalles de productos
             total: total,
             estado: 'pendiente',
-            numeroOrden: generarNumeroOrden(),
-            userId: authUser ? authUser.uid : (usuarioStorageParsed ? (usuarioStorageParsed.correo || usuarioStorageParsed.nombre || null) : null)
+            fechaCompra: new Date(),
+            idCompra: generarNumeroOrden()
         };
 
         // Guardar en Firestore
         const docRef = await db.collection('compras').add(compra);
-        
+
         // Simular procesamiento de pago (50% de éxito)
         const pagoExitoso = Math.random() > 0.5;
-        
+
         if (pagoExitoso) {
             // Actualizar estado en Firestore
             await db.collection('compras').doc(docRef.id).update({
                 estado: 'completada'
             });
-            
+
             // Limpiar carrito y redirigir a éxito
             localStorage.removeItem('carrito');
             localStorage.setItem('ultimaCompra', JSON.stringify({
                 ...compra,
                 id: docRef.id
             }));
-            window.location.href = `compraexitosa.html?orden=${compra.numeroOrden}`;
+            window.location.href = `compraExitosa.html?compraId=${docRef.id}`;
         } else {
             // Actualizar estado en Firestore
             await db.collection('compras').doc(docRef.id).update({
                 estado: 'error_pago'
             });
-            
+
             // Redirigir a error
             localStorage.setItem('ultimaCompra', JSON.stringify({
                 ...compra,
                 id: docRef.id
             }));
-            window.location.href = `errorPago.html?orden=${compra.numeroOrden}`;
+            window.location.href = `errorPago.html?orden=${compra.idCompra}`;
         }
 
     } catch (error) {
@@ -247,7 +247,8 @@ function obtenerDatosCliente() {
     return {
         nombre: document.getElementById('nombre').value,
         apellidos: document.getElementById('apellidos').value,
-        correo: document.getElementById('correo').value
+        correo: document.getElementById('correo').value,
+        telefono: document.getElementById('telefono')?.value || null
     };
 }
 

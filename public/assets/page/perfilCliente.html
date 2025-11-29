@@ -5,8 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard de Usuario</title>
   <link rel="stylesheet" href="../css/perfilcliente.css">
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, doc, updateDoc, getDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
+      authDomain: "pasteleriamilsaborestresleches.web.app",
+      projectId: "pasteleriamilsaborestresleches",
+      storageBucket: "pasteleriamilsaborestresleches.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef123456"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    window.firebaseAuth = auth;
+    window.firebaseDb = db;
+    window.onAuthStateChanged = onAuthStateChanged;
+    window.doc = doc;
+    window.updateDoc = updateDoc;
+    window.getDoc = getDoc;
+    window.collection = collection;
+    window.query = query;
+    window.where = where;
+    window.getDocs = getDocs;
+  </script>
 </head>
 <body>
   <div class="admin-container">
@@ -177,6 +204,7 @@
       const logoutBtn = document.getElementById('logout-btn');
       const sidebarUsername = document.getElementById('sidebar-username');
       const updateMessage = document.getElementById('update-message');
+      let userName = '';
 
       // Función para cambiar vistas
       function showView(viewName, title) {
@@ -185,7 +213,10 @@
         if (targetView) {
           targetView.classList.remove('hidden');
         }
-        pageTitle.textContent = title;
+        // Only set title if it's not the dashboard view (to preserve personalized greeting)
+        if (viewName !== 'dashboard') {
+          pageTitle.textContent = title;
+        }
       }
 
       // Navegación del sidebar
@@ -228,43 +259,84 @@
         });
       }
 
-      // Load user data from localStorage on profile view
+      // Load user data from localStorage
       function loadUserData() {
         try {
-          const user = JSON.parse(localStorage.getItem('usuario'));
+          // Check both 'usuario' and 'usuarioActual' keys for compatibility
+          const user = JSON.parse(localStorage.getItem('usuario') || localStorage.getItem('usuarioActual'));
+          console.log('loadUserData - localStorage user:', user);
           if (user) {
             document.getElementById('input-nombre').value = user.nombre || '';
-            // Other fields can be set similarly if stored (sample placeholders):
-            // document.getElementById('input-apellido').value = user.apellido || '';
-            // document.getElementById('input-username').value = user.nombreDeUsuario || '';
             document.getElementById('input-correo').value = user.correo || '';
-            // document.getElementById('input-telefono').value = user.telefono || '';
 
             if (sidebarUsername) sidebarUsername.textContent = `Bienvenido ${user.nombre}`;
             if (pageTitle && pageTitle.textContent === '¡HOLA --------!') {
               pageTitle.textContent = `¡HOLA ${user.nombre}!`;
             }
+            console.log('loadUserData - Updated UI with user:', user.nombre);
+          } else {
+            console.log('loadUserData - No user data found in localStorage');
           }
         } catch(e) {
           console.error('Error loading user data:', e);
         }
       }
 
-      // Save updated name to Firestore
-      async function updateUserNameInFirestore(email, newName) {
+      // Load additional data from Firestore
+      async function loadUserDataFromFirestore() {
         try {
-          if (!window.firebase || !firebase.firestore) {
-            throw new Error('Firebase Firestore no está disponible');
-          }
-          const db = firebase.firestore();
+          if (window.firebaseDb) {
+            // Get user data from localStorage
+            const localUser = JSON.parse(localStorage.getItem('usuario') || localStorage.getItem('usuarioActual') || '{}');
+            const correo = localUser.correo;
 
-          const query = await db.collection('usuario').where('correo', '==', email).get();
-          if (!query.empty) {
-            const doc = query.docs[0];
-            await db.collection('usuario').doc(doc.id).update({ nombre: newName });
+            if (correo) {
+              const q = window.query(window.collection(window.firebaseDb, 'usuario'), window.where('correo', '==', correo));
+              const querySnapshot = await window.getDocs(q);
+              if (!querySnapshot.empty) {
+                const userData = querySnapshot.docs[0].data();
+                const nombreCompleto = userData.nombre_completo || userData.nombre || '';
+
+                document.getElementById('input-nombre').value = nombreCompleto;
+                document.getElementById('input-correo').value = correo;
+
+                // Update localStorage
+                const updatedUser = { nombre: nombreCompleto, correo: correo };
+                localStorage.setItem('usuario', JSON.stringify(updatedUser));
+
+                if (sidebarUsername) sidebarUsername.textContent = `Bienvenido ${nombreCompleto}`;
+                if (pageTitle) pageTitle.textContent = `¡HOLA ${nombreCompleto}!`;
+              }
+            }
+          }
+        } catch(e) {
+          console.error('Error loading user data from Firestore:', e);
+        }
+      }
+
+      // Save updated name to Firestore
+      async function updateUserNameInFirestore(newName) {
+        try {
+          if (!window.firebaseDb) {
+            throw new Error('Firebase no está disponible');
+          }
+
+          // Get user data from localStorage
+          const localUser = JSON.parse(localStorage.getItem('usuario') || localStorage.getItem('usuarioActual') || '{}');
+          const correo = localUser.correo;
+
+          if (!correo) {
+            throw new Error('Correo no disponible');
+          }
+
+          const q = window.query(window.collection(window.firebaseDb, 'usuario'), window.where('correo', '==', correo));
+          const querySnapshot = await window.getDocs(q);
+          if (!querySnapshot.empty) {
+            const userDocRef = querySnapshot.docs[0].ref;
+            await window.updateDoc(userDocRef, { nombre_completo: newName });
             return true;
           } else {
-            throw new Error('No se encontró el usuario en Firestore');
+            throw new Error('Documento de usuario no encontrado');
           }
         } catch (error) {
           console.error('Error updating user name in Firestore:', error);
@@ -300,10 +372,12 @@
           }
 
           // Update Firestore
-          const success = await updateUserNameInFirestore(email, newName);
+          const success = await updateUserNameInFirestore(newName);
           if (success) {
             updateMessage.style.color = 'green';
             updateMessage.textContent = 'Nombre actualizado correctamente.';
+            // Reload data from Firestore to ensure UI is updated
+            await loadUserDataFromFirestore();
             setTimeout(() => {
               updateMessage.textContent = '';
             }, 2000);
@@ -319,6 +393,22 @@
 
       // Initial load user data
       loadUserData();
+      loadUserDataFromFirestore();
+
+      // Listen for auth state changes
+      if (window.onAuthStateChanged && window.firebaseAuth) {
+        window.onAuthStateChanged(window.firebaseAuth, async (user) => {
+          if (user) {
+            await loadUserDataFromFirestore();
+          } else {
+            // User logged out, clear data
+            document.getElementById('input-nombre').value = '';
+            document.getElementById('input-correo').value = '';
+            if (sidebarUsername) sidebarUsername.textContent = 'Bienvenido *Usuario';
+            if (pageTitle) pageTitle.textContent = '¡HOLA --------!';
+          }
+        });
+      }
 
       // Actualizar contador del carrito
       function actualizarContadorCarrito() {

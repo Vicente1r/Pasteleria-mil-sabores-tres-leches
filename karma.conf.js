@@ -4,17 +4,13 @@ module.exports = function(config) {
     config.set({
         frameworks: ['jasmine'],
         files: [
-            'src/**/*.test.js',
-            'src/**/*.test.jsx',
-            'src/**/*.test.ts',
-            'src/**/*.test.tsx'
+            'src/unit/**/*.test.js',
+            'src/test/setup.js'
         ],
 
         preprocessors: {
-            'src/**/*.test.js': ['webpack'],
-            'src/**/*.test.jsx': ['webpack'],
-            'src/**/*.test.ts': ['webpack'],
-            'src/**/*.test.tsx': ['webpack']
+            'src/unit/**/*.test.js': ['webpack'],
+            'src/test/setup.js': ['webpack']
         },
 
         webpack: {
@@ -28,7 +24,13 @@ module.exports = function(config) {
             }
         },
 
-        browser: ['Chrome'],
+        browsers: ['ChromeHeadlessNoSandbox'],
+        customLaunchers: {
+            ChromeHeadlessNoSandbox: {
+                base: 'ChromeHeadless',
+                flags: ['--no-sandbox', '--disable-gpu', '--disable-web-security']
+            }
+        },
         reporters: ['progress'],
         logLevel: config.LOG_INFO,
         autowatch: true,

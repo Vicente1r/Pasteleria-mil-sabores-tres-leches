@@ -1,11 +1,14 @@
-# TODO: Arreglar blog.html para usar CSS idéntico a index.html y ajustar tarjetas
+# TODO: Fix User Name Display in perfilCliente.html
 
-## Pasos a completar:
-- [x] Cambiar el enlace CSS de `style_blog.css` a `styles.css` en blog.html
-- [x] Remover enlaces a Bootstrap y Font Awesome del head
-- [x] Ajustar la estructura del header para usar clases de styles.css (topbar, logo, navegacion, etc.)
-- [x] Corregir enlaces de navegación para que sean consistentes con index.html
-- [x] Ajustar el main y las tarjetas de noticias para usar clases de styles.css (e.g., .main, .item)
-- [x] Mantener el contenido de noticias intacto, solo cambiar clases para coincidir con el estilo
-- [x] Verificar que el archivo se vea correcto y coincida con el estilo de index.html
-- [x] Hacer los cuadritos (tarjetas) más grandes y separados uno arriba del otro agregando estilos específicos en blog.html
+## Completed Tasks
+- [x] Analyze the issue: User name not displaying correctly due to mismatch in Firestore query (using uid instead of correo)
+- [x] Add necessary Firebase imports (collection, query, where, getDocs)
+- [x] Update loadUserDataFromFirestore to query by correo instead of uid
+- [x] Update updateUserNameInFirestore to query by correo and update the correct document
+- [x] Test the changes to ensure user name loads and updates correctly
+
+## Summary
+The issue was that the Firestore queries were using `user.uid` to fetch/update user data, but the login process stores users by `correo` (email). This caused the wrong or no user data to be loaded. The fix involved:
+- Querying Firestore by `correo` field instead of document ID
+- Using localStorage data to get the correct email for queries
+- Ensuring both load and update functions use the same query method
