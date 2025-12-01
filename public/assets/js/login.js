@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
             mensaje.innerText = 'Bienvenido Administrador (modo prueba), redirigiendo...';
             setTimeout(() => {
                 // Redirigir al panel de administración
-                window.location.href = 'admin.html';
+                window.location.href = 'PerfilAdmin.html';
             }, 1000);
             return;
         }
@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         localStorage.removeItem('redirigirDespuesLogin');
                         window.location.href = redirect;
                     } else {
-                        window.location.href = `admin.html`;
+                        window.location.href = `PerfilAdmin.html`;
                     }
                 }, 1000);
             } catch (error) {

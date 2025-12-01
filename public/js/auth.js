@@ -8,8 +8,9 @@ import {
   doc,
   setDoc,
   getDoc,
-} from "./firebase-config.js";
+} from "../../public/js/firebase-config.js";
 
+// from "./firebase-config.js";
 // ================== ELEMENTOS DEL DOM ==================
 const modal = document.getElementById("modal");
 // Buscar elemento de inicio de sesión: preferir id pero aceptar clase (.btn-login)
