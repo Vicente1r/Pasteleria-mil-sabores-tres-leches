@@ -452,29 +452,25 @@ h1, h2, h3, h4, h5, h6, .topbar strong {
 
 /* ================== Grid de productos ================== */
 .buscador {
-  display: grid; 
-  gap: 24px;
+  display: grid;
+  gap: 16px;
   grid-template-columns: repeat(4, 1fr);
   margin-bottom: 40px;
 }
 
-@media (max-width: 1200px) { 
-  .buscador { grid-template-columns: repeat(3, 1fr); } 
+@media (max-width: 768px)  {
+  .buscador { grid-template-columns: repeat(3, 1fr); }
 }
 
-@media (max-width: 768px)  { 
-  .buscador { grid-template-columns: repeat(2, 1fr); } 
-}
-
-@media (max-width: 480px)  { 
-  .buscador { grid-template-columns: 1fr; } 
+@media (max-width: 480px)  {
+  .buscador { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* Tarjetas de productos */
 .item {
   border: 2px solid #FFC0CB;
-  border-radius: 12px; 
-  padding: 16px; 
+  border-radius: 12px;
+  padding: 12px;
   background: #FFF;
   transition: all 0.4s ease;
   box-shadow: 0 4px 12px rgba(139, 69, 19, 0.1);
@@ -500,12 +496,12 @@ h1, h2, h3, h4, h5, h6, .topbar strong {
   left: 0;
 }
 
-.item img { 
-  width: 100%; 
-  height: 220px;
+.item img {
+  width: 100%;
+  aspect-ratio: 1;
   object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   transition: transform 0.3s ease;
 }
 
@@ -793,8 +789,57 @@ h1, h2, h3, h4, h5, h6, .topbar strong {
 }
 
 .usuario a:hover {
-  color: #8B4513;         
-  text-decoration: underline; 
+  color: #8B4513;
+  text-decoration: underline;
+}
+
+
+
+/* ================== Notificaciones ================== */
+.notificaciones{
+  position:fixed;
+  top:100px;
+  right:20px;
+  z-index:10000;
+}
+.notificacion{
+  background: linear-gradient(90deg,#28a745,#20c997);
+  color:#fff;
+  padding:15px 20px;
+  border-radius:8px;
+  margin-bottom:10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-weight:600;
+  animation: slideIn 0.3s ease-out;
+  max-width:300px;
+}
+.notificacion.error{
+  background: linear-gradient(90deg,#dc3545,#fd7e14);
+}
+.notificacion.fade-out{
+  animation: fadeOut 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
 }
 
 

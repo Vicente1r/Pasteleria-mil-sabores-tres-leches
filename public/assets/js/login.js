@@ -24,14 +24,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // Token generation function
-    function generateToken(length = 32) {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let token = '';
-        for (let i = 0; i < length; i++) {
-            token += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return token;
+    // Función para generar un token JWT simple (para admin)
+    function generateAdminToken() {
+        const header = {
+            alg: "HS256",
+            typ: "JWT"
+        };
+        const payload = {
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + 86400, // 24 horas
+            rol: "admin"
+        };
+        const headerBase64 = btoa(JSON.stringify(header)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+        const payloadBase64 = btoa(JSON.stringify(payload)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+        // Nota: Este es un JWT sin firma real. Para producción, genera el token en el backend.
+        return `${headerBase64}.${payloadBase64}.fake_signature`;
     }
 
     form.addEventListener("submit", async (e) => {
@@ -47,70 +54,42 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Credenciales de prueba locales (útiles si no tienes usuarios creados en Firebase)
-        // Contraseñas temporales: admin -> "admin123", cliente -> "cliente123"
-        if (correo === 'admin@duoc.cl' && clave === 'admin123') {
-            const usuario = { nombre: 'Administrador', correo, rol: 'admin' };
-            const token = generateToken();
-            localStorage.setItem('usuario', JSON.stringify(usuario));
-            localStorage.setItem('token', token);
-            mensaje.style.color = 'green';
-            mensaje.innerText = 'Bienvenido Administrador (modo prueba), redirigiendo...';
-            setTimeout(() => {
-                // Redirigir al panel de administración
-                window.location.href = 'PerfilAdmin.html';
-            }, 1000);
-            return;
-        }
+        // Admin: autenticar desde la colección 'admin' en Firestore
+        try {
+            const adminQuery = await db.collection("admin")
+                .where("correo", "==", correo)
+                .get();
 
-        if (correo === 'cliente@duoc.cl' && clave === 'cliente123') {
-            const usuario = { nombre: 'Cliente Demo', correo, rol: 'cliente' };
-            const token = generateToken();
-            localStorage.setItem('usuario', JSON.stringify(usuario));
-            localStorage.setItem('token', token);
-            mensaje.style.color = 'green';
-            mensaje.innerText = 'Bienvenido Cliente (modo prueba), redirigiendo...';
+            if (!adminQuery.empty) {
+                const adminData = adminQuery.docs[0].data();
+                
+                // Validar contraseña (comparación directa - sin encriptación)
+                if (adminData.contraseña === clave) {
+                    const usuario = { nombre: "Administrador", correo, rol: "admin" };
+                    const token = generateAdminToken();
+                    localStorage.setItem("usuario", JSON.stringify(usuario));
+                    localStorage.setItem("token", token);
+                    localStorage.setItem("adminLoginTime", new Date().toISOString());
+
+                    mensaje.style.color = "green";
+                    mensaje.innerText = "Bienvenido Administrador, redirigiendo...";
                     setTimeout(() => {
-                        window.location.href = "perfilCliente.html";
+                        window.location.href = "PerfilAdmin.html";
                     }, 1000);
-            return;
-        }
-
-        // Admin: autenticar con Firebase Auth
-        if (correo === "admin@duoc.cl") {
-            try {
-                // Asegurar persistencia local de la sesión antes de iniciar (permanece tras redirect)
-                try {
-                    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-                } catch (pErr) {
-                    console.warn('No se pudo establecer persistencia explícita:', pErr);
+                    return;
+                } else {
+                    mensaje.style.color = "red";
+                    mensaje.innerText = "Correo o contraseña incorrectos";
+                    return;
                 }
-
-                await auth.signInWithEmailAndPassword(correo, clave);
-                // Guardar usuario en localStorage
-                const usuario = { nombre: "Administrador", correo, rol: "admin" };
-                const token = generateToken();
-                localStorage.setItem("usuario", JSON.stringify(usuario));
-                localStorage.setItem("token", token);
-
-                mensaje.style.color = "green";
-                mensaje.innerText = "Bienvenido Administrador, redirigiendo...";
-                setTimeout(() => {
-                    const redirect = localStorage.getItem('redirigirDespuesLogin');
-                    if (redirect) {
-                        localStorage.removeItem('redirigirDespuesLogin');
-                        window.location.href = redirect;
-                    } else {
-                        window.location.href = `PerfilAdmin.html`;
-                    }
-                }, 1000);
-            } catch (error) {
-                console.error("Error login admin:", error);
-                mensaje.style.color = "red";
-                mensaje.innerText = "Credenciales incorrectas para administrador";
             }
-            return;
+        } catch (adminError) {
+            console.error("Error al buscar admin en Firestore:", adminError);
         }
+
+        // Si no es admin, verificar si es cliente
+        mensaje.style.color = "red";
+        mensaje.innerText = "Correo o contraseña incorrectos";
 
         // Cliente: validar desde Firestore
         try {
@@ -137,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // Guardar usuario en localStorage con rol real
                     const usuario = { nombre, correo, rol: "cliente" };
-                    const token = generateToken();
+                    const token = generateAdminToken(); // Reutilizar para clientes también
                     localStorage.setItem("usuario", JSON.stringify(usuario));
                     localStorage.setItem("token", token);
 

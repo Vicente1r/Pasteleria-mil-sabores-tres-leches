@@ -317,6 +317,16 @@ function irATienda() {
     window.location.href = '../../index.html';
 }
 
+function cerrarSesion() {
+    // Borrar datos de sesión del admin
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('token');
+    localStorage.removeItem('adminLoginTime');
+    
+    // Redirigir al inicio
+    window.location.href = '../../index.html';
+}
+
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🏁 DOM Cargado - Inicializando DashboardManager...');

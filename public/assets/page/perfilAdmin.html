@@ -723,5 +723,40 @@
     <script src="../../js/auth.js"></script>
     <script src="../../js/dashboard.js"></script>
     <script src="../../js/crud-functions.js"></script>
+    
+    <!-- Script de protección de sesión admin -->
+    <script>
+        // Verificar que el usuario tiene sesión válida de admin
+        function verificarSesionAdmin() {
+            const usuario = localStorage.getItem('usuario');
+            const token = localStorage.getItem('token');
+            
+            if (!usuario || !token) {
+                alert('Sesión no válida. Por favor inicia sesión como administrador.');
+                window.location.href = '../../index.html';
+                return false;
+            }
+            
+            try {
+                const usuarioObj = JSON.parse(usuario);
+                if (usuarioObj.rol !== 'admin') {
+                    alert('Acceso denegado: no tienes permisos de administrador.');
+                    window.location.href = '../../index.html';
+                    return false;
+                }
+            } catch (e) {
+                alert('Error al verificar sesión.');
+                window.location.href = '../../index.html';
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Ejecutar verificación cuando se carga la página
+        document.addEventListener('DOMContentLoaded', () => {
+            verificarSesionAdmin();
+        });
+    </script>
 </body>
 </html>

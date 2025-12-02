@@ -268,20 +268,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // Inicializar la interfaz con categorías y productos
   function inicializarInterfaz(productos) {
     const categorias = obtenerCategoriasUnicas(productos);
-    
+
     if (dropdownCategorias) {
       mostrarDropdownCategorias(categorias);
     }
-    
+
     if (cardsCategorias) {
       mostrarCardsCategorias(categorias);
     }
-    
-    // Mostrar todas las categorías apiladas con sus productos
+
+    // Mostrar todos los productos en una cuadrícula
     if (productos.length > 0) {
-      mostrarCategoriasStacked();
+      mostrarProductos(productos);
     }
-    
+
     configurarEventos();
   }
 

@@ -20,6 +20,7 @@
   <script src="../js/filtro.js" defer></script>
   <script type="module" src="../../js/firebase-config.js"></script>
   <script src="../js/validaciones.js" defer></script>
+  <script type="module" src="../js/contacto.js"></script>
 
 </head>
 <body>
@@ -217,7 +218,7 @@
       </p>
 
       <h2>Formulario de Contacto</h2>
-      <form action="#" method="post">
+      <form id="form-contacto">
         <div style="margin-bottom: 16px;">
           <label for="nombre" style="display: block; margin-bottom: 8px; color: #5D4037;">Nombre Completo</label>
           <input type="text" id="nombre" name="nombre" style="width: 100%; padding: 10px; border: 1px solid #8B4513; border-radius: 8px; background: #FFF5E1; color: #5D4037;" required>
@@ -231,7 +232,7 @@
           <textarea id="contenido" name="contenido" rows="5" style="width: 100%; padding: 10px; border: 1px solid #8B4513; border-radius: 8px; background: #FFF5E1; color: #5D4037;" required></textarea>
         </div>
         <div style="text-align: center;">
-          <button type="submit" class="btn">Enviar Mensaje</button>
+          <button type="button" id="btn-enviar-mensaje" class="btn">Enviar Mensaje</button>
         </div>
       </form>
     </section>
