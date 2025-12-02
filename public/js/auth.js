@@ -136,10 +136,14 @@ function actualizarUIUsuario(userData) {
         btnPerfil = document.createElement("a");
         btnPerfil.id = "btn-perfil";
         btnPerfil.textContent = "Mi Perfil";
-        btnPerfil.href =
-          userData && (userData.rol === "admin" || userData.role === "admin")
-            ? "admin.html"
-            : "perfilCliente.html";
+          // Si es admin -> panel admin; si es vendedor -> perfil vendedor; si no -> perfil cliente
+          if (userData && (userData.rol === 'admin' || userData.role === 'admin')) {
+            btnPerfil.href = 'admin.html';
+          } else if (userData && (userData.rol === 'vendedor' || userData.role === 'vendedor')) {
+            btnPerfil.href = 'perfilVendedor.html';
+          } else {
+            btnPerfil.href = 'perfilCliente.html';
+          }
         btnPerfil.style.marginRight = "10px";
         usuarioDiv.insertBefore(btnPerfil, separador || null);
       }

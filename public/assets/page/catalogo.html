@@ -51,24 +51,24 @@
     <div class="categories-row" aria-hidden="false">
       <button class="category-thumb cat-btn active" data-filter="tortas_chocolate" aria-pressed="true">
         <div class="thumb-img"><img src="../vegana_torta_chocolate.png" alt="Tortas Chocolate"></div>
-        <div class="thumb-label">Categoría 1</div>
+        <div class="thumb-label">Tortas de chocolate</div>
       </button>
       <button class="category-thumb cat-btn" data-filter="tortas_circulares">
         <div class="thumb-img"><img src="../torta_circular_vainilla.png" alt="Tortas Circulares"></div>
-        <div class="thumb-label">Categoría 2</div>
+        <div class="thumb-label">tortas circulares</div>
       </button>
       <button class="category-thumb cat-btn" data-filter="tortas_cuadradas">
         <div class="thumb-img"><img src="../torta_cuadrada_frutas2.png" alt="Tortas Cuadradas"></div>
-        <div class="thumb-label">Categoría 3</div>
+        <div class="thumb-label">postres individuales</div>
       </button>
       <button class="category-thumb cat-btn" data-filter="postres_individuales">
         <div class="thumb-img"><img src="../individual_tiramisu_clasico.png" alt="Postres Individuales"></div>
-        <div class="thumb-label">Categoría 4</div>
+        <div class="thumb-label">especiales</div>
       </button>
     </div>
 
     <section class="productos" aria-labelledby="titulo-productos">
-      <h2 class="sr-only">Todos los Productos</h2>
+      <h2 id="tituloProductos" class="sr-only">Todos los Productos</h2>
       <div id="productosGrid" class="buscador">
         <!-- Productos renderizados dinámicamente por catalogo.js -->
       </div>
@@ -80,13 +80,13 @@
     (function(){
       const thumbs = document.querySelectorAll('.category-thumb');
       const filtro = document.getElementById('filtro');
-      const titulo = document.getElementById('titulo-productos');
+      const titulo = document.getElementById('tituloProductos');
 
       const labelMap = {
-        tortas_chocolate: 'Torta chocolate',
-        tortas_circulares: 'testest',
-        tortas_cuadradas: 'Categoría 3',
-        postres_individuales: 'Categoría 4'
+        tortas_chocolate: 'Tortas de chocolate',
+        tortas_circulares: 'tortas circulares',
+        tortas_cuadradas: 'postres individuales',
+        postres_individuales: 'especiales'
       };
 
       function setActiveFilter(value){

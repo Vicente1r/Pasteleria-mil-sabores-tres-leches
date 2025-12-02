@@ -39,6 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
         id: doc.id, // Incluir ID del documento
         ...doc.data() // Incluir datos del documento
       }));
+      // Asegurar que la categoría 'tortas_chocolate' contenga los productos requeridos
+      asegurarProductosTortasChocolate(productosGlobal);
       
       console.log("Productos cargados:", productosGlobal); 
       inicializarInterfaz(productosGlobal); // Inicializar interfaz con productos
@@ -48,6 +50,34 @@ document.addEventListener("DOMContentLoaded", () => {
       tituloProductos.textContent = "Error al cargar productos";
       productosGrid.innerHTML = "<p class='error'>No se pudieron cargar los productos. Intenta recargar la página.</p>";
     }
+  }
+
+  // Añade productos locales para la categoría 'tortas_chocolate' si faltan
+  function asegurarProductosTortasChocolate(productos) {
+    const required = [
+      { nombre: 'Brownie sin gluten', precio: 4500, imagen: '../vegana_torta_chocolate.png' },
+      { nombre: 'Torta cuadrada de chocolate', precio: 45000, imagen: '../torta_cuadrada_frutas2.png' },
+      { nombre: 'Torta vegana de chocolate', precio: 50000, imagen: '../vegana_torta_chocolate.png' }
+    ];
+
+    // Contar existentes en la misma categoría
+    const existentes = productos.filter(p => p.categoria === 'tortas_chocolate');
+
+    required.forEach(req => {
+      const existe = productos.some(p => (p.categoria === 'tortas_chocolate') && (p.nombre && p.nombre.toLowerCase() === req.nombre.toLowerCase()));
+      if (!existe) {
+        // Añadir objeto local (id sintético para evitar colisiones)
+        const nuevo = {
+          id: `local-${req.nombre.toLowerCase().replace(/\s+/g,'-')}`,
+          nombre: req.nombre,
+          precio: req.precio,
+          descripcion: req.descripcion || '',
+          imagen: req.imagen,
+          categoria: 'tortas_chocolate'
+        };
+        productos.push(nuevo);
+      }
+    });
   }
   // Inicializar la interfaz con categorías y productos
   function inicializarInterfaz(productos) {

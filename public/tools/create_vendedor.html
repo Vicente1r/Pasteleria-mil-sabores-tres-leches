@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Crear vendedor de prueba</title>
+    <style>
+      body{font-family:Arial,Helvetica,sans-serif;padding:20px}
+      label{display:block;margin-top:8px}
+      input{padding:8px;width:320px;max-width:100%}
+      button{margin-top:12px;padding:10px 14px}
+      .status{margin-top:12px;color:#222}
+    </style>
+  </head>
+  <body>
+    <h2>Crear cuenta de vendedor de prueba</h2>
+    <p>Esta herramienta crea un usuario en Firebase Auth y guarda <code>role: 'vendedor'</code> en <code>users/{uid}</code>. Úsala solo en desarrollo.</p>
+    <form id="createForm">
+      <label>Nombre
+        <input id="nombre" type="text" placeholder="Nombre del vendedor" required />
+      </label>
+      <label>Correo
+        <input id="email" type="email" placeholder="vendedor@example.com" required />
+      </label>
+      <label>Contraseña
+        <input id="password" type="password" placeholder="Contraseña (mín 6 caracteres)" required />
+      </label>
+      <button type="submit">Crear vendedor</button>
+    </form>
+    <div class="status" id="status"></div>
+
+    <!-- Firebase v8 (compatible con la mayoría del proyecto actual) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Cargar la configuración del proyecto (ajusta la ruta si es necesario) -->
+    <script src="../js/firebase-config.js"></script>
+    <script src="create_vendedor.js"></script>
+  </body>
+</html>

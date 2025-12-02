@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfil Vendedor - Mil Sabores</title>
+  <link rel="stylesheet" href="../assets/css/style_admin_new.css">
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">⚙</div>
+        <span>Panel Vendedor - Mil Sabores</span>
+      </div>
+      
+      <nav class="nav-menu">
+        <div class="nav-item active" data-view="dashboard">
+          <i class="icon"></i>
+          <span>Panel</span>
+        </div>
+        <div class="nav-item" data-view="orders">
+          <i class="icon"></i>
+          <span>Ordenes</span>
+        </div>
+        <div class="nav-item">
+          <i class="icon"></i>
+          <span>Inventario</span>
+        </div>
+        <div class="nav-item">
+          <i class="icon"></i>
+          <span>Reportes</span>
+        </div>
+        <div class="nav-item" data-view="employees">
+          <i class="icon"></i>
+          <span>Empleados</span>
+        </div>
+        <div class="nav-item">
+          <i class="icon"></i>
+          <span>Clientes</span>
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="nav-item">
+          <i class="icon">⚙</i>
+          <span>Configuracion</span>
+        </div>
+        <div class="nav-item">
+          <i class="icon"></i>
+          <span>Perfil</span>
+        </div>
+        <div class="nav-item">
+          <i class="icon"></i>
+          <span>Busqueda</span>
+        </div>
+        <div class="nav-item">
+          <i class="icon"></i>
+          <span>Ayuda</span>
+        </div>
+        <div class="nav-item profile">
+          <i class="icon"></i>
+          <span>Mi Perfil</span>
+        </div>
+      </div>
+    </div>
+
+    <!--Lo principal-->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <h1 id="page-title">Perfil Vendedor</h1>
+        <div class="header-actions">
+          <button class="notification-btn"></button>
+        </div>
+      </div>
+
+      <!-- Views (copiado del admin pero en modo solo lectura) -->
+      <div class="content-view" id="dashboard-view">
+        <div class="welcome-message">
+          <p>Vista de vendedor (solo lectura)</p>
+        </div>
+        <div class="readonly-panel">
+          <p>Como vendedor puedes ver los paneles de administración pero no modificar nada.</p>
+        </div>
+      </div>
+
+      <div class="content-view hidden" id="orders-view">
+        <div class="view-header">
+          <h2>Ordenes</h2>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Orden #</th>
+                <th>Cliente</th>
+                <th>Estado</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2024-06-01</td>
+                <td>SO101</td>
+                <td>Arturo Vidal</td>
+                <td><span class="status shipped">Entregado</span></td>
+                <td>$60.000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Deshabilitar interacciones para mantener la vista en solo lectura
+    document.addEventListener('DOMContentLoaded', function() {
+      // Desactivar botones, inputs y enlaces que puedan modificar datos
+      const selectors = 'button, input, select, textarea, .btn-primary, .btn-register, .btn-imprimir, .page-btn, .nav-item[data-view]';
+      document.querySelectorAll(selectors).forEach(el => {
+        try { el.setAttribute('disabled','disabled'); } catch(e){}
+        el.style.pointerEvents = 'none';
+        el.style.opacity = '0.9';
+      });
+
+      // Mantener navegación visual pero evitar cambios de vista por vendedores
+      document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+        });
+      });
+    });
+  </script>
+
+  <!-- Incluir Firebase + auth para control de acceso si es necesario -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script type="module" src="../../js/auth.js"></script>
+</body>
+</html>
