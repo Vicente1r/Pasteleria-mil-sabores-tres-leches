@@ -76,11 +76,9 @@ function mostrarNotificacion(mensaje, tipo = 'success') {
   }, 3000);
 }
 
-// Handle form submission
-async function handleFormSubmit(e) {
-  console.log('Button clicked, preventing default');
-  e.preventDefault();
-  console.log('Default prevented, checking user login');
+// Process contact form submission (similar to procesarPago in checkout.js)
+async function procesarContacto() {
+  console.log('Processing contact form submission');
 
   // Check if user is logged in
   const logueado = await usuarioLogueado();
@@ -93,18 +91,16 @@ async function handleFormSubmit(e) {
     return;
   }
 
-  // Get form data
-  const nombre = document.getElementById('nombre').value.trim();
-  const correo = document.getElementById('correo').value.trim();
-  const contenido = document.getElementById('contenido').value.trim();
-
-  // Validate form data
-  if (!nombre || !correo || !contenido) {
-    mostrarNotificacion('Por favor, completa todos los campos', 'error');
+  // Validate form
+  if (!validarFormularioContacto()) {
+    mostrarNotificacion('Por favor completa todos los campos obligatorios', 'error');
     return;
   }
 
   try {
+    // Get contact data
+    const datosContacto = obtenerDatosContacto();
+
     // Get user data from localStorage
     const usuario = JSON.parse(localStorage.getItem('usuario'));
     if (!usuario || !usuario.correo) {
@@ -112,18 +108,25 @@ async function handleFormSubmit(e) {
       return;
     }
 
+    // Fetch user document to get id_usuario
+    const userDoc = await db.collection('usuarios').doc(usuario.correo).get();
+    if (!userDoc.exists) {
+      mostrarNotificacion('Error: Usuario no encontrado en la base de datos', 'error');
+      return;
+    }
+    const userData = userDoc.data();
+    const id_usuario = userData.id; // assuming id is an int field
+
     // Create contact document
-    const contactoData = {
-      nombre: nombre,
-      correo: correo,
-      contenido: contenido,
-      usuarioId: usuario.correo,
-      fechaEnvio: new Date().toISOString(),
-      estado: 'pendiente' // or any status you want
+    const contacto = {
+      id_usuario: id_usuario,
+      correo: datosContacto.correo,
+      mensaje: datosContacto.mensaje,
+      nombre_completo: datosContacto.nombre
     };
 
     // Save to Firestore
-    await db.collection('contactos').add(contactoData);
+    await db.collection('contactos').add(contacto);
 
     // Clear form
     formContacto.reset();
@@ -132,18 +135,121 @@ async function handleFormSubmit(e) {
     mostrarNotificacion('Mensaje enviado exitosamente. Nos pondremos en contacto contigo pronto.');
 
   } catch (error) {
-    console.error('Error al enviar el mensaje:', error);
+    console.error('Error procesando el contacto:', error);
     mostrarNotificacion('Error al enviar el mensaje. Inténtalo de nuevo.', 'error');
   }
 }
 
+// Validate contact form
+function validarFormularioContacto() {
+  const nombre = document.getElementById('nombre').value.trim();
+  const correo = document.getElementById('correo').value.trim();
+  const contenido = document.getElementById('contenido').value.trim();
+
+  return nombre && correo && contenido;
+}
+
+// Get contact data from form
+function obtenerDatosContacto() {
+  return {
+    nombre: document.getElementById('nombre').value.trim(),
+    correo: document.getElementById('correo').value.trim(),
+    mensaje: document.getElementById('contenido').value.trim()
+  };
+}
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM loaded, btnEnviarMensaje:', btnEnviarMensaje);
-  if (btnEnviarMensaje) {
-    console.log('Adding event listener to button');
-    btnEnviarMensaje.addEventListener('click', handleFormSubmit);
+  console.log('DOM loaded, formContacto:', formContacto);
+  if (formContacto) {
+    console.log('Adding event listener to form');
+    formContacto.addEventListener('submit', (e) => {
+      e.preventDefault();
+      procesarContacto();
+    });
   } else {
-    console.error('Button not found!');
+    console.error('Form not found!');
   }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('form-contacto');
+  if (!form) return;
+
+  // Configuración (usa la misma que en login.js)
+  const firebaseConfig = {
+    apiKey: "AIzaSyA1_om-_HPyYVnUo8ELiM5Zob2VSMGbWvw",
+    authDomain: "pasteleriamilsaborestresleches.firebaseapp.com",
+    projectId: "pasteleriamilsaborestresleches",
+    storageBucket: "pasteleriamilsaborestresleches.firebasestorage.app",
+    messagingSenderId: "724534518591",
+    appId: "1:724534518591:web:fda9e47afb93ed6854e98a",
+    measurementId: "G-FXQWCCHM83"
+  };
+
+  if (!firebase.apps?.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  async function getNumericUserIdByEmail(email, uid) {
+    try {
+      // Intentar obtener documento en colección 'usuario' por correo
+      const q = await db.collection('usuario').where('correo', '==', email).get();
+      if (!q.empty) {
+        const data = q.docs[0].data();
+        // Buscar campos numéricos comunes (id, id_usuario, run)
+        const candidates = [data.id_usuario, data.id, data.run];
+        for (const c of candidates) {
+          if (typeof c === 'number' && Number.isInteger(c)) return c;
+          if (typeof c === 'string' && /^\d+$/.test(c)) return parseInt(c, 10);
+        }
+      }
+      // Si no existe por correo, intentar por uid (si acaso guardaste uid numérico)
+      if (uid && /^\d+$/.test(uid)) return parseInt(uid, 10);
+    } catch (err) {
+      console.error('Error buscando id usuario:', err);
+    }
+    // Fallback: timestamp como entero
+    return Date.now();
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const nombre = (document.getElementById('nombre')?.value || '').trim();
+    const correo = (document.getElementById('correo')?.value || '').trim();
+    const mensaje = (document.getElementById('contenido')?.value || '').trim();
+
+    if (!nombre || !correo || !mensaje) {
+      alert('Completa nombre, correo y mensaje.');
+      return;
+    }
+
+    const user = auth.currentUser;
+    if (!user) {
+      // No hay sesión -> redirigir a login
+      window.location.href = '../../assets/page/login.html'.replace(/\/\.\.\//g, '/'); // Ajusta ruta si hace falta
+      return;
+    }
+
+    // Obtener id numérico del usuario (buscar en colección 'usuario' por correo)
+    const id_usuario = await getNumericUserIdByEmail(user.email || correo, user.uid);
+
+    try {
+      await db.collection('contactos').add({
+        id_usuario: id_usuario,
+        correo: correo,
+        mensaje: mensaje,
+        nombre_completo: nombre,
+        creado_en: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      alert('Mensaje enviado. Gracias.');
+      form.reset();
+    } catch (err) {
+      console.error('Error guardando contacto:', err);
+      alert('Error al enviar mensaje. Intenta nuevamente.');
+    }
+  });
 });
