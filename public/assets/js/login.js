@@ -1,4 +1,6 @@
+
 document.addEventListener("DOMContentLoaded", () => {
+
     const form = document.getElementById("formLogin");
     const correoInput = document.getElementById("correoLogin");
     const claveInput = document.getElementById("claveLogin");
@@ -6,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!form) return console.error("No se encontró #formLogin");
 
-    // Inicializar Firebase
+    // Initialize Firebase (keeping original config for compatibility)
     const firebaseConfig = {
         apiKey: "AIzaSyA1_om-_HPyYVnUo8ELiM5Zob2VSMGbWvw",
         authDomain: "pasteleriamilsaborestresleches.firebaseapp.com",
@@ -24,8 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // Función para generar un token JWT simple (para admin)
-    function generateAdminToken() {
+    // Function to generate a token (for backward compatibility)
+    function generateToken() {
         const header = {
             alg: "HS256",
             typ: "JWT"
@@ -33,11 +35,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const payload = {
             iat: Math.floor(Date.now() / 1000),
             exp: Math.floor(Date.now() / 1000) + 86400, // 24 horas
-            rol: "admin"
+            rol: "cliente"
         };
         const headerBase64 = btoa(JSON.stringify(header)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
         const payloadBase64 = btoa(JSON.stringify(payload)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-        // Nota: Este es un JWT sin firma real. Para producción, genera el token en el backend.
         return `${headerBase64}.${payloadBase64}.fake_signature`;
     }
 
@@ -54,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Admin: autenticar desde la colección 'admin' en Firestore
+        // Admin: authenticate from 'admin' collection in Firestore
         try {
             const adminQuery = await db.collection("admin")
                 .where("correo", "==", correo)
@@ -62,11 +63,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!adminQuery.empty) {
                 const adminData = adminQuery.docs[0].data();
-                
-                // Validar contraseña (comparación directa - sin encriptación)
+
+                // Validate password (direct comparison - no encryption)
                 if (adminData.contraseña === clave) {
                     const usuario = { nombre: "Administrador", correo, rol: "admin" };
-                    const token = generateAdminToken();
+                    const token = generateToken();
                     localStorage.setItem("usuario", JSON.stringify(usuario));
                     localStorage.setItem("token", token);
                     localStorage.setItem("adminLoginTime", new Date().toISOString());
@@ -87,11 +88,11 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error al buscar admin en Firestore:", adminError);
         }
 
-        // Si no es admin, verificar si es cliente
+        // If not admin, check if it's a client
         mensaje.style.color = "red";
         mensaje.innerText = "Correo o contraseña incorrectos";
 
-        // Cliente: validar desde Firestore
+        // Client: validate from Firestore
         try {
             // Fetch user document by email only
             const query = await db.collection("usuario")
@@ -114,9 +115,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (trimmedStoredClave === trimmedInputClave) {
                     const nombre = userData.nombre_completo || correo;
 
-                    // Guardar usuario en localStorage con rol real
+                    // Store user in localStorage with real role
                     const usuario = { nombre, correo, rol: "cliente" };
-                    const token = generateAdminToken(); // Reutilizar para clientes también
+                    const token = generateToken();
                     localStorage.setItem("usuario", JSON.stringify(usuario));
                     localStorage.setItem("token", token);
 

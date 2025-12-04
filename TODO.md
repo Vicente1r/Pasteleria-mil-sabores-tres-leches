@@ -1,19 +1,16 @@
-# TODO: Remove Logo from Headers of All HTML Files
+# TODO: Implement Contact Form Functionality
 
-## Files to Update
-- [x] public/index.html (remove logo from header)
-- [x] public/assets/page/blog.html (remove logo from header)
-- [x] public/assets/page/carrito.html (remove logo from header)
-- [x] public/assets/page/catalogo.html (remove logo from header)
-- [x] public/assets/page/contacto.html (remove logo from header)
-- [x] public/assets/page/perfilCliente.html (remove logo from header)
-- [x] public/assets/page/nosotros.html (remove logo from header)
-- [x] public/assets/page/ofertas.html (remove logo from header)
+## Tasks
+- [x] Implement `contacto.js` as an ES module with Firebase imports
+- [x] Add event listener to the form submit event
+- [x] Check if user is authenticated using `auth.currentUser`
+- [x] If not authenticated, redirect to `login.html`
+- [x] If authenticated, retrieve user data from Firestore
+- [x] Extract form values (nombre, correo, contenido)
+- [x] Compute `id_usuario` as int from user's RUN
+- [x] Insert document into "contactos" collection with: id_usuario, correo, mensaje, nombre_completo
+- [x] Provide user feedback on success/error
 
-## Plan
-- Remove the <div class="logo"><img src="..." alt="..."></div> from the header in each file.
-- Ensure the header structure remains intact after removal.
-
-## Followup
-- Verify all headers display correctly without the logo.
-- Test responsiveness.
+## Followup Steps
+- [ ] Test the form submission with and without authentication
+- [ ] Verify data insertion in Firebase Firestore
