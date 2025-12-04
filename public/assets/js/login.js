@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const db = firebase.firestore();
 
     // Function to generate a token (for backward compatibility)
-    function generateToken() {
+    function generateToken(userData = {}) {
         const header = {
             alg: "HS256",
             typ: "JWT"
@@ -35,7 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const payload = {
             iat: Math.floor(Date.now() / 1000),
             exp: Math.floor(Date.now() / 1000) + 86400, // 24 horas
-            rol: "cliente"
+            rol: "cliente",
+            comuna: userData.comuna || "",
+            correo: userData.correo || "",
+            nombre_completo: userData.nombre_completo || "",
+            telefono: userData.telefono || ""
         };
         const headerBase64 = btoa(JSON.stringify(header)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
         const payloadBase64 = btoa(JSON.stringify(payload)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
@@ -117,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // Store user in localStorage with real role
                     const usuario = { nombre, correo, rol: "cliente" };
-                    const token = generateToken();
+                    const token = generateToken(userData);
                     localStorage.setItem("usuario", JSON.stringify(usuario));
                     localStorage.setItem("token", token);
 

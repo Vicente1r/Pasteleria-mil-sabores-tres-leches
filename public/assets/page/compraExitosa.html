@@ -5,6 +5,151 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Compra Exitosa - Pastelería Mil Sabores</title>
   <link rel="stylesheet" href="../css/inicio.css">
+  <style>
+    .invoice-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--color-white);
+      border-radius: var(--border-radius);
+      box-shadow: 0 8px 24px var(--color-shadow);
+      overflow: hidden;
+    }
+    .invoice-header {
+      background: linear-gradient(135deg, var(--color-rosa) 0%, var(--color-chocolate) 100%);
+      color: var(--color-white);
+      padding: 30px;
+      text-align: center;
+    }
+    .invoice-header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    .invoice-header .invoice-details {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    .invoice-body {
+      padding: 40px;
+    }
+    .customer-info, .billing-address {
+      margin-bottom: 30px;
+    }
+    .customer-info h3, .billing-address h3 {
+      color: var(--color-chocolate);
+      font-size: 18px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid var(--color-rosa);
+      padding-bottom: 5px;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .info-item label {
+      font-weight: bold;
+      color: var(--color-chocolate);
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .info-item span {
+      color: var(--color-text);
+      font-size: 14px;
+    }
+    .products-section h3 {
+      color: var(--color-chocolate);
+      font-size: 18px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--color-rosa);
+      padding-bottom: 5px;
+    }
+    .products-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    .products-table th, .products-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    .products-table th {
+      background: var(--color-crema);
+      color: var(--color-chocolate);
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+    .products-table td {
+      color: var(--color-text);
+    }
+    .total-section {
+      text-align: right;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid var(--color-rosa);
+    }
+    .total-amount {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--color-chocolate);
+    }
+    .order-status {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      background: var(--color-rosa);
+      color: var(--color-white);
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+    .btn-print, .btn-email {
+      background: var(--color-chocolate);
+      color: var(--color-white);
+      border: 2px solid var(--color-chocolate);
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-print:hover, .btn-email:hover {
+      background: #a0531c;
+      transform: translateY(-2px);
+    }
+    @media (max-width: 768px) {
+      .invoice-header .invoice-details {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      .action-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -21,69 +166,64 @@
 
     <!-- Main Content -->
     <main class="main-content">
-      <!-- Success Section -->
-      <section class="hero success-hero">
-        <div class="hero-content">
-          <span class="success-icon">✅</span>
-          <h2>¡Compra Exitosa!</h2>
-          <p>Tu pedido ha sido procesado correctamente</p>
-          <div class="order-info">
-            <p><strong>ID de Compra:</strong> <span id="codigoOrden">Cargando...</span></p>
-            <p><strong>Fecha:</strong> <span id="fechaCompra">Cargando...</span></p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Purchase Details Section -->
-      <section class="featured-section">
-        <h2>Detalles de tu Compra</h2>
-
-        <!-- Customer Information -->
-        <div class="purchase-section">
-          <h3>Información del Cliente</h3>
-          <div class="info-grid">
-            <div class="info-item">
-              <label>Nombre:</label>
-              <span id="exitoNombre">Cargando...</span>
-            </div>
-            <div class="info-item">
-              <label>Correo:</label>
-              <span id="exitoCorreo">Cargando...</span>
-            </div>
-            <div class="info-item">
-              <label>Teléfono:</label>
-              <span id="exitoTelefono">Cargando...</span>
-            </div>
+      <div class="invoice-container">
+        <!-- Invoice Header -->
+        <div class="invoice-header">
+          <h1>Factura de Compra</h1>
+          <p>¡Gracias por tu compra!</p>
+          <div class="invoice-details">
+            <div><strong>ID de Compra:</strong> <span id="codigoOrden">ORDEN-LOCAL</span></div>
+            <div><strong>Fecha:</strong> <span id="fechaCompra">--/--/----</span></div>
           </div>
         </div>
 
-        <!-- Shipping Address -->
-        <div class="purchase-section">
-          <h3>Dirección de Entrega</h3>
-          <div class="info-grid">
-            <div class="info-item">
-              <label>Calle:</label>
-              <span id="exitoCalle">Cargando...</span>
-            </div>
-            <div class="info-item">
-              <label>Ciudad:</label>
-              <span id="exitoCiudad">Cargando...</span>
-            </div>
-            <div class="info-item">
-              <label>Región:</label>
-              <span id="exitoRegion">Cargando...</span>
-            </div>
-            <div class="info-item">
-              <label>Código Postal:</label>
-              <span id="exitoCodigoPostal">Cargando...</span>
+        <!-- Invoice Body -->
+        <div class="invoice-body">
+          <!-- Customer Information -->
+          <div class="customer-info">
+            <h3>Información del Cliente</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Nombre:</label>
+                <span id="exitoNombre">-</span>
+              </div>
+              <div class="info-item">
+                <label>Correo:</label>
+                <span id="exitoCorreo">-</span>
+              </div>
+              <div class="info-item">
+                <label>Teléfono:</label>
+                <span id="exitoTelefono">-</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Products Table -->
-        <div class="purchase-section">
-          <h3>Productos Comprados</h3>
-          <div class="products-table-container">
+          <!-- Billing Address -->
+          <div class="billing-address">
+            <h3>Dirección de Entrega</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Calle:</label>
+                <span id="exitoCalle">Dirección Local 123</span>
+              </div>
+              <div class="info-item">
+                <label>Ciudad:</label>
+                <span id="exitoCiudad">Santiago</span>
+              </div>
+              <div class="info-item">
+                <label>Región:</label>
+                <span id="exitoRegion">Chile</span>
+              </div>
+              <div class="info-item">
+                <label>Código Postal:</label>
+                <span id="exitoCodigoPostal">N/A</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Products Section -->
+          <div class="products-section">
+            <h3>Productos Comprados</h3>
             <table class="products-table">
               <thead>
                 <tr>
@@ -94,23 +234,40 @@
                 </tr>
               </thead>
               <tbody id="tablaExitoBody">
-                <!-- Products will be loaded here -->
+                <tr>
+                  <td>Torta de Chocolate</td>
+                  <td>$15.000</td>
+                  <td>2</td>
+                  <td>$30.000</td>
+                </tr>
+                <tr>
+                  <td>Cupcakes Varios</td>
+                  <td>$25.000</td>
+                  <td>1</td>
+                  <td>$25.000</td>
+                </tr>
               </tbody>
             </table>
-          </div>
-          <div class="total-section">
-            <div class="total-amount">
-              <strong>Total Pagado: $<span id="totalPagado">0</span></strong>
+            <div class="total-section">
+              <div class="total-amount">
+                <strong>Total Pagado: $<span id="totalPagado">55.000</span></strong>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-          <button class="btn btn-primary" onclick="window.location.href='catalogo.html'">Continuar Comprando</button>
-          <button class="btn btn-secondary" onclick="window.location.href='perfilCliente.html'">Ver Mis Compras</button>
+          <!-- Order Status -->
+          <div class="order-status">
+            <div class="status-badge">Estado del Pedido: Procesado</div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button class="btn-print" id="btnImprimirPDF">Imprimir Factura</button>
+            <button class="btn-email" id="btnEnviarEmail">Enviar por Email</button>
+            <button class="btn btn-primary" onclick="window.location.href='catalogo.html'">Continuar Comprando</button>
+          </div>
         </div>
-      </section>
+      </div>
     </main>
 
     <!-- Footer -->
@@ -172,7 +329,7 @@
     </section>
   </dialog>
 
-  <script src="../js/compraExitosa.js"></script>
-  <script type="module" src="../../js/auth.js"></script>
+  <script src="compraExitosa.js"></script>
+  <script type="module" src="../js/auth.js"></script>
 </body>
 </html>
