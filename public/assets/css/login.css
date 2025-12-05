@@ -3,20 +3,23 @@ body {
   margin: 0;
   font-family: 'Lato', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #FFF5E1;
-  height: 100vh;
+  min-height: 100vh;
+  padding-top: 80px; /* Space for the header */
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  padding-bottom: 2rem;
 }
 
 main {
   background-color: white;
-  padding: 2.5rem 3rem;
+  padding: 2rem 2.5rem;
   border-radius: 10px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
   width: 100%;
-  max-width: 400px;
+  max-width: 350px;
   box-sizing: border-box;
+  margin-top: 2rem;
 }
 
 form {

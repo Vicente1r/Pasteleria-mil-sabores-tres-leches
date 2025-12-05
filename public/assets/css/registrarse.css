@@ -11,17 +11,19 @@ body {
 
 main {
   background-color: white;
-  padding: 2.5rem 3rem;
+  padding: 1rem 1.5rem;
   border-radius: 10px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
   box-sizing: border-box;
+  margin-top: 70px;
 }
 
 form {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
 label {
@@ -67,6 +69,7 @@ button[type="submit"] {
   cursor: pointer;
   transition: background-color 0.25s ease;
   font-family: 'Pacifico', cursive;
+  grid-column: span 2;
 }
 
 button[type="submit"]:hover {
