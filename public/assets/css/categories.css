@@ -73,9 +73,11 @@
   padding-left: 4px;
 }
 
-/* Contenedor principal de productos: apilar secciones verticalmente */
+/* Contenedor principal de productos: grid de 4 columnas */
 .productos #productosGrid {
-  display: block;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
   width: 100%;
   margin-bottom: 60px;
   padding: 0 4px;
@@ -193,6 +195,6 @@
 }
 
 @media (max-width: 420px) {
-  .productos #productosGrid { grid-template-columns: 1fr; }
+  .productos #productosGrid { grid-template-columns: repeat(2, 1fr); }
   .category-thumb { width: 130px; }
 }

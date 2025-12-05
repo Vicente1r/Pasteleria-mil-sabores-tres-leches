@@ -39,6 +39,32 @@ document.addEventListener("DOMContentLoaded", () => {
         id: doc.id, // Incluir ID del documento
         ...doc.data() // Incluir datos del documento
       }));
+
+      const order = [
+        'Torta Cuadrada de Chocolate',
+        'Torta Cuadrada de Frutas',
+        'Torta Circular de Vainilla',
+        'Torta Circular de Manjar',
+        'Mousse de Chocolate',
+        'Tiramisú clásico',
+        'Torta Sin Azúcar de Naranja',
+        'Cheesecake de Naranja',
+        'Empanada de Manzana',
+        'Tarta de Santiago',
+        'Brownie Sin Gluten',
+        'Pan Sin Gluten',
+        'Torta Vegana de Chocolate',
+        'Galletas Veganas de Avena',
+        'Torta Especial de Cumpleaños',
+        'Torta Especial de Boda'
+      ];
+
+      productosGlobal.sort((a, b) => {
+        const indexA = order.indexOf(a.nombre);
+        const indexB = order.indexOf(b.nombre);
+        return (indexA === -1 ? order.length : indexA) - (indexB === -1 ? order.length : indexB);
+      });
+
       // Asegurar que la categoría 'tortas_chocolate' contenga los productos requeridos
       asegurarProductosTortasChocolate(productosGlobal);
       
