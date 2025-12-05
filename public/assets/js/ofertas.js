@@ -1,3 +1,5 @@
+import { db } from './firebase-config.js';
+
 document.addEventListener("DOMContentLoaded", () => {
   // Elementos del DOM
   const productosGrid = document.getElementById("productosGrid");
@@ -7,19 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let productosGlobal = [];
   let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
-  // Configuración de Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
-    authDomain: "pasteleriamilsaborestresleches.web.app",
-    projectId: "pasteleriamilsaborestresleches",
-  };
-
-  // Inicializar Firebase solo si no está inicializado
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-  const db = firebase.firestore();
-
   // Inicializar la aplicación
   actualizarContadorCarrito();
   cargarProductos();
@@ -27,11 +16,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Función para cargar productos desde Firestore (colección "oferta")
   async function cargarProductos() {
     try {
+      console.log("Iniciando carga de ofertas...");
       if (tituloProductos) {
         tituloProductos.textContent = "Cargando ofertas...";
       }
 
-      const snapshot = await db.collection("oferta").get();
+      const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const productosRef = collection(db, "oferta");
+      const snapshot = await getDocs(productosRef);
       productosGlobal = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -77,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     productosGrid.innerHTML = productos.map(producto => {
       const precioOriginal = producto["precio original"] ? `<span class="precio-antes">$${producto["precio original"].toLocaleString('es-CL')} CLP</span>` : '';
-      const precioOferta = (producto["precio oferta"] || producto.Precio || producto.precio) ? `$${(producto["precio oferta"] || producto.Precio || producto.precio).toLocaleString('es-CL')} CLP` : 'Consultar';
+      const precioOferta = producto.precio ? `$${producto.precio.toLocaleString('es-CL')} CLP` : 'Consultar';
 
       return `
         <article class="item producto-card" data-category="${producto.categoria || ''}" data-id="${producto.id}">
@@ -90,7 +82,10 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="item-content producto-info">
             <h3 class="producto-nombre">${producto.nombre || 'Sin nombre'}</h3>
             <p>${producto.descripcion || ''}</p>
-            <p class="producto-precio precio">${precioOriginal} ${precioOferta}</p>
+            <div class="precios-container" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <div class="precio-original" style="text-decoration: line-through; color: #999;">${precioOriginal}</div>
+              <div class="precio-oferta" style="color: #e36b86; font-weight: bold; font-size: 1.1rem;">${precioOferta}</div>
+            </div>
             ${producto.stock ? `<p class="stock-info" style="font-size: 12px; color: #666;">Stock: ${producto.stock}</p>` : ''}
             <button class="btn-agregar btn-comprar" data-id="${producto.id}">
               🛒 Agregar al carrito
@@ -146,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
         nombre: producto.nombre,
         descripcion: producto.descripcion,
         precio: producto.precio,
-        precioOriginal: producto.precioOriginal,
+        precioOriginal: producto["precio original"],
         imagen: producto.imagen,
         categoria: producto.categoria,
         stock: producto.stock,
@@ -172,14 +167,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // Actualizar stock en Firebase
   async function actualizarStockFirebase(productId, cambio) {
     try {
-      const productoRef = db.collection("oferta").doc(productId);
-      const productoDoc = await productoRef.get();
+      const { doc, getDoc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const productoRef = doc(db, "oferta", productId);
+      const productoDoc = await getDoc(productoRef);
 
-      if (productoDoc.exists) {
+      if (productoDoc.exists()) {
         const stockActual = productoDoc.data().stock;
         const nuevoStock = Math.max(0, stockActual + cambio);
 
-        await productoRef.update({
+        await updateDoc(productoRef, {
           stock: nuevoStock
         });
 
