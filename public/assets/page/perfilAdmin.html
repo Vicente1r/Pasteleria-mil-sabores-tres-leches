@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1_om-_HPyYVnUo8ELiM5Zob2VSMGbWvw&callback=initMap"></script>
 </head>
 <body>
     <div class="admin-container">
@@ -236,7 +237,7 @@
                             <div class="nav-icon">
                                 <i class="bi bi-shop"></i>
                             </div>
-                            <h1 class="nav-title">Tienda</h1>
+                            <h1 class="nav-title">Tiendas</h1>
                             <p class="nav-description">
                                 Visualiza tu tienda en tiempo real, visualiza los reportes de usuarios.
                             </p>
@@ -485,6 +486,22 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Sección de Tiendas -->
+            <section id="tienda" style="display: none;">
+                <div class="welcome-section">
+                    <h2 class="welcome-title">Ubicación de Tiendas</h2>
+                    <p class="welcome-subtitle">Visualiza todas las tiendas en las comunas de Santiago</p>
+                </div>
+                <div class="crud-container">
+                    <div class="map-container">
+                        <div id="map" style="height: 400px; width: 100%; border-radius: 8px;"></div>
+                    </div>
+                    <div class="map-info">
+                        <p><i class="bi bi-info-circle"></i> Las tiendas están ubicadas en diferentes comunas de Santiago, Chile</p>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -627,13 +644,13 @@
         function verificarSesionAdmin() {
             const usuario = localStorage.getItem('usuario');
             const token = localStorage.getItem('token');
-            
+
             if (!usuario || !token) {
                 alert('Sesión no válida. Por favor inicia sesión como administrador.');
                 window.location.href = '../../index.html';
                 return false;
             }
-            
+
             try {
                 const usuarioObj = JSON.parse(usuario);
                 if (usuarioObj.rol !== 'admin') {
@@ -646,13 +663,137 @@
                 window.location.href = '../../index.html';
                 return false;
             }
-            
+
             return true;
         }
-        
+
         // Ejecutar verificación cuando se carga la página
         document.addEventListener('DOMContentLoaded', () => {
             verificarSesionAdmin();
+        });
+    </script>
+
+    <!-- Script para Google Maps -->
+    <script>
+        let map;
+        let markers = [];
+
+        function initMap() {
+            // Centro de Santiago, Chile
+            const santiagoCenter = { lat: -33.4489, lng: -70.6693 };
+
+            // Crear el mapa
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 11,
+                center: santiagoCenter,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                styles: [
+                    {
+                        featureType: 'poi',
+                        stylers: [{ visibility: 'off' }]
+                    }
+                ]
+            });
+
+            // Tiendas en diferentes comunas de Santiago
+            const stores = [
+                { name: 'Pastelería Mil Sabores - Santiago Centro', comuna: 'Santiago Centro', lat: -33.4378, lng: -70.6504 },
+                { name: 'Pastelería Mil Sabores - Providencia', comuna: 'Providencia', lat: -33.4314, lng: -70.6092 },
+                { name: 'Pastelería Mil Sabores - Las Condes', comuna: 'Las Condes', lat: -33.4155, lng: -70.5944 },
+                { name: 'Pastelería Mil Sabores - Ñuñoa', comuna: 'Ñuñoa', lat: -33.4547, lng: -70.6043 },
+                { name: 'Pastelería Mil Sabores - Vitacura', comuna: 'Vitacura', lat: -33.3868, lng: -70.5714 },
+                { name: 'Pastelería Mil Sabores - La Reina', comuna: 'La Reina', lat: -33.4425, lng: -70.5333 },
+                { name: 'Pastelería Mil Sabores - Peñalolén', comuna: 'Peñalolén', lat: -33.4833, lng: -70.5333 },
+                { name: 'Pastelería Mil Sabores - Macul', comuna: 'Macul', lat: -33.4833, lng: -70.6167 },
+                { name: 'Pastelería Mil Sabores - La Florida', comuna: 'La Florida', lat: -33.5167, lng: -70.6167 },
+                { name: 'Pastelería Mil Sabores - Puente Alto', comuna: 'Puente Alto', lat: -33.6167, lng: -70.5833 },
+                { name: 'Pastelería Mil Sabores - Maipú', comuna: 'Maipú', lat: -33.5167, lng: -70.7667 },
+                { name: 'Pastelería Mil Sabores - Estación Central', comuna: 'Estación Central', lat: -33.4500, lng: -70.6833 },
+                { name: 'Pastelería Mil Sabores - Recoleta', comuna: 'Recoleta', lat: -33.4167, lng: -70.6500 },
+                { name: 'Pastelería Mil Sabores - Independencia', comuna: 'Independencia', lat: -33.4167, lng: -70.6667 },
+                { name: 'Pastelería Mil Sabores - Quinta Normal', comuna: 'Quinta Normal', lat: -33.4333, lng: -70.7000 }
+            ];
+
+            // Crear marcadores para cada tienda
+            stores.forEach(store => {
+                const marker = new google.maps.Marker({
+                    position: { lat: store.lat, lng: store.lng },
+                    map: map,
+                    title: store.name,
+                    icon: {
+                        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                            <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="20" cy="20" r="18" fill="#FF6B6B" stroke="#FFFFFF" stroke-width="3"/>
+                                <path d="M12 16h16v8H12z" fill="#FFFFFF"/>
+                                <path d="M16 12h8v4h-8z" fill="#FFFFFF"/>
+                                <circle cx="20" cy="22" r="2" fill="#FF6B6B"/>
+                            </svg>
+                        `),
+                        scaledSize: new google.maps.Size(40, 40),
+                        anchor: new google.maps.Point(20, 40)
+                    }
+                });
+
+                // Crear info window para cada marcador
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div style="font-family: Arial, sans-serif; max-width: 200px;">
+                            <h4 style="margin: 0 0 8px 0; color: #333;">${store.name}</h4>
+                            <p style="margin: 0; color: #666; font-size: 14px;">
+                                <strong>Comuna:</strong> ${store.comuna}<br>
+                                <strong>Dirección:</strong> ${store.name.split(' - ')[1]}, ${store.comuna}
+                            </p>
+                        </div>
+                    `
+                });
+
+                // Agregar evento click al marcador
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+
+                markers.push(marker);
+            });
+
+            // Ajustar el mapa para mostrar todos los marcadores
+            const bounds = new google.maps.LatLngBounds();
+            markers.forEach(marker => {
+                bounds.extend(marker.getPosition());
+            });
+            map.fitBounds(bounds);
+
+            // Limitar el zoom máximo
+            google.maps.event.addListener(map, 'zoom_changed', function() {
+                if (map.getZoom() > 15) {
+                    map.setZoom(15);
+                }
+            });
+        }
+
+        // Función para mostrar/ocultar mapa cuando se navega a la sección tienda
+        function toggleMapVisibility() {
+            const tiendaSection = document.getElementById('tienda');
+            if (tiendaSection.style.display !== 'none') {
+                // Pequeño delay para asegurar que el mapa se renderice correctamente
+                setTimeout(() => {
+                    if (typeof google !== 'undefined' && google.maps) {
+                        google.maps.event.trigger(map, 'resize');
+                        // Re-centrar el mapa
+                        const bounds = new google.maps.LatLngBounds();
+                        markers.forEach(marker => {
+                            bounds.extend(marker.getPosition());
+                        });
+                        map.fitBounds(bounds);
+                    }
+                }, 100);
+            }
+        }
+
+        // Observar cambios en la navegación para ajustar el mapa
+        const observer = new MutationObserver(toggleMapVisibility);
+        observer.observe(document.getElementById('tienda'), {
+            attributes: true,
+            attributeFilter: ['style']
         });
     </script>
 </body>
