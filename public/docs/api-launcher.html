@@ -91,12 +91,12 @@
         // Contenido YAML simplificado y compatible
         const openapiContent = `openapi: 3.0.0
 info:
-  title: API Panel de Administración - Huerta Hogar
-  description: Documentación de servicios Firebase Firestore - Los ejemplos son estáticos
+  title: API Panel de Administración - Pastelería
+  description: Documentación de servicios Firebase Firestore para gestión de Pastelería y Repostería
   version: 1.0.0
   contact:
     name: Soporte Técnico
-    email: soporte@tiendaonline.com
+    email: soporte@pasteleria.com
 
 servers:
   - url: https://firestore.googleapis.com/v1
@@ -106,13 +106,13 @@ tags:
   - name: Dashboard
     description: Operaciones del panel de control
   - name: Productos
-    description: Gestión de productos
+    description: Gestión de tortas y pasteles
   - name: Órdenes
-    description: Gestión de órdenes de compra
+    description: Gestión de pedidos
   - name: Usuarios
-    description: Gestión de usuarios
+    description: Gestión de clientes y administradores
   - name: Categorías
-    description: Gestión de categorías
+    description: Gestión de tipos de pastelería
 
 paths:
   /api/dashboard/estadisticas:
@@ -120,7 +120,7 @@ paths:
       tags:
         - Dashboard
       summary: Obtener estadísticas del dashboard
-      description: Servicio Firebase - DashboardService.getEstadisticasCompletas()
+      description: Resumen de ventas de la pastelería
       responses:
         '200':
           description: Estadísticas obtenidas correctamente
@@ -129,19 +129,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/EstadisticasDashboard'
               example:
-                totalCompras: 19
-                proyeccionCompras: 0
-                totalProductos: 9
-                inventarioTotal: 710
-                totalUsuarios: 4
-                nuevosUsuariosMes: 1
+                totalCompras: 45
+                proyeccionCompras: 10
+                totalProductos: 35
+                inventarioTotal: 150
+                totalUsuarios: 120
+                nuevosUsuariosMes: 5
 
   /api/productos:
     get:
       tags:
         - Productos
       summary: Obtener lista de productos
-      description: Servicio Firebase - CrudService.getProductos()
+      description: Obtiene el listado completo (Tortas, postres, etc.)
       responses:
         '200':
           description: Lista de productos obtenida correctamente
@@ -152,47 +152,74 @@ paths:
                 items:
                   $ref: '#/components/schemas/Producto'
               example:
-                - id: "1"
-                  nombre: "Manzanas Fuji"
-                  precio: 1200
-                  stock: 100
-                  categoria: "Fruta"
-                  imagen: "https://tienda-huerta-hogar.web.app/assets/Img/manzanas_fuji.jpg"
+                - id: "TC001"
+                  nombre: "Torta Cuadrada de Chocolate"
+                  precio: 45000
+                  stock: 10
+                  categoria: "Tortas Cuadradas"
+                  imagen: "https://pasteleria.web.app/assets/Img/tc001.jpg"
                   activo: true
-                - id: "2"
-                  nombre: "Naranjas Valencia"
-                  precio: 1000
-                  stock: 100
-                  categoria: "Fruta"
-                  imagen: "https://tienda-huerta-hogar.web.app/assets/Img/Naranja.jpg"
+                - id: "TC002"
+                  nombre: "Torta Cuadrada de Frutas"
+                  precio: 50000
+                  stock: 8
+                  categoria: "Tortas Cuadradas"
+                  imagen: "https://pasteleria.web.app/assets/Img/tc002.jpg"
                   activo: true
-                - id: "3"
-                  nombre: "Banana Cavendish"
-                  precio: 800
-                  stock: 100
-                  categoria: "Fruta"
-                  imagen: "https://tienda-huerta-hogar.web.app/assets/Img/Banana.jpg"
+                - id: "TT001"
+                  nombre: "Torta Circular de Vainilla"
+                  precio: 40000
+                  stock: 12
+                  categoria: "Tortas Circulares"
+                  imagen: "https://pasteleria.web.app/assets/Img/tt001.jpg"
                   activo: true
-                - id: "4"
-                  nombre: "Zanahoria Organica"
-                  precio: 900
-                  stock: 100
-                  categoria: "Verdura"
-                  imagen: "https://tienda-huerta-hogar.web.app/assets/Img/Zhanaoria Organica.jpg"
+                - id: "PI001"
+                  nombre: "Mousse de Chocolate"
+                  precio: 5000
+                  stock: 50
+                  categoria: "Postres Individuales"
+                  imagen: "https://pasteleria.web.app/assets/Img/pi001.jpg"
                   activo: true
-                - id: "5"
-                  nombre: "Espinacas Frescas"
-                  precio: 700
+                - id: "PSA001"
+                  nombre: "Torta Sin Azúcar de Naranja"
+                  precio: 48000
+                  stock: 5
+                  categoria: "Productos Sin Azúcar"
+                  imagen: "https://pasteleria.web.app/assets/Img/psa001.jpg"
+                  activo: true
+                - id: "PT001"
+                  nombre: "Empanada de Manzana"
+                  precio: 3000
                   stock: 100
-                  categoria: "Verdura"
-                  imagen: "https://tienda-huerta-hogar.web.app/assets/Img/espinacas_Frescas.jpg"
+                  categoria: "Pastelería Tradicional"
+                  imagen: "https://pasteleria.web.app/assets/Img/pt001.jpg"
+                  activo: true
+                - id: "PG001"
+                  nombre: "Brownie Sin Gluten"
+                  precio: 4000
+                  stock: 30
+                  categoria: "Productos Sin Gluten"
+                  imagen: "https://pasteleria.web.app/assets/Img/pg001.jpg"
+                  activo: true
+                - id: "PV001"
+                  nombre: "Torta Vegana de Chocolate"
+                  precio: 50000
+                  stock: 4
+                  categoria: "Productos Vegana"
+                  imagen: "https://pasteleria.web.app/assets/Img/pv001.jpg"
+                  activo: true
+                - id: "TE001"
+                  nombre: "Torta Especial de Cumpleaños"
+                  precio: 55000
+                  stock: 2
+                  categoria: "Tortas Especiales"
+                  imagen: "https://pasteleria.web.app/assets/Img/te001.jpg"
                   activo: true
                   
     post:
       tags:
         - Productos
-      summary: Crear un nuevo producto
-      description: Servicio Firebase - CrudService.createProducto()
+      summary: Crear un nuevo producto de pastelería
       requestBody:
         required: true
         content:
@@ -200,11 +227,11 @@ paths:
             schema:
               $ref: '#/components/schemas/ProductoInput'
             example:
-              nombre: "Pimientos Tricolor"
-              precio: 1500
-              stock: 25
-              categoria: "Verdura"
-              imagen: "https://tienda-huerta-hogar.web.app/assets/Img/Pimientos_Tricolor.jpg"
+              nombre: "Cheesecake Sin Azúcar"
+              precio: 47000
+              stock: 6
+              categoria: "Productos Sin Azúcar"
+              imagen: "https://pasteleria.web.app/assets/Img/psa002.jpg"
       responses:
         '201':
           description: Producto creado correctamente
@@ -216,21 +243,20 @@ paths:
                   id:
                     type: string
               example:
-                id: "nuevoIdGeneradoPorFirestore123"
+                id: "PSA002"
 
   /api/productos/{id}:
     get:
       tags:
         - Productos
-      summary: Obtener producto por ID
-      description: Servicio Firebase - CrudService.getProductoById()
+      summary: Obtener pastel por ID (Código)
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
-          example: "prod123"
+          example: "TC001"
       responses:
         '200':
           description: Producto encontrado
@@ -239,33 +265,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Producto'
               example:
-                id: "1"
-                nombre: "Manzanas Fuji"
-                precio: 1200
-                stock: 15
-                categoria: "Fruta"
-                imagen: "https://tienda-huerta-hogar.web.app/assets/Img/manzanas_fuji.jpg"
+                id: "TC001"
+                nombre: "Torta Cuadrada de Chocolate"
+                precio: 45000
+                stock: 10
+                categoria: "Tortas Cuadradas"
+                imagen: "https://pasteleria.web.app/assets/Img/tc001.jpg"
                 activo: true
         '404':
           description: Producto no encontrado
-          content:
-            application/json:
-              example:
-                error: "Producto no encontrado"
-                message: "El producto con ID prod123 no existe"
 
     put:
       tags:
         - Productos
-      summary: Actualizar producto existente
-      description: Servicio Firebase - CrudService.updateProducto()
+      summary: Actualizar datos del pastel
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
-          example: "prod123"
+          example: "TC001"
       requestBody:
         required: true
         content:
@@ -273,41 +293,30 @@ paths:
             schema:
               $ref: '#/components/schemas/ProductoInput'
             example:
-              nombre: "Naranjas Valencia"
-              precio: 1100
-              stock: 90
-              categoria: "Fruta"
+              nombre: "Torta Cuadrada de Chocolate (Edición Especial)"
+              precio: 48000
+              stock: 5
+              categoria: "Tortas Cuadradas"
       responses:
         '200':
           description: Producto actualizado correctamente
-          content:
-            application/json:
-              example:
-                success: true
-                message: "Producto actualizado correctamente"
         '404':
           description: Producto no encontrado
 
     delete:
       tags:
         - Productos
-      summary: Eliminar producto del sistema
-      description: Servicio Firebase - CrudService.deleteProducto()
+      summary: Eliminar producto
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
-          example: "prod123"
+          example: "TC001"
       responses:
         '200':
           description: Producto eliminado correctamente
-          content:
-            application/json:
-              example:
-                success: true
-                message: "Producto eliminado correctamente"
         '404':
           description: Producto no encontrado
 
@@ -316,7 +325,6 @@ paths:
       tags:
         - Órdenes
       summary: Obtener lista de órdenes
-      description: Servicio Firebase - CrudService.getOrdenes()
       responses:
         '200':
           description: Lista de órdenes obtenida correctamente
@@ -327,44 +335,43 @@ paths:
                 items:
                   $ref: '#/components/schemas/Orden'
               example:
-                - id: "orden123"
+                - id: "orden1001"
                   clienteNombre: "Juan Pérez"
-                  total: 199.99
+                  total: 85000
                   estado: "completado"
-                  fecha: "2024-01-15T10:30:00Z"
+                  fecha: "2024-02-15T10:30:00Z"
                   productos:
-                    - id: "prod123"
-                      nombre: "Manzanas Fuji"
+                    - id: "TC001"
+                      nombre: "Torta Cuadrada de Chocolate"
                       cantidad: 1
-                      precio: 1200
-                    - id: "prod456"
-                      nombre: "Naranjas Valencia"
+                      precio: 45000
+                    - id: "TT001"
+                      nombre: "Torta Circular de Vainilla"
                       cantidad: 1
-                      precio: 1000
-                - id: "orden124"
+                      precio: 40000
+                - id: "orden1002"
                   clienteNombre: "María García"
-                  total: 299.99
+                  total: 10000
                   estado: "procesando"
-                  fecha: "2024-01-14T15:45:00Z"
+                  fecha: "2024-02-16T15:45:00Z"
                   productos:
-                    - id: "prod789"
-                      nombre: "Banana Cavendish"
+                    - id: "PI001"
+                      nombre: "Mousse de Chocolate"
                       cantidad: 2
-                      precio: 800
+                      precio: 5000
 
   /api/ordenes/{id}:
     get:
       tags:
         - Órdenes
       summary: Obtener orden por ID
-      description: Servicio Firebase - CrudService.getOrdenById()
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
-          example: "orden123"
+          example: "orden1001"
       responses:
         '200':
           description: Orden encontrada
@@ -373,20 +380,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/Orden'
               example:
-                id: "orden123"
+                id: "orden1001"
                 clienteNombre: "Juan Pérez"
-                total: 199.99
+                total: 45000
                 estado: "completado"
-                fecha: "2024-01-15T10:30:00Z"
+                fecha: "2024-02-15T10:30:00Z"
                 productos:
-                  - id: "prod123"
-                    nombre: "Manzanas Fuji"
+                  - id: "TC001"
+                    nombre: "Torta Cuadrada de Chocolate"
                     cantidad: 1
-                    precio: 1200
-                  - id: "prod456"
-                    nombre: "Naranjas Valencia"
-                    cantidad: 1
-                    precio: 1000
+                    precio: 45000
         '404':
           description: Orden no encontrada
 
@@ -395,14 +398,13 @@ paths:
       tags:
         - Órdenes
       summary: Actualizar estado de orden
-      description: Servicio Firebase - CrudService.updateOrdenEstado()
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
-          example: "orden123"
+          example: "orden1001"
       requestBody:
         required: true
         content:
@@ -412,29 +414,21 @@ paths:
               properties:
                 estado:
                   type: string
-                  enum: [pendiente, procesando, completado, cancelado]
+                  enum: [pendiente, preparacion, listo_retiro, entregado, cancelado]
             example:
-              estado: "completado"
+              estado: "entregado"
       responses:
         '200':
           description: Estado actualizado correctamente
-          content:
-            application/json:
-              example:
-                success: true
-                message: "Estado actualizado a completado"
-        '404':
-          description: Orden no encontrada
 
   /api/usuarios:
     get:
       tags:
         - Usuarios
       summary: Obtener lista de usuarios
-      description: Servicio Firebase - CrudService.getUsuarios()
       responses:
         '200':
-          description: Lista de usuarios obtenida correctamente
+          description: Lista de usuarios obtenida
           content:
             application/json:
               schema:
@@ -442,38 +436,26 @@ paths:
                 items:
                   $ref: '#/components/schemas/Usuario'
               example:
-                - id: "user123"
-                  nombre: "Ana López"
-                  email: "ana@ejemplo.com"
+                - id: "u001"
+                  nombre: "Admin Pastelería"
+                  email: "admin@pasteleria.com"
                   rol: "admin"
                   activo: true
-                  telefono: "+56912345678"
-                  direccion: "Av. Principal 123"
-                - id: "user124"
-                  nombre: "Carlos Ruiz"
-                  email: "carlos@ejemplo.com"
-                  rol: "cliente"
-                  activo: true
-                  telefono: "+56987654321"
-                - id: "user125"
-                  nombre: "María González"
-                  email: "maria@ejemplo.com"
-                  rol: "cliente"
-                  activo: false
+                  telefono: "+56911112222"
+                  direccion: "Calle Dulce 123"
 
   /api/usuarios/{id}:
     get:
       tags:
         - Usuarios
       summary: Obtener usuario por ID
-      description: Servicio Firebase - CrudService.getUsuarioById()
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
-          example: "user123"
+          example: "u001"
       responses:
         '200':
           description: Usuario encontrado
@@ -481,24 +463,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Usuario'
-              example:
-                id: "user123"
-                nombre: "Ana López"
-                email: "ana@ejemplo.com"
-                rol: "admin"
-                activo: true
-                telefono: "+56912345678"
-                direccion: "Av. Principal 123"
-                createdAt: "2024-01-01T00:00:00Z"
-        '404':
-          description: Usuario no encontrado
 
   /api/categorias:
     get:
       tags:
         - Categorías
-      summary: Obtener lista de categorías
-      description: Servicio Firebase - CrudService.getCategorias()
+      summary: Obtener categorías de la pastelería
+      description: Devuelve las categorías listadas en el menú (Tortas Cuadradas, Circulares, etc.)
       responses:
         '200':
           description: Lista de categorías obtenida correctamente
@@ -509,21 +480,46 @@ paths:
                 items:
                   $ref: '#/components/schemas/Categoria'
               example:
-                - id: "cat123"
-                  nombre: "Frutas"
-                  descripcion: "Frutas frescas de temporada"
-                  productosCount: 15
+                - id: "cat_cuadradas"
+                  nombre: "Tortas Cuadradas"
+                  descripcion: "Tortas de formato cuadrado para eventos"
+                  productosCount: 2
                   activa: true
-                - id: "cat124"
-                  nombre: "Vegetales"
-                  descripcion: "Vegetales orgánicos y frescos"
-                  productosCount: 10
+                - id: "cat_circulares"
+                  nombre: "Tortas Circulares"
+                  descripcion: "Tortas clásicas redondas"
+                  productosCount: 2
                   activa: true
-                - id: "cat125"
-                  nombre: "Abarrotes"
-                  descripcion: "Productos secos y envasados"
-                  productosCount: 20
-                  activa: false
+                - id: "cat_individuales"
+                  nombre: "Postres Individuales"
+                  descripcion: "Porciones personales y postres al vaso"
+                  productosCount: 5
+                  activa: true
+                - id: "cat_sin_azucar"
+                  nombre: "Productos Sin Azúcar"
+                  descripcion: "Línea apta para diabéticos o dieta keto"
+                  productosCount: 2
+                  activa: true
+                - id: "cat_tradicional"
+                  nombre: "Pastelería Tradicional"
+                  descripcion: "Empanadas dulces, tartas clásicas"
+                  productosCount: 4
+                  activa: true
+                - id: "cat_sin_gluten"
+                  nombre: "Productos sin gluten"
+                  descripcion: "Certificados sin TACC"
+                  productosCount: 3
+                  activa: true
+                - id: "cat_vegana"
+                  nombre: "Productos Vegana"
+                  descripcion: "Sin ingredientes de origen animal"
+                  productosCount: 3
+                  activa: true
+                - id: "cat_especiales"
+                  nombre: "Tortas Especiales"
+                  descripcion: "Para bodas, cumpleaños temáticos"
+                  productosCount: 2
+                  activa: true
 
 components:
   schemas:
@@ -532,45 +528,40 @@ components:
       properties:
         totalCompras:
           type: integer
-          example: 24
         proyeccionCompras:
           type: integer
-          example: 15
         totalProductos:
           type: integer
-          example: 156
         inventarioTotal:
           type: integer
-          example: 1248
         totalUsuarios:
           type: integer
-          example: 89
         nuevosUsuariosMes:
           type: integer
-          example: 12
 
     Producto:
       type: object
       properties:
         id:
           type: string
+          description: Código del producto (Ej. TC001)
         nombre:
           type: string
-          example: "Manzanas Fuji"
+          example: "Torta Cuadrada de Chocolate"
         precio:
           type: number
-          example: 1200
+          description: Precio en CLP
+          example: 45000
         stock:
           type: integer
-          example: 15
+          example: 10
         categoria:
           type: string
-          example: "Frutas"
+          example: "Tortas Cuadradas"
         imagen:
           type: string
         activo:
           type: boolean
-          example: true
 
     ProductoInput:
       type: object
@@ -578,6 +569,7 @@ components:
         - nombre
         - precio
         - stock
+        - categoria
       properties:
         nombre:
           type: string
@@ -646,6 +638,7 @@ components:
           type: string
         nombre:
           type: string
+          example: "Tortas Cuadradas"
         descripcion:
           type: string
         productosCount:
