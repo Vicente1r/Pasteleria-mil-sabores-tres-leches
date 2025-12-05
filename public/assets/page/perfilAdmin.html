@@ -85,118 +85,15 @@
             </div>
 
             <!-- Botones de Acción -->
-              <button class="action-btn btn-store" onclick="irATienda()">
-                 <div class="sidebar-section sidebar-actions">
-                 <i class="bi bi-shop menu-icon"></i>
-                    Tienda
-
-                   
-                </button>
-                 <a href="../../docs/api-launcher.html" target="_blank" class="action-btn btn-info">
-                    <i class="bi bi-file-text menu-icon"></i>
-                    API Docs
-                    </a>
-                <button class="action-btn btn-logout" onclick="cerrarSesion()">
-                    <i class="bi bi-box-arrow-right menu-icon"></i>
-                    Cerrar Sesión
-                </button>
-            </div>
-        </aside>
-
-        <!-- Contenido Principal -->
-        <main class="admin-main">
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración</title>
-    <link rel="stylesheet" href="../css/perfiladmin.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-</head>
-<body>
-    <div class="admin-container">
-        <!-- Header -->
-        <header class="admin-header">
-            <a href="#" class="logo">Tienda Online Pasteleria mil sabores</a>
-        </header>
-
-        <!-- Sidebar -->
-        <aside class="admin-sidebar">
-            <!-- Sección de Bienvenida -->
-            <div class="sidebar-section">
-                <!-- Sección de Bienvenida -->
-                <section class="welcome-section">
-                    <h1 class="welcome-title" id="bienvenidoPrincipal">Bienvenido al Panel de Administración</h1>
-                    <p class="welcome-subtitle" id="userEmail">pasteleriamilsabores@gmail.com</p>
-                </section>
-            </div>
-
-            <!-- Menú Principal -->
-            <div class="sidebar-section">
-                <h3 class="sidebar-title">Administración</h3>
-                <ul class="sidebar-menu">
-                    <li class="menu-item">
-                        <a href="#dashboard" class="menu-link">
-                            <i class="bi bi-speedometer2 menu-icon"></i>
-                            Dashboard
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#ordenes" class="menu-link">
-                            <i class="bi bi-clipboard-check menu-icon"></i>
-                            Órdenes
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#productos" class="menu-link">
-                            <i class="bi bi-box-seam menu-icon"></i>
-                            Productos
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#categorias" class="menu-link">
-                            <i class="bi bi-tags menu-icon"></i>
-                            Categorías
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#usuarios" class="menu-link">
-                            <i class="bi bi-people menu-icon"></i>
-                            Usuarios
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#reportes" class="menu-link">
-                            <i class="bi bi-graph-up menu-icon"></i>
-                            Reportes
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Sección de Perfil y Acciones -->
-            <div class="sidebar-section">
-                <h3 class="sidebar-title">Cuenta</h3>
-                <ul class="sidebar-menu">
-                    <li class="menu-item">
-                        <a href="#perfil" class="menu-link">
-                            <i class="bi bi-person menu-icon"></i>
-                            Perfil
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Botones de Acción -->
             <div class="sidebar-section sidebar-actions">
                 <button class="action-btn btn-store" onclick="irATienda()">
                     <i class="bi bi-shop menu-icon"></i>
                     Tienda
                 </button>
+                <a href="../../docs/api-launcher.html" target="_blank" class="action-btn btn-info">
+                    <i class="bi bi-file-text menu-icon"></i>
+                    API Docs
+                </a>
                 <button class="action-btn btn-logout" onclick="cerrarSesion()">
                     <i class="bi bi-box-arrow-right menu-icon"></i>
                     Cerrar Sesión
