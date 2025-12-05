@@ -85,7 +85,7 @@
 
             <!-- Botones de Acción -->
             <div class="sidebar-section sidebar-actions">
-                <button class="action-btn btn-store" onclick="irATienda()">
+                <button class="action-btn btn-store allow-vendedor-edit" data-allow-vendedor onclick="irATienda()">
                     <i class="bi bi-shop menu-icon"></i>
                     Tienda
                 </button>
@@ -93,7 +93,7 @@
                     <i class="bi bi-file-text menu-icon"></i>
                     API Docs
                 </a>
-                <button class="action-btn btn-logout" onclick="cerrarSesion()">
+                <button class="action-btn btn-logout allow-vendedor-edit" data-allow-vendedor onclick="cerrarSesion()">
                     <i class="bi bi-box-arrow-right menu-icon"></i>
                     Cerrar Sesión
                 </button>
@@ -105,9 +105,106 @@
             <!-- Dashboard -->
             <section id="dashboard">
                 <h2 class="sidebar-title">Resumen General</h2>
-                <!-- ...existing code... (igual que perfilAdmin.html) ... -->
+                <div class="dashboard-cards-row">
+                    <div class="summary-card blue-card">
+                        <div class="card-content">
+                            <div class="card-icon"><i class="bi bi-cart"></i></div>
+                            <div class="card-info">
+                                <h3 class="card-title">Compras</h3>
+                                <p class="card-value" id="totalCompras">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="summary-card green-card">
+                        <div class="card-content">
+                            <div class="card-icon"><i class="bi bi-box"></i></div>
+                            <div class="card-info">
+                                <h3 class="card-title">Productos</h3>
+                                <p class="card-value" id="totalProductos">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="summary-card yellow-card">
+                        <div class="card-content">
+                            <div class="card-icon"><i class="bi bi-people"></i></div>
+                            <div class="card-info">
+                                <h3 class="card-title">Usuarios</h3>
+                                <p class="card-value" id="totalUsuarios">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
-            <!-- ...existing code... (todas las secciones CRUD, igual que perfilAdmin.html) ... -->
+
+            <!-- Órdenes (vendedor puede ver detalles) -->
+            <section id="ordenes" style="display:none;">
+                <div class="welcome-section">
+                    <h2 class="welcome-title">Registro de Órdenes</h2>
+                    <p class="welcome-subtitle">Ver registros de compras y detalles</p>
+                </div>
+                <div class="table-responsive">
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordenes-tbody">
+                            <tr><td colspan="6" class="no-data">Cargando órdenes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Productos (vendedor puede ver registros y detalles) -->
+            <section id="productos" style="display:none;">
+                <div class="welcome-section">
+                    <h2 class="welcome-title">Registro de Productos</h2>
+                    <p class="welcome-subtitle">Ver lista de productos y sus detalles</p>
+                </div>
+                <div class="table-responsive">
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Categoría</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productos-tbody">
+                            <tr><td colspan="6" class="no-data">Cargando productos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Perfil (vendedor puede cambiar su nombre) -->
+            <section id="perfil" style="display:none;">
+                <div class="welcome-section">
+                    <h2 class="welcome-title">Mi Perfil</h2>
+                    <p class="welcome-subtitle">Actualiza tu información de vendedor</p>
+                </div>
+                <div class="form-container">
+                    <form id="perfilForm">
+                        <div class="form-group">
+                            <label for="vendedorNombre">Nombre</label>
+                            <input id="vendedorNombre" class="form-input allow-vendedor-edit" type="text" />
+                        </div>
+                        <div class="form-actions">
+                            <button id="saveVendedorBtn" type="submit" class="btn btn-primary allow-vendedor-edit">Guardar</button>
+                        </div>
+                        <p id="perfilStatus"></p>
+                    </form>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -117,9 +214,38 @@
       if (window.enableReadOnlyView) window.enableReadOnlyView();
     </script>
 
+        <!-- Perfil Vendedor API client -->
+        <script src="../js/perfilVendedor-api.js"></script>
+
     <!-- Scripts de navegación y Firebase (igual que perfilAdmin.html) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script type="module" src="../../js/auth.js"></script>
+        <script>
+            // Funciones globales usadas por los botones del panel (asegurar que onclick las encuentre)
+            function irATienda() {
+                window.location.href = '../../index.html';
+            }
+
+            async function cerrarSesion() {
+                try {
+                    if (window.firebase && firebase.auth) {
+                        await firebase.auth().signOut();
+                    }
+                } catch (e) {
+                    console.warn('Error cerrando sesión vía Firebase:', e);
+                }
+                try {
+                    localStorage.removeItem('usuario');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('adminLoginTime');
+                    localStorage.removeItem('redirigirDespuesLogin');
+                } catch (_) {}
+                try { window.location.href = '../../index.html'; } catch (_) {}
+            }
+            // Exponer en window por si acaso
+            window.irATienda = irATienda;
+            window.cerrarSesion = cerrarSesion;
+        </script>
+        <script type="module" src="../../js/auth.js"></script>
 </body>
 </html>

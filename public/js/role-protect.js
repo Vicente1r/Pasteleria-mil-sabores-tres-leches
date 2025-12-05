@@ -9,6 +9,9 @@ window.enableReadOnlyView = function enableReadOnlyView() {
 
   disableSelectors.forEach(sel => {
     document.querySelectorAll(sel).forEach(el => {
+      // Allow specific elements for vendedor to remain interactive (class 'allow-vendedor-edit')
+      if (el.classList && el.classList.contains('allow-vendedor-edit')) return;
+      if (el.hasAttribute && el.hasAttribute('data-allow-vendedor')) return;
       try { el.setAttribute('disabled','disabled'); } catch(e) {}
       el.style.pointerEvents = 'none';
       el.style.opacity = el.style.opacity || '0.85';

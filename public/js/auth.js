@@ -101,7 +101,19 @@ function actualizarUIUsuario(userData) {
         e.preventDefault();
         try {
           await signOut(auth);
+          // Limpiar estado local relacionado con el usuario
+          try {
+            localStorage.removeItem('usuario');
+            localStorage.removeItem('token');
+            localStorage.removeItem('adminLoginTime');
+            localStorage.removeItem('redirigirDespuesLogin');
+          } catch (lsErr) {
+            console.warn('No se pudo limpiar localStorage:', lsErr);
+          }
+
           mostrarExito("Sesión cerrada exitosamente");
+          // Redirigir al inicio
+          try { window.location.href = '/'; } catch(_) { /* ignore */ }
         } catch (error) {
           console.error("Error al cerrar sesión:", error);
           mostrarError("Error al cerrar sesión");
