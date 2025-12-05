@@ -87,14 +87,7 @@
 
       <div class="content-view hidden" id="orders-view">
         <div class="view-header">
-          <h2>Usuarios</h2>
-          <button class="btn-primary" id="new-user-btn">NUEVO USUARIO</button>
-        </div>
-        
-        <div class="filter-section">
-          <select class="filter-dropdown">
-            <option>Todos los pedidos de venta ▼</option>
-          </select>
+          <h2>Historial de Contactos</h2>
         </div>
 
         <div class="table-container">
@@ -102,55 +95,20 @@
             <thead>
               <tr>
                 <th>Fecha</th>
-                <th>Orden #</th>
-                <th>Cliente</th>
-                <th>Estado</th>
-                <th>Monto</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Mensaje</th>
+                <th>RUT</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>2024-06-01</td>
-                <td>SO101</td>
-                <td>Arturo Vidal</td>
-                <td><span class="status shipped">Entregado</span></td>
-                <td>$60.000</td>
-              </tr>
-              <tr>
-                <td>2024-06-01</td>
-                <td>SO102</td>
-                <td>Claudio Bravo</td>
-                <td><span class="status pending">Pendiente</span></td>
-                <td>$5.000</td>
-              </tr>
-              <tr>
-                <td>2024-06-02</td>
-                <td>SO103</td>
-                <td>Mauricio Paredes</td>
-                <td><span class="status cancelled">Cancelado</span></td>
-                <td>$30.000</td>
-              </tr>
-              <tr>
-                <td>2024-06-03</td>
-                <td>SO104</td>
-                <td>Roman Rojas</td>
-                <td><span class="status processing">Procesando</span></td>
-                <td>$12.000</td>
-              </tr>
+            <tbody id="contactos-tbody">
+              <!-- Contactos will be loaded dynamically -->
             </tbody>
           </table>
         </div>
 
-        <div class="pagination">
-          <button class="page-btn">‹‹</button>
-          <button class="page-btn">‹</button>
-          <button class="page-btn">1</button>
-          <button class="page-btn">2</button>
-          <button class="page-btn active">3</button>
-          <button class="page-btn">4</button>
-          <button class="page-btn">5</button>
-          <button class="page-btn">›</button>
-          <button class="page-btn">››</button>
+        <div id="no-contactos-message" style="text-align: center; margin-top: 2rem; display: none;">
+          No hay contactos registrados.
         </div>
       </div>
 
@@ -230,7 +188,8 @@
               showView('dashboard', '¡HOLA --------!');
               break;
             case 'orders':
-              showView('orders', 'Usuarios');
+              showView('orders', 'Historial de Contactos');
+              loadContactos();
               break;
           }
         });
@@ -422,6 +381,92 @@
           }
         } catch (error) {
           console.error('Error actualizando contador del carrito:', error);
+        }
+      }
+
+      // Load contactos from Firestore
+      async function loadContactos() {
+        try {
+          if (!window.firebaseDb) {
+            console.error('Firebase no está disponible');
+            return;
+          }
+
+          // Get user data from localStorage
+          const localUser = JSON.parse(localStorage.getItem('usuario') || localStorage.getItem('usuarioActual') || '{}');
+          const correo = localUser.correo;
+
+          if (!correo) {
+            console.error('Correo no disponible');
+            return;
+          }
+
+          // Get user data to find RUT
+          const userQuery = window.query(window.collection(window.firebaseDb, 'usuario'), window.where('correo', '==', correo));
+          const userSnapshot = await window.getDocs(userQuery);
+
+          if (userSnapshot.empty) {
+            console.error('Usuario no encontrado');
+            return;
+          }
+
+          const userData = userSnapshot.docs[0].data();
+          const userRut = userData.run;
+
+          if (!userRut) {
+            console.error('RUT no disponible para el usuario');
+            return;
+          }
+
+          // Extract numeric RUT
+          let numericRut;
+          if (typeof userRut === 'string') {
+            numericRut = parseInt(userRut.replace(/[^0-9]/g, ''), 10);
+          } else if (typeof userRut === 'number') {
+            numericRut = userRut;
+          } else {
+            console.error('Formato de RUT inválido');
+            return;
+          }
+
+          // Query contactos collection
+          const contactosQuery = window.query(window.collection(window.firebaseDb, 'contactos'), window.where('id_usuario', '==', numericRut));
+          const contactosSnapshot = await window.getDocs(contactosQuery);
+
+          const contactosTbody = document.getElementById('contactos-tbody');
+          const noContactosMessage = document.getElementById('no-contactos-message');
+
+          // Clear existing rows
+          contactosTbody.innerHTML = '';
+
+          if (contactosSnapshot.empty) {
+            noContactosMessage.style.display = 'block';
+            return;
+          }
+
+          noContactosMessage.style.display = 'none';
+
+          // Add rows for each contacto
+          contactosSnapshot.forEach(doc => {
+            const contacto = doc.data();
+            const fecha = contacto.fecha_publicacion ? contacto.fecha_publicacion.toDate().toLocaleDateString('es-ES') : 'N/A';
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${fecha}</td>
+              <td>${contacto.nombre || 'N/A'}</td>
+              <td>${contacto.correo || 'N/A'}</td>
+              <td>${contacto.mensaje || 'N/A'}</td>
+              <td>${contacto.id_usuario || 'N/A'}</td>
+            `;
+            contactosTbody.appendChild(row);
+          });
+
+        } catch (error) {
+          console.error('Error loading contactos:', error);
+          const noContactosMessage = document.getElementById('no-contactos-message');
+          noContactosMessage.textContent = 'Error al cargar contactos.';
+          noContactosMessage.style.display = 'block';
         }
       }
 
