@@ -135,8 +135,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     mensaje.innerText = "Clave incorrecta";
                 }
             } else {
-                mensaje.style.color = "red";
-                mensaje.innerText = "Correo no registrado";
+                // Fallback de desarrollo: aceptar credenciales demo vendedor
+                if (correo === 'vendedor@duoc.cl' && clave === 'vendedor1234') {
+                    const usuario = { nombre: 'Vendedor Demo', correo, rol: 'vendedor' };
+                    const token = generateToken({ correo, nombre_completo: 'Vendedor Demo' });
+                    localStorage.setItem('usuario', JSON.stringify(usuario));
+                    localStorage.setItem('token', token);
+                    mensaje.style.color = 'green';
+                    mensaje.innerText = 'Bienvenido Vendedor (demo), redirigiendo...';
+                    setTimeout(() => {
+                        window.location.href = 'perfilVendedor.html';
+                    }, 800);
+                } else {
+                    mensaje.style.color = "red";
+                    mensaje.innerText = "Correo no registrado";
+                }
             }
         } catch (error) {
             console.error("Error login cliente:", error);

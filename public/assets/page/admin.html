@@ -317,15 +317,28 @@
             const doc = await docRef.get();
             if (doc.exists) {
               const data = doc.data();
-              if (data && data.role === 'admin') return; // permitido
+              if (data && data.role === 'admin') return; // permitido como admin
+              // permitir a 'vendedor' ver en modo solo lectura
+              if (data && (data.role === 'vendedor' || data.rol === 'vendedor')) {
+                // cargar script de proteccion y aplicar read-only
+                try {
+                  var s = document.createElement('script');
+                  s.src = '../../js/role-protect.js';
+                  s.onload = function() {
+                    if (window.enableReadOnlyView) window.enableReadOnlyView();
+                  };
+                  document.head.appendChild(s);
+                } catch (e) { console.warn('No se pudo aplicar modo solo lectura', e); }
+                return; // permitir acceso de solo lectura
+              }
             }
           } catch (e) {
             console.warn('Error comprobando rol en Firestore', e);
           }
         }
 
-        // Si llegamos aquí, no es admin: redirigir al login
-        alert('Acceso restringido: debes iniciar sesión como administrador');
+        // Si llegamos aquí, no es admin ni vendedor: redirigir al login
+        alert('Acceso restringido: debes iniciar sesión como administrador o vendedor');
         window.location.href = 'login.html';
       }
 
