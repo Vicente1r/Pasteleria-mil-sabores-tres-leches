@@ -73,12 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       return `
         <article class="item producto-card" data-category="${producto.categoria || ''}" data-id="${producto.id}">
-          <a href="productos/${producto.id}.html">
             <img src="${producto.imagen || 'https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'}"
                  alt="${producto.nombre || 'Sin nombre'}"
                  class="producto-imagen"
                  onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'">
-          </a>
           <div class="item-content producto-info">
             <h3 class="producto-nombre">${producto.nombre || 'Sin nombre'}</h3>
             <p>${producto.descripcion || ''}</p>

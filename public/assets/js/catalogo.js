@@ -124,12 +124,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     ofertasGrid.innerHTML = ofertas.map(oferta => `
       <article class="item producto-card oferta-card" data-category="${oferta.categoria}" data-id="${oferta.id}">
-        <a href="productos/${oferta.id}.html">
-          <img src="${oferta.imagen}"
-               alt="${oferta.nombre}"
-               class="producto-imagen"
-               onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Oferta'">
-        </a>
+        <img src="${oferta.imagen}"
+             alt="${oferta.nombre}"
+             class="producto-imagen"
+             onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Oferta'">
         <div class="item-content producto-info">
           <h3 class="producto-nombre">${oferta.nombre || 'Sin nombre'}</h3>
           <p>${oferta.descripcion || ''}</p>
@@ -350,12 +348,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return `
       <article class="item producto-card" data-category="${producto.categoria}" data-id="${producto.id}">
-        <a href="productos/${producto.id}.html">
-          <img src="${imagenSrc}" 
-               alt="${producto.nombre}" 
-               class="producto-imagen"
-               onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'">
-        </a>
+        <img src="${imagenSrc}"
+             alt="${producto.nombre}"
+             class="producto-imagen"
+             onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'">
         <div class="item-content producto-info">
           <h3 class="producto-nombre">${producto.nombre || 'Sin nombre'}</h3>
           <p>${producto.descripcion || ''}</p>
@@ -480,12 +476,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       return `
       <article class="item producto-card" data-category="${producto.categoria}" data-id="${producto.id}">
-        <a href="productos/${producto.id}.html">
-          <img src="${imagenSrc}" 
-               alt="${producto.nombre}" 
-               class="producto-imagen"
-               onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'">
-        </a>
+        <img src="${imagenSrc}"
+             alt="${producto.nombre}"
+             class="producto-imagen"
+             onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'">
         <div class="item-content producto-info">
           <h3 class="producto-nombre">${producto.nombre || 'Sin nombre'}</h3>
           <p>${producto.descripcion || ''}</p>
