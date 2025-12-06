@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const API_BASE = '/api';
-
   // Navigation: show/hide sections when menu links clicked
   document.querySelectorAll('.menu-link').forEach(a => {
     a.addEventListener('click', (e) => {
@@ -19,13 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Fetch products
+  // Fetch products from Firestore
   async function loadProducts() {
     const tbody = document.getElementById('productos-tbody');
     try {
-      const res = await fetch(API_BASE + '/productos');
-      if (!res.ok) throw new Error('Error cargando productos');
-      const productos = await res.json();
+      const snapshot = await window.getDocs(window.collection(window.firebaseDb, 'producto'));
+      const productos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       tbody.innerHTML = '';
       productos.forEach(p => {
         const tr = document.createElement('tr');
@@ -45,22 +42,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Fetch orders
+  // Fetch orders from Firestore
   async function loadOrders() {
     const tbody = document.getElementById('ordenes-tbody');
     try {
-      const res = await fetch(API_BASE + '/ordenes');
-      if (!res.ok) throw new Error('Error cargando ordenes');
-      const ordenes = await res.json();
+      const q = window.query(window.collection(window.firebaseDb, 'compras'), window.where('fecha', '!=', null));
+      const snapshot = await window.getDocs(q);
+      const ordenes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => {
+        if (a.fecha && b.fecha) {
+          return b.fecha.seconds - a.fecha.seconds;
+        }
+        return 0;
+      });
       tbody.innerHTML = '';
       ordenes.forEach(o => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${o.id || ''}</td>
-          <td>${o.clienteNombre || ''}</td>
+          <td>${o.clienteNombre || o.nombreCliente || ''}</td>
           <td>${o.total != null ? o.total : ''}</td>
-          <td>${o.estado || ''}</td>
-          <td>${o.fecha || ''}</td>
+          <td>${o.estado || 'Pendiente'}</td>
+          <td>${o.fecha ? new Date(o.fecha.seconds * 1000).toLocaleDateString('es-ES') : ''}</td>
           <td><button class="btn btn-secondary" data-id="${o.id}" data-action="view-order">Ver</button></td>
         `;
         tbody.appendChild(tr);
@@ -78,11 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const action = btn.getAttribute('data-action');
     const id = btn.getAttribute('data-id');
     if (action === 'view-product') {
-      // fetch product details and show modal (simple alert for now)
+      // fetch product details from Firestore
       try {
-        const res = await fetch(API_BASE + '/productos/' + encodeURIComponent(id));
-        if (!res.ok) throw new Error('Producto no encontrado');
-        const p = await res.json();
+        const docRef = window.doc(window.firebaseDb, 'producto', id);
+        const docSnap = await window.getDoc(docRef);
+        if (!docSnap.exists()) throw new Error('Producto no encontrado');
+        const p = docSnap.data();
         alert(`Producto: ${p.nombre}\nPrecio: ${p.precio}\nStock: ${p.stock}\nCategoria: ${p.categoria}`);
       } catch (err) {
         alert('No se pudo obtener el producto: ' + err.message);
@@ -90,11 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (action === 'view-order') {
       try {
-        const res = await fetch(API_BASE + '/ordenes/' + encodeURIComponent(id));
-        if (!res.ok) throw new Error('Orden no encontrada');
-        const o = await res.json();
+        const docRef = window.doc(window.firebaseDb, 'compras', id);
+        const docSnap = await window.getDoc(docRef);
+        if (!docSnap.exists()) throw new Error('Orden no encontrada');
+        const o = docSnap.data();
         const lines = o.productos && o.productos.length ? o.productos.map(x=>`${x.cantidad} x ${x.nombre} ($${x.precio})`).join('\n') : '';
-        alert(`Orden: ${o.id}\nCliente: ${o.clienteNombre}\nTotal: ${o.total}\nEstado: ${o.estado}\nProductos:\n${lines}`);
+        alert(`Orden: ${id}\nCliente: ${o.clienteNombre || o.nombreCliente}\nTotal: ${o.total}\nEstado: ${o.estado}\nProductos:\n${lines}`);
       } catch (err) {
         alert('No se pudo obtener la orden: ' + err.message);
       }
@@ -107,25 +111,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const status = document.getElementById('perfilStatus');
     // try Firebase Auth user
     try {
-      const user = firebase.auth().currentUser;
+      const user = window.firebaseAuth.currentUser;
       if (user) {
-        // try GET /api/usuarios/{uid}
-        const res = await fetch(API_BASE + '/usuarios/' + encodeURIComponent(user.uid));
-        if (res.ok) {
-          const u = await res.json();
-          nombreInput.value = u.nombre || '';
+        // try Firestore users collection
+        const docRef = window.doc(window.firebaseDb, 'users', user.uid);
+        const docSnap = await window.getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          nombreInput.value = data.nombre || '';
           return;
         }
-        // fallback: try Firestore users collection
-        const doc = await firebase.firestore().collection('users').doc(user.uid).get();
-        if (doc.exists) {
-          const data = doc.data();
+        // fallback: try vendedor collection
+        const q = window.query(window.collection(window.firebaseDb, 'vendedor'), window.where('correo', '==', user.email));
+        const querySnapshot = await window.getDocs(q);
+        if (!querySnapshot.empty) {
+          const data = querySnapshot.docs[0].data();
           nombreInput.value = data.nombre || '';
           return;
         }
       }
     } catch (e) {
-      console.warn('No se pudo cargar perfil desde API/Auth:', e);
+      console.warn('No se pudo cargar perfil desde Firestore:', e);
     }
     // fallback to localStorage
     try {
@@ -146,61 +152,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!newName) { status.textContent = 'Ingresa un nombre'; return; }
 
     try {
-      const user = firebase.auth().currentUser;
+      const user = window.firebaseAuth.currentUser;
       if (user) {
-        // Try PUT to API (include Firebase ID token if available)
-        try {
-          const headers = { 'Content-Type': 'application/json' };
-          try {
-            const idToken = await user.getIdToken();
-            if (idToken) headers['Authorization'] = 'Bearer ' + idToken;
-          } catch (tErr) {
-            console.warn('No se pudo obtener idToken:', tErr);
-          }
-
-          const res = await fetch(API_BASE + '/usuarios/' + encodeURIComponent(user.uid), {
-            method: 'PUT',
-            headers,
-            body: JSON.stringify({ nombre: newName })
-          });
-
-          if (res.ok) {
-            status.textContent = 'Nombre actualizado (API)';
-            // update local users collection too
-            await firebase.firestore().collection('users').doc(user.uid).set({ nombre: newName }, { merge: true });
-            return;
-          }
-
-          // If API returned an error, try to extract message for diagnostics
-          let errMsg = `API error ${res.status}`;
-          try {
-            const body = await res.json();
-            if (body && body.message) errMsg = body.message;
-            else if (body && body.error) errMsg = body.error;
-          } catch (parseErr) {
-            try { const text = await res.text(); if (text) errMsg = text; } catch(_){}
-          }
-          console.warn('PUT /usuarios error:', res.status, errMsg);
-
-          // fallback to Firestore update
-          await firebase.firestore().collection('users').doc(user.uid).set({ nombre: newName }, { merge: true });
-          status.textContent = 'Nombre actualizado (Firestore) — nota: ' + errMsg;
-          // update localStorage
-          try { const raw = localStorage.getItem('usuario'); if (raw) { const u = JSON.parse(raw); u.nombre = newName; localStorage.setItem('usuario', JSON.stringify(u)); } } catch(e){}
-          return;
-        } catch (apiErr) {
-          console.error('Error en PUT /usuarios:', apiErr);
-          // Attempt Firestore fallback
-          try {
-            await firebase.firestore().collection('users').doc(user.uid).set({ nombre: newName }, { merge: true });
-            status.textContent = 'Nombre actualizado (Firestore)';
-            try { const raw = localStorage.getItem('usuario'); if (raw) { const u = JSON.parse(raw); u.nombre = newName; localStorage.setItem('usuario', JSON.stringify(u)); } } catch(e){}
-            return;
-          } catch (fsErr) {
-            console.error('Firestore fallback failed:', fsErr);
-            throw fsErr; // will be caught by outer catch
-          }
+        // Update Firestore users collection
+        const userDocRef = window.doc(window.firebaseDb, 'users', user.uid);
+        await window.updateDoc(userDocRef, { nombre: newName });
+        // Also update vendedor collection if exists
+        const q = window.query(window.collection(window.firebaseDb, 'vendedor'), window.where('correo', '==', user.email));
+        const querySnapshot = await window.getDocs(q);
+        if (!querySnapshot.empty) {
+          const vendedorDocRef = window.doc(window.firebaseDb, 'vendedor', querySnapshot.docs[0].id);
+          await window.updateDoc(vendedorDocRef, { nombre: newName });
         }
+        status.textContent = 'Nombre actualizado correctamente';
         // update localStorage
         try { const raw = localStorage.getItem('usuario'); if (raw) { const u = JSON.parse(raw); u.nombre = newName; localStorage.setItem('usuario', JSON.stringify(u)); } } catch(e){}
         return;
