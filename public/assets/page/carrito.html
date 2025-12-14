@@ -36,46 +36,56 @@
   </header>
 
   <main class="main">
-    <section class="carrito-container" aria-labelledby="titulo-carrito">
-      <h1 id="titulo-carrito" class="carrito-titulo">Tu Carrito de Compras</h1>
+    <div class="carrito-ofertas-container">
+      <section class="carrito-container" aria-labelledby="titulo-carrito">
+        <h1 id="titulo-carrito" class="carrito-titulo">Tu Carrito de Compras</h1>
 
-      <!-- Carrito vacío -->
-      <div id="carrito-vacio" class="carrito-vacio" style="display: none;">
-        <div class="carrito-vacio-icon">🛒</div>
-        <h2>Tu carrito está vacío</h2>
-        <p>¡Agrega algunos productos deliciosos de nuestra pastelería!</p>
-        <a href="catalogo.html" class="btn-ir-catalogo">Ver Catálogo</a>
-      </div>
+        <!-- Carrito vacío -->
+        <div id="carrito-vacio" class="carrito-vacio" style="display: none;">
+          <div class="carrito-vacio-icon">🛒</div>
+          <h2>Tu carrito está vacío</h2>
+          <p>¡Agrega algunos productos deliciosos de nuestra pastelería!</p>
+          <a href="catalogo.html" class="btn-ir-catalogo">Ver Catálogo</a>
+        </div>
 
-      <!-- Lista de productos en el carrito -->
-      <div id="carrito-items" class="carrito-items">
-        <!-- Los items del carrito se cargarán dinámicamente aquí -->
-      </div>
+        <!-- Lista de productos en el carrito -->
+        <div id="carrito-items" class="carrito-items">
+          <!-- Los items del carrito se cargarán dinámicamente aquí -->
+        </div>
 
-      <!-- Resumen del carrito -->
-      <div id="carrito-resumen" class="carrito-resumen" style="display: none;">
-        <div class="resumen-total">
-          <div class="total-line">
-            <span class="total-label">Subtotal:</span>
-            <span id="subtotal" class="total-amount">$0 CLP</span>
+        <!-- Resumen del carrito -->
+        <div id="carrito-resumen" class="carrito-resumen" style="display: none;">
+          <div class="resumen-total">
+            <div class="total-line">
+              <span class="total-label">Subtotal:</span>
+              <span id="subtotal" class="total-amount">$0 CLP</span>
+            </div>
+            <div class="total-line total-final">
+              <span class="total-label">Total:</span>
+              <span id="total" class="total-amount">$0 CLP</span>
+            </div>
           </div>
-          <div class="total-line total-final">
-            <span class="total-label">Total:</span>
-            <span id="total" class="total-amount">$0 CLP</span>
+          <div class="resumen-acciones">
+            <button id="btn-seguir-comprando" class="btn-seguir-comprando">Seguir Comprando</button>
+            <button id="btn-proceder-pago" class="btn-proceder-pago">Proceder al Pago</button>
           </div>
         </div>
-        <div class="resumen-acciones">
-          <button id="btn-seguir-comprando" class="btn-seguir-comprando">Seguir Comprando</button>
-          <button id="btn-proceder-pago" class="btn-proceder-pago">Proceder al Pago</button>
+      </section>
+
+      <aside class="ofertas-sidebar">
+        <h2>Ofertas Especiales</h2>
+        <div id="ofertasGrid" class="ofertas-grid">
+          <!-- Las ofertas se cargarán dinámicamente aquí -->
         </div>
-      </div>
-    </section>
+      </aside>
+    </div>
   </main>
 
   <!-- Notificaciones -->
   <div id="notificaciones" class="notificaciones"></div>
 
   <script src="../js/carrito.js"></script>
+  <script type="module" src="../js/carrito-ofertas.js"></script>
   <script type="module" src="../../js/auth.js"></script>
 </body>
 </html>

@@ -1,31 +1,20 @@
-# CompraExitosa.html Redesign - Invoice Style
+# TODO: Add Offers Section to Carrito.html
 
-## Completed Tasks
-- [x] Redesigned compraExitosa.html to look like a professional invoice/receipt
-- [x] Added custom CSS styles matching the project's color scheme (crema pastel, rosa suave, chocolate)
-- [x] Included all required information: customer info, total price, purchased products, customer name, address, order status
-- [x] Maintained responsive design for mobile devices
-- [x] Added print and email buttons for invoice functionality
-- [x] Kept existing JavaScript functionality intact
+## Task Overview
+Add a section in carrito.html to display offer products dynamically loaded from Firestore, similar to oferta.html.
 
-## Key Features Added
-- Invoice header with purchase ID and date
-- Customer information section
-- Billing address section
-- Products table with pricing details
-- Total amount display
-- Order status badge
-- Action buttons: Print Invoice, Send by Email, Continue Shopping
+## Steps
+- [ ] Modify carrito-ofertas.js to load and display offers in the aside
+- [ ] Update carrito.html to remove hardcoded offers and ensure dynamic loading
+- [ ] Test the integration
 
-## Colors Used
-- Background: Crema Pastel (#FFF5E1)
-- Accents: Rosa Suave (#FFC0CB), Chocolate (#8B4513)
-- Text: Dark for readability
+## Information Gathered
+- oferta.html loads products from Firestore collection "oferta" using ofertas.js
+- carrito.html has an aside with id="ofertasGrid" currently with hardcoded products
+- carrito-ofertas.js is empty and needs to be populated with loading logic
 
-## Responsive Design
-- Mobile-friendly layout with stacked elements on small screens
-- Flexible grid system for information display
-
-## Pending Tasks
-- [x] Modify login token to include user data (comuna, correo, nombre_completo, telefono)
-- [x] Update compraExitosa.html to display user data from token
+## Plan
+1. Populate carrito-ofertas.js with logic to fetch offers from Firestore and render them in #ofertasGrid
+2. Remove hardcoded products from carrito.html aside
+3. Ensure Firebase scripts are included in carrito.html (they are)
+4. Test that offers load correctly in the carrito page
