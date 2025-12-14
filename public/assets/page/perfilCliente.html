@@ -56,6 +56,10 @@
       </nav>
       
       <div class="sidebar-footer">
+        <div class="nav-item tienda" id="tienda-btn">
+          <i class="icon"></i>
+          <span>Tienda</span>
+        </div>
         <div class="nav-item profile" id="profile-btn">
           <i class="icon"></i>
           <span>Mi Perfil</span>
@@ -158,6 +162,7 @@
       const contentViews = document.querySelectorAll('.content-view');
       const pageTitle = document.getElementById('page-title');
       const newUserBtn = document.getElementById('new-user-btn');
+      const tiendaBtn = document.getElementById('tienda-btn');
       const profileBtn = document.getElementById('profile-btn');
       const logoutBtn = document.getElementById('logout-btn');
       const sidebarUsername = document.getElementById('sidebar-username');
@@ -213,6 +218,13 @@
           // Eliminar token y usuario de localStorage
           localStorage.removeItem('usuario');
           localStorage.removeItem('token');
+          // Redirigir a index.html
+          window.location.href = '/index.html';
+        });
+      }
+
+      if (tiendaBtn) {
+        tiendaBtn.addEventListener('click', function() {
           // Redirigir a index.html
           window.location.href = '/index.html';
         });
