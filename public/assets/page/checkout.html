@@ -9,6 +9,35 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, doc, updateDoc, getDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
+      authDomain: "pasteleriamilsaborestresleches.web.app",
+      projectId: "pasteleriamilsaborestresleches",
+      storageBucket: "pasteleriamilsaborestresleches.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef123456"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    window.firebaseAuth = auth;
+    window.firebaseDb = db;
+    window.onAuthStateChanged = onAuthStateChanged;
+    window.doc = doc;
+    window.updateDoc = updateDoc;
+    window.getDoc = getDoc;
+    window.collection = collection;
+    window.query = query;
+    window.where = where;
+    window.getDocs = getDocs;
+  </script>
 </head>
 <body>
   <!-- HEADER -->
@@ -210,6 +239,91 @@
   </main>
 
   
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      // Get compraId from URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const compraId = urlParams.get('compraId');
+
+      if (!compraId) {
+        console.error('No compraId provided in URL');
+        return;
+      }
+
+      try {
+        // Load purchase data from Firebase
+        const compraDoc = await window.getDoc(window.doc(window.firebaseDb, 'compras', compraId));
+        if (!compraDoc.exists()) {
+          console.error('Compra not found');
+          return;
+        }
+
+        const compraData = compraDoc.data();
+
+        // Populate purchase information
+        document.getElementById('idCompra').textContent = compraData.idCompra || compraId;
+        document.getElementById('estadoCompra').textContent = compraData.estado || 'N/A';
+        document.getElementById('fechaCompra').textContent = compraData.fechaCompra ? compraData.fechaCompra.toDate().toLocaleDateString('es-ES') : 'N/A';
+        document.getElementById('actualizadoEn').textContent = compraData.actualizadoEn ? compraData.actualizadoEn.toDate().toLocaleDateString('es-ES') : 'N/A';
+        document.getElementById('metodoPago').textContent = compraData.metodoPago || 'N/A';
+        document.getElementById('totalCompra').textContent = `$${compraData.total ? compraData.total.toLocaleString('es-ES') : '0'}`;
+        document.getElementById('totalPagar').textContent = `$${compraData.total ? compraData.total.toLocaleString('es-ES') : '0'}`;
+        document.getElementById('montoPagar').textContent = `$${compraData.total ? compraData.total.toLocaleString('es-ES') : '0'}`;
+
+        // Load user data from Firebase using usuarioId (which is the email)
+        const usuarioId = compraData.usuarioId;
+        if (usuarioId) {
+          const userQuery = window.query(window.collection(window.firebaseDb, 'usuario'), window.where('correo', '==', usuarioId));
+          const userSnapshot = await window.getDocs(userQuery);
+
+          if (!userSnapshot.empty) {
+            const userData = userSnapshot.docs[0].data();
+
+            // Populate user information
+            document.getElementById('usuarioNombre').textContent = userData.nombre_completo || 'N/A';
+            document.getElementById('usuarioCorreo').textContent = userData.correo || 'N/A';
+            document.getElementById('usuarioRun').textContent = userData.run || 'N/A';
+            document.getElementById('usuarioTelefono').textContent = userData.telefono || 'N/A';
+            document.getElementById('usuarioComuna').textContent = userData.comuna || 'N/A';
+          } else {
+            console.error('User not found');
+          }
+        }
+
+        // Populate items table
+        const tablaBody = document.getElementById('tablaCheckoutBody');
+        if (compraData.items && Array.isArray(compraData.items)) {
+          compraData.items.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td><img src="${item.imagen || '../assets/placeholder.jpg'}" alt="${item.nombre}" style="width: 50px; height: 50px;"></td>
+              <td>${item.nombre || 'N/A'}</td>
+              <td>$${item.precio ? item.precio.toLocaleString('es-ES') : '0'}</td>
+              <td>${item.cantidad || 1}</td>
+              <td>$${item.subtotal ? item.subtotal.toLocaleString('es-ES') : '0'}</td>
+            `;
+            tablaBody.appendChild(row);
+          });
+        }
+
+      } catch (error) {
+        console.error('Error loading checkout data:', error);
+        // Show error messages in the UI
+        document.getElementById('idCompra').textContent = 'Error al cargar';
+        document.getElementById('estadoCompra').textContent = 'Error al cargar';
+        document.getElementById('fechaCompra').textContent = 'Error al cargar';
+        document.getElementById('actualizadoEn').textContent = 'Error al cargar';
+        document.getElementById('metodoPago').textContent = 'Error al cargar';
+        document.getElementById('totalCompra').textContent = 'Error al cargar';
+        document.getElementById('usuarioNombre').textContent = 'Error al cargar';
+        document.getElementById('usuarioCorreo').textContent = 'Error al cargar';
+        document.getElementById('usuarioRun').textContent = 'Error al cargar';
+        document.getElementById('usuarioTelefono').textContent = 'Error al cargar';
+        document.getElementById('usuarioComuna').textContent = 'Error al cargar';
+      }
+    });
+  </script>
 
   <script src="../js/checkout.js"></script>
   <script type="module" src="../../js/auth.js"></script>
