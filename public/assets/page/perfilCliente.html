@@ -45,7 +45,7 @@
       </div>
       
       <nav class="nav-menu">
-        <div class="nav-item active" data-view="dashboard">
+        <div class="nav-item active" data-view="compras">
           <i class="icon"></i>
           <span>Historial de compra</span>
         </div>
@@ -86,6 +86,41 @@
         <div class="welcome-message">
           <p>Bienvenido al panel de administración</p>
           <a href="carrito.html" id="carrito-link">Carrito (0)</a>
+        </div>
+      </div>
+
+      <div class="content-view hidden" id="compras-view">
+        <div class="view-header">
+          <h2>Historial de Compras</h2>
+        </div>
+
+        <div class="connection-info" style="margin-bottom: 1rem; padding: 1rem; background-color: #f9f9f9; border-radius: 5px;">
+          <h3>Estado de Conexión a Base de Datos</h3>
+          <p><strong>Proyecto Firebase:</strong> <span id="firebase-project">pasteleriamilsaborestresleches</span></p>
+          <p><strong>Estado:</strong> <span id="connection-status">Conectado</span></p>
+          <p><strong>Usuario Actual:</strong> <span id="current-user">Cargando...</span></p>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID Compra</th>
+                <th>Fecha Compra</th>
+                <th>Estado</th>
+                <th>Método Pago</th>
+                <th>Total</th>
+                <th>Items</th>
+              </tr>
+            </thead>
+            <tbody id="compras-tbody">
+              <!-- Purchase history will be loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <div id="no-compras-message" style="text-align: center; margin-top: 2rem; display: none;">
+          No hay compras registradas.
         </div>
       </div>
 
@@ -145,6 +180,38 @@
     </div>
   </div>
 
+  <!-- Modal para Historial de Compras -->
+  <div id="historial-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Historial de Compras</h2>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID Compra</th>
+                <th>Fecha Compra</th>
+                <th>Estado</th>
+                <th>Método Pago</th>
+                <th>Total</th>
+                <th>Items</th>
+              </tr>
+            </thead>
+            <tbody id="historial-tbody">
+              <!-- Purchase history will be loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+        <div id="no-compras-message" style="text-align: center; margin-top: 2rem; display: none;">
+          No hay compras registradas.
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Check for server message in URL parameters
@@ -189,8 +256,9 @@
           navItems.forEach(nav => nav.classList.remove('active'));
           this.classList.add('active');
           switch(viewName) {
-            case 'dashboard':
-              showView('dashboard', '¡HOLA --------!');
+            case 'compras':
+              showView('compras', 'Historial de Compras');
+              loadHistorialCompras();
               break;
             case 'orders':
               showView('orders', 'Historial de Contactos');
@@ -480,6 +548,88 @@
           noContactosMessage.textContent = 'Error al cargar contactos.';
           noContactosMessage.style.display = 'block';
         }
+      }
+
+      // Load historial de compras from Firestore
+      async function loadHistorialCompras() {
+        try {
+          if (!window.firebaseDb) {
+            console.error('Firebase no está disponible');
+            return;
+          }
+
+          // Get user data from localStorage
+          const localUser = JSON.parse(localStorage.getItem('usuario') || localStorage.getItem('usuarioActual') || '{}');
+          const correo = localUser.correo;
+
+          if (!correo) {
+            console.error('Correo no disponible');
+            return;
+          }
+
+          // Query compras collection filtered by usuarioId (which is the email)
+          const comprasQuery = window.query(window.collection(window.firebaseDb, 'compras'), window.where('usuarioId', '==', correo));
+          const comprasSnapshot = await window.getDocs(comprasQuery);
+
+          const comprasTbody = document.getElementById('compras-tbody');
+          const noComprasMessage = document.getElementById('no-compras-message');
+
+          // Clear existing rows
+          comprasTbody.innerHTML = '';
+
+          if (comprasSnapshot.empty) {
+            noComprasMessage.style.display = 'block';
+            return;
+          }
+
+          noComprasMessage.style.display = 'none';
+
+          // Add rows for each compra
+          comprasSnapshot.forEach(doc => {
+            const compra = doc.data();
+            const fecha = compra.fechaCompra ? compra.fechaCompra.toDate().toLocaleDateString('es-ES') : 'N/A';
+            const estado = compra.estado || 'N/A';
+            const metodoPago = compra.metodoPago || 'N/A';
+            const total = compra.total ? `$${compra.total.toLocaleString('es-ES')}` : 'N/A';
+            const items = compra.items ? compra.items.map(item => `${item.nombre} (x${item.cantidad})`).join(', ') : 'N/A';
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${doc.id}</td>
+              <td>${fecha}</td>
+              <td><span class="status ${estado.toLowerCase()}">${estado}</span></td>
+              <td>${metodoPago}</td>
+              <td>${total}</td>
+              <td>${items}</td>
+            `;
+            comprasTbody.appendChild(row);
+          });
+
+        } catch (error) {
+          console.error('Error loading historial de compras:', error);
+          const noComprasMessage = document.getElementById('no-compras-message');
+          noComprasMessage.textContent = 'Error al cargar el historial de compras.';
+          noComprasMessage.style.display = 'block';
+        }
+      }
+
+      // Modal functionality
+      const historialModal = document.getElementById('historial-modal');
+      const closeModalBtn = document.querySelector('.close-modal');
+
+      if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', function() {
+          historialModal.classList.remove('show');
+        });
+      }
+
+      // Close modal when clicking outside
+      if (historialModal) {
+        historialModal.addEventListener('click', function(e) {
+          if (e.target === historialModal) {
+            historialModal.classList.remove('show');
+          }
+        });
       }
 
       // Actualizar contador inicialmente y escuchar cambios en localStorage
