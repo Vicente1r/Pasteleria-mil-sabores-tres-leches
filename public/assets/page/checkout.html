@@ -52,16 +52,75 @@
       <!-- Encabezado del Checkout -->
       <div class="checkout-header">
         <div class="checkout-titulos">
-          <h1 class="checkout-titulo">Carrito de Compra</h1>
-          <p class="checkout-subtitulo">Completa la siguiente información</p>
+          <h1 class="checkout-titulo">Checkout - Detalles de Compra</h1>
+          <p class="checkout-subtitulo">Revisa y completa tu pedido</p>
         </div>
         <button class="btn-total-pagar" id="btnTotalPagar">
           Total a Pagar: $<span id="totalPagar">0</span>
         </button>
       </div>
 
+      <!-- Información de la Compra -->
+      <section class="info-compra">
+        <h2 class="section-title">Información de la Compra</h2>
+        <div class="compra-info-grid">
+          <div class="info-item">
+            <strong>ID de Compra:</strong>
+            <span id="idCompra">Cargando...</span>
+          </div>
+          <div class="info-item">
+            <strong>Estado:</strong>
+            <span id="estadoCompra" class="estado-pendiente">Cargando...</span>
+          </div>
+          <div class="info-item">
+            <strong>Fecha de Compra:</strong>
+            <span id="fechaCompra">Cargando...</span>
+          </div>
+          <div class="info-item">
+            <strong>Última Actualización:</strong>
+            <span id="actualizadoEn">Cargando...</span>
+          </div>
+          <div class="info-item">
+            <strong>Método de Pago:</strong>
+            <span id="metodoPago">Cargando...</span>
+          </div>
+          <div class="info-item">
+            <strong>Total:</strong>
+            <span id="totalCompra" class="total-amount">Cargando...</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Información del Usuario -->
+      <section class="info-usuario">
+        <h2 class="section-title">Información del Usuario</h2>
+        <div class="usuario-info-grid">
+          <div class="info-item">
+            <strong>Nombre Completo:</strong>
+            <span id="usuarioNombre">Cargando...</span>
+          </div>
+          <div class="info-item">
+            <strong>Correo:</strong>
+            <span id="usuarioCorreo">Cargando...</span>
+          </div>
+          <div class="info-item">
+            <strong>RUN:</strong>
+            <span id="usuarioRun">Cargando...</span>
+          </div>
+          <div class="info-item">
+            <strong>Teléfono:</strong>
+            <span id="usuarioTelefono">Cargando...</span>
+          </div>
+          <div class="info-item">
+            <strong>Comuna:</strong>
+            <span id="usuarioComuna">Cargando...</span>
+          </div>
+        </div>
+      </section>
+
       <!-- Tabla de Productos -->
       <div class="tabla-checkout-container">
+        <h2 class="section-title">Productos en tu Carrito</h2>
         <table class="tabla-checkout">
           <thead>
             <tr>
@@ -147,7 +206,10 @@
         </button>
       </div>
     </div>
+    
   </main>
+
+  
 
   <script src="../js/checkout.js"></script>
   <script type="module" src="../../js/auth.js"></script>

@@ -11,11 +11,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let carrito = [];
 
-  // Configuración de Firebase (igual que en catalogo.js)
+  // Configuración de Firebase (igual que en checkout.js)
   const firebaseConfig = {
-    apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
-    authDomain: "pasteleriamilsaborestresleches.web.app",
+    apiKey: "AIzaSyA1_om-_HPyYVnUo8ELiM5Zob2VSMGbWvw",
+    authDomain: "pasteleriamilsaborestresleches.firebaseapp.com",
     projectId: "pasteleriamilsaborestresleches",
+    storageBucket: "pasteleriamilsaborestresleches.firebasestorage.app",
+    messagingSenderId: "724534518591",
+    appId: "1:724534518591:web:fda9e47afb93ed6854e98a",
+    measurementId: "G-FXQWCCHM83"
   };
 
   // Inicializar Firebase solo si no está inicializado
@@ -253,48 +257,33 @@ document.addEventListener("DOMContentLoaded", () => {
   // Verificar si el usuario está logueado
   async function usuarioLogueado() {
     try {
-      // Primero verificar localStorage para acceso rápido
-      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      // Verificar sesión de login.html (usuario + token)
+      const usuarioStr = localStorage.getItem('usuario');
       const token = localStorage.getItem('token');
-      console.log("Usuario en localStorage:", usuario);
-      console.log("Token en localStorage:", token);
 
-      if (usuario && usuario.correo && usuario.nombre && token) {
-        console.log("Usuario y token encontrados en localStorage, verificando Firestore...");
-
-        // Verificar que la sesión esté activa en Firestore
-        try {
-          const sesionDoc = await db.collection("sesiones").doc(usuario.correo).get();
-          console.log("Documento de sesión existe:", sesionDoc.exists);
-
-          if (sesionDoc.exists) {
-            const sesionData = sesionDoc.data();
-            console.log("Datos de sesión:", sesionData);
-            return sesionData.activo === true;
-          } else {
-            console.log("No se encontró documento de sesión en Firestore");
-            // Si no hay sesión en Firestore pero sí en localStorage, considerarlo válido
-            return true;
-          }
-        } catch (firestoreError) {
-          console.error("Error consultando Firestore:", firestoreError);
-          // Si hay error con Firestore pero el usuario está en localStorage, permitir acceso
+      if (usuarioStr && token) {
+        const usuario = JSON.parse(usuarioStr);
+        if (usuario && usuario.correo && usuario.nombre) {
+          console.log("Usuario logueado encontrado (login.html):", usuario.nombre);
           return true;
         }
       }
 
-      console.log("No se encontró usuario o token en localStorage");
+      // Verificar sesión del modal (usuarioActual + token)
+      const usuarioActualStr = localStorage.getItem('usuarioActual');
+      if (usuarioActualStr && token) {
+        const usuarioActual = JSON.parse(usuarioActualStr);
+        if (usuarioActual && usuarioActual.correo && usuarioActual.nombre) {
+          console.log("Usuario logueado encontrado (modal):", usuarioActual.nombre);
+          return true;
+        }
+      }
+
+      console.log("No se encontró usuario logueado");
       return false;
     } catch (error) {
       console.error("Error verificando autenticación:", error);
-      // En caso de error, verificar si al menos hay usuario y token en localStorage
-      try {
-        const usuario = JSON.parse(localStorage.getItem('usuario'));
-        const token = localStorage.getItem('token');
-        return usuario && usuario.correo && usuario.nombre && token;
-      } catch {
-        return false;
-      }
+      return false;
     }
   }
 
@@ -315,6 +304,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Verificar si el usuario está logueado
         const logueado = await usuarioLogueado();
+        console.log("¿Usuario logueado?", logueado);
+        console.log("localStorage usuarioActual:", localStorage.getItem('usuarioActual'));
+        console.log("localStorage token:", localStorage.getItem('token'));
+
         if (!logueado) {
           // Mostrar notificación antes de redirigir
           mostrarNotificacion('No puedes comprar porque no hay sesión iniciada', 'error');
@@ -326,7 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Usuario logueado, obtener datos del usuario y guardar compra
-        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        let usuario = JSON.parse(localStorage.getItem('usuario')) || JSON.parse(localStorage.getItem('usuarioActual'));
         if (!usuario || !usuario.correo) {
           mostrarNotificacion('Error: No se encontraron datos del usuario', 'error');
           return;
@@ -334,13 +327,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
           // Obtener datos completos del usuario desde Firestore
-          const usuarioDoc = await db.collection('usuario').where('correo', '==', usuario.correo).get();
-          if (usuarioDoc.empty) {
-            mostrarNotificacion('Error: Usuario no encontrado en la base de datos', 'error');
-            return;
-          }
+          const usuarioQuery = await db.collection('usuario').where('correo', '==', usuario.correo).get();
+          let usuarioData;
 
-          const usuarioData = usuarioDoc.docs[0].data();
+          if (!usuarioQuery.empty) {
+            usuarioData = usuarioQuery.docs[0].data();
+          } else {
+            // Si no existe en Firestore, usar datos de localStorage
+            usuarioData = {
+              nombre_completo: usuario.nombre,
+              correo: usuario.correo
+            };
+          }
 
           // Generar ID de compra único
           const idCompra = `COMP-${Date.now()}`;
@@ -349,28 +347,19 @@ document.addEventListener("DOMContentLoaded", () => {
           const compra = {
             idCompra: idCompra,
             usuarioId: usuario.correo,
-            fechaCompra: new Date().toISOString(),
+            fechaCompra: firebase.firestore.Timestamp.fromDate(new Date()),
             items: carrito.map(item => ({
               productoId: item.id,
               nombre: item.nombre,
               precio: item.precio,
               cantidad: item.cantidad,
-              subtotal: item.precio * item.cantidad
+              subtotal: item.precio * item.cantidad,
+              imagen: item.imagen
             })),
-            total: carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0),
-            estado: 'completada',
+            total: parseInt(carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0)),
+            estado: 'pendiente',
             metodoPago: 'tarjeta_credito', // Por ahora fijo, se puede mejorar
-            direccionEnvio: {
-              nombre: usuarioData.nombre || '',
-              calle: usuarioData.calle || '',
-              ciudad: usuarioData.ciudad || '',
-              region: usuarioData.region || '',
-              codigoPostal: usuarioData.codigoPostal || '',
-              telefono: usuarioData.telefono || ''
-            },
-            notas: '',
-            fechaEntrega: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 días después
-            actualizadoEn: new Date().toISOString()
+            actualizadoEn: firebase.firestore.Timestamp.fromDate(new Date())
           };
 
           // Guardar compra en Firestore
@@ -382,8 +371,8 @@ document.addEventListener("DOMContentLoaded", () => {
           mostrarCarritoVacio();
           actualizarContadorCarritoHeader();
 
-          // Redirigir a página de éxito con ID de compra
-          window.location.href = `compraExitosa.html?compraId=${idCompra}`;
+          // Redirigir a checkout con ID de compra
+          window.location.href = `checkout.html?compraId=${idCompra}`;
 
         } catch (error) {
           console.error('Error al procesar la compra:', error);

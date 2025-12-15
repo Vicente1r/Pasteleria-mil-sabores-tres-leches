@@ -22,9 +22,13 @@
 
 // Configuración de Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
-  authDomain: "pasteleriamilsaborestresleches.web.app",
+  apiKey: "AIzaSyA1_om-_HPyYVnUo8ELiM5Zob2VSMGbWvw",
+  authDomain: "pasteleriamilsaborestresleches.firebaseapp.com",
   projectId: "pasteleriamilsaborestresleches",
+  storageBucket: "pasteleriamilsaborestresleches.firebasestorage.app",
+  messagingSenderId: "724534518591",
+  appId: "1:724534518591:web:fda9e47afb93ed6854e98a",
+  measurementId: "G-FXQWCCHM83"
 };
 
 // Inicializar Firebase solo si no está inicializado
@@ -134,6 +138,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (nombre) {
+          // Guardar usuario en Firestore si no existe
+          const usuarioRef = db.collection("usuarios").doc(correo);
+          const usuarioDoc = await usuarioRef.get();
+          if (!usuarioDoc.exists) {
+            await usuarioRef.set({
+              email: correo,
+              nombre: nombre,
+              fechaRegistro: new Date().toISOString()
+            });
+          }
+
           // Guardar sesión en Firestore
           await db.collection("sesiones").doc(correo).set({
             correo: correo,
@@ -148,6 +163,9 @@ document.addEventListener("DOMContentLoaded", () => {
             nombre: nombre,
             fechaLogin: new Date().toISOString()
           }));
+
+          // Guardar token de sesión
+          localStorage.setItem("token", `session_${Date.now()}_${correo}`);
 
           modal.close?.();
           mostrarBienvenida(nombre);
