@@ -56,6 +56,10 @@
       </nav>
       
       <div class="sidebar-footer">
+        <div class="nav-item carrito" id="carrito-btn">
+          <i class="icon"></i>
+          <span>Carrito</span>
+        </div>
         <div class="nav-item tienda" id="tienda-btn">
           <i class="icon"></i>
           <span>Tienda</span>
@@ -84,7 +88,7 @@
       <!--el panel-->
       <div class="content-view" id="dashboard-view">
         <div class="welcome-message">
-          <p>Bienvenido al panel de administración</p>
+          <p>Bienvenido al Perfil de Cliente</p>
           <a href="carrito.html" id="carrito-link">Carrito (0)</a>
         </div>
       </div>
@@ -94,12 +98,7 @@
           <h2>Historial de Compras</h2>
         </div>
 
-        <div class="connection-info" style="margin-bottom: 1rem; padding: 1rem; background-color: #f9f9f9; border-radius: 5px;">
-          <h3>Estado de Conexión a Base de Datos</h3>
-          <p><strong>Proyecto Firebase:</strong> <span id="firebase-project">pasteleriamilsaborestresleches</span></p>
-          <p><strong>Estado:</strong> <span id="connection-status">Conectado</span></p>
-          <p><strong>Usuario Actual:</strong> <span id="current-user">Cargando...</span></p>
-        </div>
+        
 
         <div class="table-container">
           <table class="data-table">
@@ -164,7 +163,7 @@
                 <input type="text" class="form-input" id="input-nombre" required>
               </div>
 
-              <div class="form-group">
+              <div class="form-group" style="display: none;">
                 <label>CORREO ELECTRÓNICO</label>
                 <input type="email" class="form-input" id="input-correo" required readonly>
               </div>
@@ -288,6 +287,13 @@
           localStorage.removeItem('token');
           // Redirigir a index.html
           window.location.href = '/index.html';
+        });
+      }
+
+      const carritoBtn = document.getElementById('carrito-btn');
+      if (carritoBtn) {
+        carritoBtn.addEventListener('click', function() {
+          window.location.href = 'carrito.html';
         });
       }
 

@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
 
           // También guardar en localStorage para acceso rápido
-          localStorage.setItem("usuarioActual", JSON.stringify({
+          localStorage.setItem("usuario", JSON.stringify({
             correo: correo,
             nombre: nombre,
             fechaLogin: new Date().toISOString()

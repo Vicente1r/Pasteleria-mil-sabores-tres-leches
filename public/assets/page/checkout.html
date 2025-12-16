@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout - Mi Tienda</title>
-  <link rel="stylesheet" href="../css/catalogo.css">
   <link rel="stylesheet" href="../css/carrito.css">
+  <link rel="stylesheet" href="../css/styles.css" />
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -41,42 +41,31 @@
 </head>
 <body>
   <!-- HEADER -->
-  <header class="header">
-    <div class="header-top">
-      <div class="search-container">
-        <input type="text" id="buscador" placeholder="Buscar productos..." class="search-input">
-        <button id="btnBuscar" class="btn-buscar">Buscar</button>
-      </div>
-      <div class="auth-buttons">
-        <button class="btn-login">Iniciar Sesión</button>
-        <button class="btn-signup">Crear Cuenta</button>
-      </div>
+  <header class="topbar">
+    <div class="header-title">
+      <strong>🍰 Pastelería Mil Sabores</strong>
     </div>
 
-    <nav class="nav-main">
-      <div class="nav-center">
-        <a href="catalogo.html" class="nav-link">Home</a>
-        <div class="dropdown">
-          <a href="#" class="nav-link">Categoría ⌄</a>
-          <div class="dropdown-content" id="dropdownCategorias"></div>
-        </div>
-        <a href="#" class="nav-link">Ofertas</a>
-        <a href="#" class="nav-link">Nosotros</a>
-        <a href="#" class="nav-link">Blog</a>
-        <a href="#" class="nav-link">Contacto</a>
-      </div>
-      
-      <div class="nav-right">
-        <button class="btn-carrito" onclick="window.location.href='carrito.html'">
-          <span class="carrito-icon">🛒</span>
-          Total: $<span class="carrito-total">0</span>
-        </button>
-      </div>
+    <nav class="navegacion" aria-label="Navegación principal">
+      <a href="../../index.html">Home</a>
+      <a href="catalogo.html">Categoria</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="blog.html">Blog</a>
+      <a href="contacto.html">Contacto</a>
+      <a href="ofertas.html">Ofertas</a>
     </nav>
+
+    <div class="usuario">
+      <a id="inicio_sesion" href="login.html">Iniciar sesión</a>
+      <span class="separar">|</span>
+      <a id="registrarse" href="registrarse.html">Crear Cuenta</a>
+      <span class="separar">|</span>
+      <a href="carrito.html">🛒 Carrito (0)</a>
+    </div>
   </header>
 
   <!-- MAIN CONTENT -->
-  <main class="main">
+  <main class="main" style="margin-top: 50px; margin-bottom: 50px;">
     <div class="checkout-container">
       <!-- Encabezado del Checkout -->
       <div class="checkout-header">
@@ -166,67 +155,7 @@
         </table>
       </div>
 
-      <!-- Información del Cliente -->
-      <section class="info-cliente">
-        <h2 class="section-title">Información del Cliente</h2>
-        <p class="section-subtitle">Completa la siguiente información</p>
-        
-        <form id="formCliente" class="form-cliente">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="nombre">Nombre *</label>
-              <input type="text" id="nombre" name="nombre" required>
-            </div>
-            <div class="form-group">
-              <label for="apellidos">Apellidos *</label>
-              <input type="text" id="apellidos" name="apellidos" required>
-            </div>
-          </div>
-          <div class="form-group full-width">
-            <label for="correo">Correo Electrónico *</label>
-            <input type="email" id="correo" name="correo" required>
-          </div>
-        </form>
-      </section>
-
-      <!-- Dirección de Entrega -->
-      <section class="direccion-entrega">
-        <h2 class="section-title">Dirección de entrega de los productos</h2>
-        <p class="section-subtitle">Ingrese dirección de forma detallada</p>
-        
-        <form id="formDireccion" class="form-direccion">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="calle">Calle *</label>
-              <input type="text" id="calle" name="calle" required>
-            </div>
-            <div class="form-group">
-              <label for="departamento">Departamento (Opcional)</label>
-              <input type="text" id="departamento" name="departamento">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="region">Región *</label>
-              <select id="region" name="region" required>
-                <option value="">Selecciona una región</option>
-                <!-- Las regiones se cargarán con JavaScript -->
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="comuna">Comuna *</label>
-              <select id="comuna" name="comuna" required disabled>
-                <option value="">Primero selecciona una región</option>
-                <!-- Las comunas se cargarán dinámicamente -->
-              </select>
-            </div>
-          </div>
-          <div class="form-group full-width">
-            <label for="indicaciones">Indicaciones para la entrega (Opcional)</label>
-            <textarea id="indicaciones" name="indicaciones" rows="3" placeholder="Ej: Timbre azul, dejar con conserje..."></textarea>
-          </div>
-        </form>
-      </section>
+      
 
       <!-- Botón Final -->
       <div class="checkout-footer">
@@ -238,7 +167,29 @@
     
   </main>
 
-  
+  <!-- FOOTER -->
+  <footer class="footer" id="contacto">
+    <nav aria-label="Redes Sociales">
+      <a href="#">Facebook</a> ·
+      <a href="#">Instagram</a> ·
+      <a href="#">WhatsApp</a>
+    </nav>
+
+    <form class="newsletter" action="#" method="post">
+      <label for="email">Suscríbete a nuestro newsletter</label>
+      <div class="newsletter-input-group">
+        <input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="tucorreo@ejemplo.com"
+          required
+        />
+        <button type="submit">Suscribirse</button>
+      </div>
+    </form>
+    <button onclick="window.print()" class="btn-imprimir" style="font-size: 18px; padding: 15px 30px;">Imprimir Página</button>
+  </footer>
 
   <script>
     document.addEventListener('DOMContentLoaded', async function() {
