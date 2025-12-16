@@ -119,33 +119,74 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
 
       const correo = document.getElementById("login-correo")?.value || "";
+      const clave = document.getElementById("login-clave")?.value || "";
 
       let nombre = "";
+      let rol = "cliente"; // Default role
+      let uid = "";
+
       try {
+        // Fallback de desarrollo: aceptar credenciales demo vendedor
+        if (correo === 'vendedor@duoc.cl' && clave === 'vendedor1234') {
+          nombre = 'Vendedor Demo';
+          rol = 'vendedor';
+          uid = correo; // Use email as UID for demo
+
+          // Guardar en localStorage
+          localStorage.setItem("usuario", JSON.stringify({
+            correo: correo,
+            nombre: nombre,
+            rol: rol,
+            uid: uid,
+            fechaLogin: new Date().toISOString()
+          }));
+
+          localStorage.setItem("token", `session_${Date.now()}_${correo}`);
+
+          modal.close?.();
+          mostrarBienvenida(nombre);
+          return;
+        }
+
         // Primero buscar en localStorage para compatibilidad
         const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
         const usuarioLocal = usuarios.find(u => u.correo === correo);
 
         if (usuarioLocal && usuarioLocal.nombre) {
           nombre = usuarioLocal.nombre;
+          rol = usuarioLocal.rol || "cliente";
+          uid = usuarioLocal.uid || correo; // Use email as fallback UID
         } else {
           // Si no está en localStorage, buscar en Firestore
-          const usuarioDoc = await db.collection("usuarios").doc(correo).get();
+          const usuarioDoc = await db.collection("usuario").doc(correo).get();
           if (usuarioDoc.exists) {
             const usuarioData = usuarioDoc.data();
             nombre = usuarioData.nombre || "";
+            rol = usuarioData.rol || "cliente";
+            uid = usuarioDoc.id;
+          } else {
+            // Try alternative collection name
+            const usuarioDocAlt = await db.collection("usuarios").doc(correo).get();
+            if (usuarioDocAlt.exists) {
+              const usuarioData = usuarioDocAlt.data();
+              nombre = usuarioData.nombre || "";
+              rol = usuarioData.rol || "cliente";
+              uid = usuarioDocAlt.id;
+            }
           }
         }
 
         if (nombre) {
           // Guardar usuario en Firestore si no existe
-          const usuarioRef = db.collection("usuarios").doc(correo);
+          const usuarioRef = db.collection("usuario").doc(correo);
           const usuarioDoc = await usuarioRef.get();
           if (!usuarioDoc.exists) {
             await usuarioRef.set({
               email: correo,
               nombre: nombre,
-              fechaRegistro: new Date().toISOString()
+              rol: rol,
+              fechaRegistro: new Date().toISOString(),
+              activo: true
             });
           }
 
@@ -153,6 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
           await db.collection("sesiones").doc(correo).set({
             correo: correo,
             nombre: nombre,
+            rol: rol,
             fechaLogin: new Date().toISOString(),
             activo: true
           });
@@ -161,6 +203,8 @@ document.addEventListener("DOMContentLoaded", () => {
           localStorage.setItem("usuario", JSON.stringify({
             correo: correo,
             nombre: nombre,
+            rol: rol,
+            uid: uid || correo,
             fechaLogin: new Date().toISOString()
           }));
 

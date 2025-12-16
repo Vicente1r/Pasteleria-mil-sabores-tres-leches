@@ -40,9 +40,9 @@
                         </a>
                     </li>
                     <li class="menu-item">
-                        <a href="#ordenes" class="menu-link">
+                        <a href="#compras" class="menu-link">
                             <i class="bi bi-clipboard-check menu-icon"></i>
-                            Órdenes
+                            Compras
                         </a>
                     </li>
                     <li class="menu-item">
@@ -170,13 +170,13 @@
                             </p>
                         </div>
 
-                        <div class="nav-button" onclick="navegarA('ordenes')">
+                        <div class="nav-button" onclick="navegarA('compras')">
                             <div class="nav-icon">
                                 <i class="bi bi-cart-check"></i>
                             </div>
-                            <h1 class="nav-title">Ordenes</h1>
+                            <h1 class="nav-title">Compras</h1>
                             <p class="nav-description">
-                                Gestión y seguimiento de todas las ordenes de compras realizadas.
+                                Gestión y seguimiento de todas las compras realizadas.
                             </p>
                         </div>
 
@@ -248,24 +248,24 @@
 
             <!-- ==================== SECCIONES CRUD ==================== -->
 
-            <!-- Sección de Órdenes -->
-            <section id="ordenes" style="display: none;">
+            <!-- Sección de Compras -->
+            <section id="compras" style="display: none;">
                 <div class="welcome-section">
-                    <h2 class="welcome-title">Gestión de Órdenes</h2>
-                    <p class="welcome-subtitle">Administra y realiza seguimiento de todas las órdenes de compra</p>
+                    <h2 class="welcome-title">Gestión de Compras</h2>
+                    <p class="welcome-subtitle">Administra y realiza seguimiento de todas las compras</p>
                 </div>
                 <div class="crud-container">
                     <div class="crud-header">
-                        <h3>Lista de Órdenes</h3>
+                        <h3>Lista de Compras</h3>
                         <div class="crud-actions">
-                            <select id="filtroEstado" onchange="filtrarOrdenes()">
+                            <select id="filtroEstado" onchange="filtrarCompras()">
                                 <option value="">Todos los estados</option>
                                 <option value="pendiente">Pendiente</option>
                                 <option value="procesando">Procesando</option>
                                 <option value="completado">Completado</option>
                                 <option value="cancelado">Cancelado</option>
                             </select>
-                            <button class="btn btn-primary" onclick="cargarOrdenes()">
+                            <button class="btn btn-primary" onclick="cargarCompras()">
                                 <i class="bi bi-arrow-repeat"></i> Actualizar
                             </button>
                         </div>
@@ -282,9 +282,9 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="ordenes-tbody">
+                            <tbody id="compras-tbody">
                                 <tr>
-                                    <td colspan="6" class="no-data">Haz clic en Actualizar para cargar las órdenes</td>
+                                    <td colspan="6" class="no-data">Haz clic en Actualizar para cargar las compras</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -403,12 +403,12 @@
                             <thead>
                                 <tr>
                                     <th>RUN</th>
-                                    <th>Nombre</th>
+                                    <th>Nombre Completo</th>
                                     <th>Email</th>
-                                    <th>Clave</th>
+                                    <th>Contraseña</th>
                                     <th>Fecha</th>
                                     <th>Teléfono</th>
-                                    <th>Dirección</th>
+                                    <th>Comuna</th>
                                     <th>Rol</th>
                                     <th>Estado</th>
                                     <th>Fecha Registro</th>
@@ -588,9 +588,9 @@
                 </div>
                 
                 <div class="form-group" id="passwordField">
-                    <label for="usuarioClave">Clave *</label>
-                    <input type="password" id="usuarioClave" required>
-                    <small class="text-muted">La clave solo se puede establecer al crear un nuevo usuario</small>
+                    <label for="usuarioContraseña">Contraseña *</label>
+                    <input type="password" id="usuarioContraseña" required>
+                    <small class="text-muted">La contraseña solo se puede establecer al crear un nuevo usuario</small>
                 </div>
                 
                 <div class="form-group">
@@ -604,8 +604,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="usuarioDireccion">Dirección</label>
-                    <textarea id="usuarioDireccion" rows="2"></textarea>
+                    <label for="usuarioComuna">Comuna</label>
+                    <textarea id="usuarioComuna" rows="2"></textarea>
                 </div>
                 
                 <div class="form-group">

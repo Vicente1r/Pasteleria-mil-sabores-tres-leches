@@ -1,272 +1,111 @@
-<!-- Copia de perfilAdmin.html, adaptada para vendedor (solo lectura) -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Vendedor</title>
-    <link rel="stylesheet" href="../css/perfiladmin.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <script type="module">
-      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-      import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-      import { getFirestore, doc, updateDoc, getDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+    <title>Huerta Hogar - Mi Perfil</title> 
+    <link rel="icon" href="../Img/Logo.jpg" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="carousel.css" rel="stylesheet"> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" ...>
+    <link href="carousel.css" rel="stylesheet"> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" ...></script>
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
-        authDomain: "pasteleriamilsaborestresleches.web.app",
-        projectId: "pasteleriamilsaborestresleches",
-        storageBucket: "pasteleriamilsaborestresleches.appspot.com",
-        messagingSenderId: "123456789",
-        appId: "1:123456789:web:abcdef123456"
-      };
+    <link rel="stylesheet" href="../css/perfilCliente.css">
 
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      const db = getFirestore(app);
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
-      window.firebaseAuth = auth;
-      window.firebaseDb = db;
-      window.onAuthStateChanged = onAuthStateChanged;
-      window.doc = doc;
-      window.updateDoc = updateDoc;
-      window.getDoc = getDoc;
-      window.collection = collection;
-      window.query = query;
-      window.where = where;
-      window.getDocs = getDocs;
-    </script>
-</head>
+    <link rel="stylesheet" href="../css/perfilCliente.css">
+    </head>
 <body>
-    <div class="admin-container">
-        <!-- Header -->
-        <header class="admin-header">
-            <a href="#" class="logo">Tienda Online Pasteleria mil sabores</a>
-        </header>
+    
 
-        <!-- Sidebar -->
-        <aside class="admin-sidebar">
-            <!-- Sección de Bienvenida -->
-            <div class="sidebar-section">
-                <section class="welcome-section">
-                    <h1 class="welcome-title" id="bienvenidoPrincipal">Bienvenido al Panel de Vendedor</h1>
-                    <p class="welcome-subtitle" id="userEmail">vendedor@duoc.cl</p>
-                </section>
-            </div>
 
-            <!-- Menú Principal -->
-            <div class="sidebar-section">
-                <h3 class="sidebar-title">Administración</h3>
-                <ul class="sidebar-menu">
-                    <li class="menu-item">
-                        <a href="#dashboard" class="menu-link">
-                            <i class="bi bi-speedometer2 menu-icon"></i>
-                            Dashboard
-                        </a>
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-12 px-md-4">
+                <div class="text-center mb-4">
+                    <h5>Bienvenido, <br><strong>[Nombre Vendedor]</strong></h5>
+                </div>
+                
+                <div class="d-flex justify-content-end align-items-center p-3 pb-0">
+                    <a href="../../index.html" class="btn btn-outline-danger btn-sm">Cerrar sesión</a>
+                </div>
+
+                <div class="pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Resumen del Perfil</h1>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Editar mi nombre</h5>
+                        <form id="update-profile-form">
+                            <div class="mb-3">
+                                <label for="nombreUsuario" class="form-label">Nombre de usuario</label>
+                                <input type="text" class="form-control" id="nombreUsuario" placeholder="Nuevo nombre">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Actualizar nombre</button>
+                        </form>
+                        <div id="update-message" class="mt-3"></div>
+                    </div>
+                </div>
+
+                <p>Aquí puedes ver un resumen de tu actividad reciente.</p>
+
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="productos-tab" data-bs-toggle="tab" data-bs-target="#productos" type="button" role="tab" aria-controls="productos" aria-selected="true">Mis Productos</button>
                     </li>
-                    <li class="menu-item">
-                        <a href="#ordenes" class="menu-link">
-                            <i class="bi bi-clipboard-check menu-icon"></i>
-                            Órdenes
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#productos" class="menu-link">
-                            <i class="bi bi-box-seam menu-icon"></i>
-                            Productos
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#categorias" class="menu-link">
-                            <i class="bi bi-tags menu-icon"></i>
-                            Categorías
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#usuarios" class="menu-link">
-                            <i class="bi bi-people menu-icon"></i>
-                            Usuarios
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#reportes" class="menu-link">
-                            <i class="bi bi-graph-up menu-icon"></i>
-                            Reportes
-                        </a>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="ventas-tab" data-bs-toggle="tab" data-bs-target="#ventas" type="button" role="tab" aria-controls="ventas" aria-selected="false">Mis Ventas</button>
                     </li>
                 </ul>
-            </div>
 
-            <!-- Sección de Perfil y Acciones -->
-            <div class="sidebar-section">
-                <h3 class="sidebar-title">Cuenta</h3>
-                <ul class="sidebar-menu">
-                    <li class="menu-item">
-                        <a href="#perfil" class="menu-link">
-                            <i class="bi bi-person menu-icon"></i>
-                            Perfil
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Botones de Acción -->
-            <div class="sidebar-section sidebar-actions">
-                <button class="action-btn btn-store allow-vendedor-edit" data-allow-vendedor onclick="irATienda()">
-                    <i class="bi bi-shop menu-icon"></i>
-                    Tienda
-                </button>
-                <button class="action-btn btn-logout allow-vendedor-edit" data-allow-vendedor onclick="cerrarSesion()">
-                    <i class="bi bi-box-arrow-right menu-icon"></i>
-                    Cerrar Sesión
-                </button>
-            </div>
-        </aside>
-
-        <!-- Contenido Principal -->
-        <main class="admin-main">
-            <!-- Dashboard -->
-            <section id="dashboard">
-                <h2 class="sidebar-title">Resumen General</h2>
-                <div class="dashboard-cards-row">
-                    <div class="summary-card blue-card">
-                        <div class="card-content">
-                            <div class="card-icon"><i class="bi bi-cart"></i></div>
-                            <div class="card-info">
-                                <h3 class="card-title">Compras</h3>
-                                <p class="card-value" id="totalCompras">-</p>
-                            </div>
+                <!-- Tab panes -->
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="productos" role="tabpanel" aria-labelledby="productos-tab">
+                        <div class="table-responsive mt-3">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Precio</th>
+                                        <th scope="col">Stock</th>
+                                        <th scope="col">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productos-tbody">
+                                    <!-- Los productos se cargarán aquí -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="summary-card green-card">
-                        <div class="card-content">
-                            <div class="card-icon"><i class="bi bi-box"></i></div>
-                            <div class="card-info">
-                                <h3 class="card-title">Productos</h3>
-                                <p class="card-value" id="totalProductos">-</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="summary-card yellow-card">
-                        <div class="card-content">
-                            <div class="card-icon"><i class="bi bi-people"></i></div>
-                            <div class="card-info">
-                                <h3 class="card-title">Usuarios</h3>
-                                <p class="card-value" id="totalUsuarios">-</p>
-                            </div>
+                    <div class="tab-pane fade" id="ventas" role="tabpanel" aria-labelledby="ventas-tab">
+                        <div class="table-responsive mt-3">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col"># Pedido</th>
+                                        <th scope="col">Fecha</th>
+                                        <th scope="col">Productos</th>
+                                        <th scope="col">Total</th>
+                                        <th scope="col">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ventas-tbody">
+                                    <!-- Las ventas se cargarán aquí -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-            </section>
-
-            <!-- Órdenes (vendedor puede ver detalles) -->
-            <section id="ordenes" style="display:none;">
-                <div class="welcome-section">
-                    <h2 class="welcome-title">Registro de Órdenes</h2>
-                    <p class="welcome-subtitle">Ver registros de compras y detalles</p>
-                </div>
-                <div class="table-responsive">
-                    <table class="crud-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Cliente</th>
-                                <th>Total</th>
-                                <th>Estado</th>
-                                <th>Fecha</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ordenes-tbody">
-                            <tr><td colspan="6" class="no-data">Cargando órdenes...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Productos (vendedor puede ver registros y detalles) -->
-            <section id="productos" style="display:none;">
-                <div class="welcome-section">
-                    <h2 class="welcome-title">Registro de Productos</h2>
-                    <p class="welcome-subtitle">Ver lista de productos y sus detalles</p>
-                </div>
-                <div class="table-responsive">
-                    <table class="crud-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Precio</th>
-                                <th>Stock</th>
-                                <th>Categoría</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productos-tbody">
-                            <tr><td colspan="6" class="no-data">Cargando productos...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Perfil (vendedor puede cambiar su nombre) -->
-            <section id="perfil" style="display:none;">
-                <div class="welcome-section">
-                    <h2 class="welcome-title">Mi Perfil</h2>
-                    <p class="welcome-subtitle">Actualiza tu información de vendedor</p>
-                </div>
-                <div class="form-container">
-                    <form id="perfilForm">
-                        <div class="form-group">
-                            <label for="vendedorNombre">Nombre</label>
-                            <input id="vendedorNombre" class="form-input allow-vendedor-edit" type="text" />
-                        </div>
-                        <div class="form-actions">
-                            <button id="saveVendedorBtn" type="submit" class="btn btn-primary allow-vendedor-edit">Guardar</button>
-                        </div>
-                        <p id="perfilStatus"></p>
-                    </form>
-                </div>
-            </section>
-        </main>
+            </main>
+        </div>
     </div>
-
-    <!-- Solo lectura para vendedor -->
-    <script src="../../js/role-protect.js"></script>
-    <script>
-      if (window.enableReadOnlyView) window.enableReadOnlyView();
-    </script>
-
-        <!-- Perfil Vendedor API client -->
-        <script src="../js/perfilVendedor-api.js"></script>
-
-    <!-- Scripts de navegación -->
-    <script>
-        // Funciones globales usadas por los botones del panel (asegurar que onclick las encuentre)
-        function irATienda() {
-            window.location.href = '../../index.html';
-        }
-
-        async function cerrarSesion() {
-            try {
-                if (window.firebaseAuth) {
-                    await window.firebaseAuth.signOut();
-                }
-            } catch (e) {
-                console.warn('Error cerrando sesión vía Firebase:', e);
-            }
-            try {
-                localStorage.removeItem('usuario');
-                localStorage.removeItem('token');
-                localStorage.removeItem('adminLoginTime');
-                localStorage.removeItem('redirigirDespuesLogin');
-            } catch (_) {}
-            try { window.location.href = '../../index.html'; } catch (_) {}
-        }
-        // Exponer en window por si acaso
-        window.irATienda = irATienda;
-        window.cerrarSesion = cerrarSesion;
-    </script>
-    <script type="module" src="../../js/auth.js"></script>
-</body>
+    <script src="../js/perfilVendedor-api.js"></script>
+    </body>
 </html>

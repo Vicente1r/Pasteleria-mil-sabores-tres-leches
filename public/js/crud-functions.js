@@ -795,10 +795,10 @@ class CRUDFunctions {
                     'usuarioRun': usuario.run || '',
                     'usuarioNombre': usuario.nombre || '',
                     'usuarioEmail': usuario.email || usuario.correo || '',
-                    'usuarioClave': '',
+                    'usuarioContraseña': '',
                     'usuarioFecha': usuario.fecha || '',
                     'usuarioTelefono': usuario.telefono || '',
-                    'usuarioDireccion': usuario.direccion || '',
+                    'usuarioComuna': usuario.direccion || '',
                     'usuarioRol': usuario.rol || 'cliente',
                     'usuarioActivo': usuario.activo !== false
                 };
@@ -1320,16 +1320,16 @@ function guardarUsuario(event) {
         run: document.getElementById('usuarioRun').value,
         nombre: document.getElementById('usuarioNombre').value,
         email: document.getElementById('usuarioEmail').value,
-        clave: document.getElementById('usuarioClave').value,
+        clave: document.getElementById('usuarioContraseña').value,
         fecha: document.getElementById('usuarioFecha').value,
         telefono: document.getElementById('usuarioTelefono').value,
-        direccion: document.getElementById('usuarioDireccion').value,
+        direccion: document.getElementById('usuarioComuna').value,
         rol: document.getElementById('usuarioRol').value,
         activo: document.getElementById('usuarioActivo').checked
     };
 
     if (!usuarioData.id) {
-        usuarioData.clave = document.getElementById('usuarioClave').value;
+        usuarioData.clave = document.getElementById('usuarioContraseña').value;
     }
 
     if (crudFunctions) {
